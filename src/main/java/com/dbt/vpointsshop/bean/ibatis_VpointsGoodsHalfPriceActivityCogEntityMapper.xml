@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsHalfPriceActivityCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsHalfPriceActivityCogEntity">
+        <id column="info_key" property="infoKey" />
+        <result column="info_name" property="infoName" />
+        <result column="info_no" property="infoNo" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="consumer_buy_limit" property="consumerBuyLimit" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="isBegin" property="isBegin" />
+        <result column="discount" property="discount" />
+    </resultMap>
+    <resultMap id="BaseVOResultMap" type="com.dbt.vpointsshop.dto.VpointsGoodsHalfPriceActivityCogVO">
+        <id column="info_key" property="infoKey" />
+        <result column="info_name" property="infoName" />
+        <result column="info_no" property="infoNo" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="consumer_buy_limit" property="consumerBuyLimit" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="isBegin" property="isBegin" />
+        <result column="discount" property="discount" />
+        <result column="goods_id" property="goodsId" />
+        <result column="goods_name" property="goodsName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        info_key, info_name,discount, info_no, start_date, end_date, consumer_buy_limit, create_time, create_user, update_time, update_user, delete_flag
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsHalfPriceActivityCogEntity">
+        insert into vpoints_goods_half_price_activity_cog (
+                   info_key,
+                  info_name,
+                  info_no,
+                  start_date,
+                  end_date,
+                  consumer_buy_limit,
+                   discount,
+                  create_time,
+                  create_user,
+                  update_time,
+                  update_user,
+                  delete_flag
+        ) values (
+                #{infoKey},
+                #{infoName},
+                #{infoNo},
+                #{startDate},
+                #{endDate},
+                #{consumerBuyLimit},
+                #{discount},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser},
+                #{deleteFlag}
+        )
+    </insert>
+
+    <update id="updateByInfoKey" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsHalfPriceActivityCogEntity">
+        update  `vpoints_goods_half_price_activity_cog` set
+                    <if test="infoName!=null and infoName != ''">
+                         `info_name` =  #{infoName},
+                    </if>
+                    <if test=" startDate!=null">
+                         `start_date` =   #{startDate,jdbcType=TIMESTAMP},
+                    </if>
+                    <if test=" endDate!=null">
+                         `end_date` =   #{endDate,jdbcType=TIMESTAMP},
+                    </if>
+                    <if test=" consumerBuyLimit!=null and consumerBuyLimit != ''">
+                         `consumer_buy_limit` =   #{consumerBuyLimit},
+                    </if>
+                    <if test=" discount!=null and discount != ''">
+                         `discount` =   #{discount},
+                    </if>
+                    <if test=" createTime!=null">
+                         `create_time` =   #{createTime},
+                    </if>
+                    <if test=" createUser!=null and createUser != ''">
+                         `create_user` =   #{createUser},
+                    </if>
+
+                    <if test=" deleteFlag!=null and deleteFlag != ''">
+                         `delete_flag` =   #{deleteFlag},
+                    </if>
+
+                    <if test=" updateUser!=null and updateUser != ''">
+                         `update_user` =   #{updateUser},
+                    </if>
+                         `update_time` =   now()
+            where info_key=#{infoKey}
+    </update>
+
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        select * from (
+        select <include refid="Base_Column_List">
+    </include>
+        ,CASE
+        WHEN DATE(NOW()) >= cog.START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1'
+        WHEN DATE(NOW()) > cog.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin
+        from vpoints_goods_half_price_activity_cog cog where delete_flag = '0'
+
+        <if test="ew.infoName != null and ew.infoName != '' ">
+            and info_name like concat('%',#{ew.infoName},'%')
+        </if>
+        <choose>
+            <when test="ew.startDate != null and ew.endDate != null">
+                AND !(start_date > #{ew.endDate} or #{ew.startDate} > end_date)
+            </when>
+            <when test="ew.startDate!=null ">
+                and #{ew.startDate} between start_date and end_date
+            </when>
+            <when test="ew.endDate!=null ">
+                and #{ew.endDate} between start_date and end_date
+            </when>
+        </choose>
+        order by isBegin,info_no desc
+        ) activity
+        <where>
+            <if test="ew.isBegin!='' and ew.isBegin != null">
+                activity.isBegin = #{ew.isBegin}
+            </if>
+        </where>
+    </select>
+    <select id="findByInfoKey" parameterType="string" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+        from vpoints_goods_half_price_activity_cog cog where info_key=#{infoKey}
+    </select>
+    <select id="getCurrentActivity" resultMap="BaseVOResultMap">
+        select * from (select activity.*,relation.goods_id,CASE
+        WHEN DATE(NOW()) >= activity.START_DATE AND DATE(NOW()) &lt;= activity.END_DATE  THEN '1'
+        WHEN DATE(NOW()) > activity.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin from vpoints_goods_half_price_activity_cog activity
+        left join vpoints_goods_half_price_relation_cog relation
+        on relation.half_price_info_key = activity.info_Key
+        where activity.delete_flag = '0' ) cog  where  cog.isBegin = '1'
+    </select>
+    <select id="checkGoodsActivity" parameterType="com.dbt.vpointsshop.dto.VpointsGoodsHalfPriceActivityCogVO" resultMap="BaseVOResultMap">
+          select activity.*,relation.goods_id,goods.goods_name from vpoints_goods_half_price_activity_cog activity
+        left join vpoints_goods_half_price_relation_cog relation
+        on relation.half_price_info_key = activity.info_Key
+        left join vpoints_goods_info goods on goods.goods_id = relation.goods_id
+        where activity.delete_flag = '0'   AND (
+        #{startDate} between activity.start_date and activity.end_date
+         or #{endDate} between activity.start_date and activity.end_date
+        or activity.start_date between #{startDate} and #{endDate}
+        or activity.end_date between #{startDate} and #{endDate}
+        )
+         <foreach collection="goodsIdList" item="Id" open="and (" close=" )" separator="or">
+            relation.goods_id = #{Id}
+        </foreach>
+        <if test="infoKey != null and infoKey != ''">
+            and activity.info_key != #{infoKey}
+        </if>
+
+
+    </select>
+
+</mapper>

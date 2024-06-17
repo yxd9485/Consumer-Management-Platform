@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.appuser.dao.IVpsConsumerThirdAccountInfoDao">
+
+	<resultMap type="com.dbt.platform.appuser.bean.VpsConsumerThirdAccountInfo" id="vpsConsumerThirdAccountInfoResultMap">
+		<result property="thirdaccountKey" column="thirdaccount_key"/>
+  		<result property="userKey" column="user_key"/>
+  		<result property="openid" column="openid"/>
+  		<result property="unionid" column="unionid"/>
+  		<result property="appletOpenid" column="applet_openid"/>
+  		<result property="paOpenid" column="pa_openid"/>
+  		<result property="subscribeStatus" column="subscribe_status"/>
+  		<result property="subscribeTime" column="subscribe_time"/>
+        <result property="memberOpenid" column="MEMBER_OPENID"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         thirdaccount_key, 
+  			 user_key,
+  			 openid,
+  			 unionid,
+  			 applet_openid,
+  			 pa_openid,
+  			 subscribe_status,
+			 subscribe_time,
+             MEMBER_OPENID
+  	</sql>
+	<insert id="create" parameterType="com.dbt.platform.appuser.bean.VpsConsumerThirdAccountInfo" 
+		useGeneratedKeys="true"  keyProperty="thirdaccountKey">
+		INSERT INTO vps_consumer_thirdaccount_info(
+		 thirdaccount_key, 
+  			user_key,
+  			openid,
+  			unionid,
+  			subscribe_status,
+  			subscribe_time 
+		)
+		VALUES(
+		    #{thirdaccountKey},
+			
+  			#{userKey},
+			
+  			#{openid},
+			
+  			#{unionid},
+			
+  			#{subscribeStatus},
+			
+  			#{subscribeTime}
+		)
+	</insert>
+	<update id="update" parameterType="com.dbt.platform.appuser.bean.VpsConsumerThirdAccountInfo">
+		update vps_consumer_thirdaccount_info 
+	<set>
+			<if test="subscribeStatus != null and subscribeStatus!=''">
+				subscribe_status = #{subscribeStatus},
+			</if>
+			<if test="subscribeTime != null and subscribeTime!=''">
+				subscribe_time = #{subscribeTime},
+			</if>
+	</set>
+	 where thirdaccount_key=#{thirdaccountKey}
+	</update>
+	<!-- 根据openid查询消费者三方账户信息 -->
+	<select id="queryThirdAccountInfoByOpenid" parameterType="String" resultMap="vpsConsumerThirdAccountInfoResultMap">
+		select 
+			<include refid="Base_Column_List"/> 
+		from 
+			vps_consumer_thirdaccount_info 
+		where openid=#{openid} 
+		limit 1 
+	</select>
+	<!-- 根据userKey查询消费者三方账户信息 -->
+	<select id="queryThirdAccountInfoByUserKey" parameterType="String" resultMap="vpsConsumerThirdAccountInfoResultMap">
+		select 
+			<include refid="Base_Column_List"/> 
+		from 
+			vps_consumer_thirdaccount_info 
+		where user_key = #{userKey} 
+		limit 1 
+	</select>
+	
+	<select id="queryThirdAccountInfoByUserKeyGro" parameterType="Map" resultType="String">
+		select 
+			openid 
+		from 
+			vps_consumer_thirdaccount_info 
+		where user_key in  
+		<foreach collection="userKeyGro" item="userKey" open="(" close=")" separator=",">
+            #{userKey}
+        </foreach>
+	</select>
+	
+	<select id="queryPaOpenidByUserkey" parameterType="Map" resultType="String">
+		select 
+			pa_openid 
+		from 
+			vps_consumer_thirdaccount_info 
+		where user_key in  
+		<foreach collection="userKeyGro" item="userKey" open="(" close=")" separator=",">
+            #{userKey}
+        </foreach>
+        and pa_openid is not null
+        and pa_openid != ''
+	</select>
+	
+	<!-- 根据uniodid查询三方账户信息 -->
+	<select id ="queryThirdAccountInfoByUnionid" parameterType="String" resultMap="vpsConsumerThirdAccountInfoResultMap">
+		select 
+			<include refid="Base_Column_List"/> 
+		from 
+			vps_consumer_thirdaccount_info 
+		where unionid=#{unionid} 	
+	</select>
+	
+	<!-- 获取积分账户大于的0的用户openid -->
+	<select id="queryValidOpenid" parameterType="Map" resultType="String">
+		SELECT openid FROM vps_consumer_thirdaccount_info 
+		WHERE USER_KEY IN (
+			SELECT USER_KEY FROM vps_consumer_account_info 
+			WHERE 1=1
+			<if test="minVpoint != null and minVpoint != ''">
+				AND surplus_vpoints >= #{minVpoint}
+			</if>
+			<if test="maxVpoint != null and maxVpoint != ''">
+				AND surplus_vpoints <![CDATA[<=]]> #{maxVpoint}
+			</if>
+			<choose>
+				<when test="projectServerName == 'laobaifj'">
+					<if test="minMoney != null and minMoney != ''">
+						AND account_money >= #{minMoney}
+					</if>
+					<if test="maxMoney != null and maxMoney != ''">
+						AND account_money <![CDATA[<=]]> #{maxMoney}
+					</if>				
+				</when>
+				<otherwise>
+					<if test="minMoney != null and minMoney != ''">
+						AND surplus_money >= #{minMoney}
+					</if>
+					<if test="maxMoney != null and maxMoney != ''">
+						AND surplus_money <![CDATA[<=]]> #{maxMoney}
+					</if>
+				</otherwise>
+			</choose>
+		) 
+		AND SUBSCRIBE_STATUS = '1'
+		AND openid is not null AND openid != ''
+	</select>
+	
+	<!-- 获取积分账户大于的0的用户openid -->
+	<select id="queryValidOpenidCount" parameterType="Map" resultType="Integer">
+		SELECT COUNT(1) FROM vps_consumer_thirdaccount_info 
+		WHERE USER_KEY IN (
+			SELECT USER_KEY FROM vps_consumer_account_info 
+			WHERE 1=1
+			<if test="minVpoint == null and minVpoint == ''">
+				AND surplus_vpoints > 0
+			</if>
+			<if test="minVpoint != null and minVpoint != ''">
+				AND surplus_vpoints >= #{minVpoint}
+			</if>
+			<if test="maxVpoint != null and maxVpoint != ''">
+				AND surplus_vpoints <![CDATA[<=]]> #{maxVpoint}
+			</if>
+		) AND openid is not null AND openid != ''
+	</select>
+	
+	<!-- 获取积分账户大于的0的用户pa_openid -->
+	<select id="queryValidPaOpenid" parameterType="Map" resultType="String">
+		SELECT pa_openid FROM vps_consumer_thirdaccount_info 
+		WHERE USER_KEY IN (
+			SELECT USER_KEY FROM vps_consumer_account_info 
+			WHERE 1=1
+			<if test="minVpoint == null and minVpoint == ''">
+				AND surplus_vpoints > 0
+			</if>
+			<if test="minVpoint != null and minVpoint != ''">
+				AND surplus_vpoints >= #{minVpoint}
+			</if>
+			<if test="maxVpoint != null and maxVpoint != ''">
+				AND surplus_vpoints <![CDATA[<=]]> #{maxVpoint}
+			</if>
+		) AND pa_openid is not null AND pa_openid != ''
+	</select>
+	
+	
+	<!-- 获取积分账户大于的0的用户pa_openid数量 -->
+	<select id="queryValidPaOpenidCount" parameterType="Map" resultType="Integer">
+		SELECT COUNT(1) FROM vps_consumer_thirdaccount_info 
+		WHERE USER_KEY IN (
+			SELECT USER_KEY FROM vps_consumer_account_info 
+			WHERE 1=1
+			<if test="minVpoint == null and minVpoint == ''">
+				AND surplus_vpoints > 0
+			</if>
+			<if test="minVpoint != null and minVpoint != ''">
+				AND surplus_vpoints >= #{minVpoint}
+			</if>
+			<if test="maxVpoint != null and maxVpoint != ''">
+				AND surplus_vpoints <![CDATA[<=]]> #{maxVpoint}
+			</if>
+		) AND pa_openid is not null AND pa_openid != ''
+	</select>
+	
+	<select id="findAllAppletOpenid" resultType="String">
+		SELECT applet_openid FROM vps_consumer_thirdaccount_info
+		WHERE applet_openid IS NOT NULL
+		AND applet_openid != ''
+	</select>
+	
+	<select id="queryAppletOpenidByCreateTime" resultType="String">
+        SELECT 
+            t.applet_openid 
+        FROM
+            vps_consumer_thirdaccount_info t, vps_consumer_user_info u
+		WHERE 
+            t.user_key = u.user_key
+            and IFNULL(t.applet_openid, '') != ''
+            and u.create_time between #{startDate} and #{endDate}
+	</select>
+</mapper>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.blacklist.dao.IBlacklistDao">
+
+	<resultMap type="com.dbt.platform.blacklist.bean.Blacklist" id="blacklistResultMap">
+		<result property="blackKey" column="BLACK_LIST_KEY" jdbcType="VARCHAR" />
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY" jdbcType="VARCHAR" />
+		<result property="blackType" column="BLACK_LIST_TYPE" jdbcType="VARCHAR" />
+		<result property="ifBlackList" column="IF_BLACK_LIST" jdbcType="VARCHAR" />
+		<result property="blackValue" column="BLACK_LIST_VALUE" jdbcType="VARCHAR" />
+		<result property="creDate" column="CREATE_TIME" jdbcType="VARCHAR" />
+		<result property="creUser" column="CREATE_USER" jdbcType="VARCHAR" />
+		<result property="updateTime" column="UPDATE_TIME" jdbcType="VARCHAR" />
+		<result property="updateUser" column="UPDATE_USER" jdbcType="VARCHAR" />
+		<result property="doubtReason" column="DOUBT_REASON" jdbcType="VARCHAR" />
+		
+		<result property="openid" column="OPENID" jdbcType="VARCHAR" />
+		<result property="nickName" column="NICK_NAME" jdbcType="VARCHAR" />
+		<result property="phoneNum" column="PHONE_NUMBER" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 增加黑名单 -->
+    <insert id="create" parameterType="com.dbt.platform.blacklist.bean.Blacklist">
+        INSERT INTO VPS_BLACK_LIST_INFO(
+            BLACK_LIST_KEY,
+            VCODE_ACTIVITY_KEY,
+            BLACK_LIST_TYPE,
+            IF_BLACK_LIST,
+            BLACK_LIST_VALUE,
+            province,
+            city,
+            county,
+            DOUBT_REASON,
+            CREATE_TIME,
+            CREATE_USER,
+            UPDATE_TIME,
+            UPDATE_USER
+        ) VALUES (
+            #{blackKey},
+            #{vcodeActivityKey},
+            #{blackType},
+            #{ifBlackList},
+            #{blackValue},
+            #{province},
+            #{city},
+            #{county},
+            #{doubtReason},
+            #{creDate},
+            #{creUser},
+            #{updateTime},
+            #{updateUser}
+        )
+    </insert>
+	
+	<!-- 查询黑名单用户 -->
+	<select id="findBlacklistByBlackType" parameterType="Map" resultMap="blacklistResultMap" >
+		SELECT 
+		    b.*,
+            a.VCODE_ACTIVITY_NAME as vcodeActivityName,
+			t.OPENID,
+			c.NICK_NAME,
+            c.PHONE_NUMBER,
+            CONCAT(IFNULL(b.province, ''), '-', IFNULL(b.city, ''), '-', IFNULL(b.county, '')) address
+		FROM
+		  VPS_BLACK_LIST_INFO b
+		INNER JOIN VPS_CONSUMER_USER_INFO c ON b.BLACK_LIST_VALUE = c.USER_KEY
+		INNER JOIN vps_consumer_thirdaccount_info t ON t.USER_KEY = c.USER_KEY
+        LEFT JOIN vps_vcode_activity_cog a on b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+		WHERE 
+			b.DELETE_FLAG = '0' 
+            AND b.IF_BLACK_LIST = '1' 
+			AND b.BLACK_LIST_TYPE = '1'
+			<if test="queryBean.openid != null and queryBean.openid != ''">
+                 AND (t.OPENID = #{queryBean.openid} OR c.USER_KEY = #{queryBean.openid})
+            </if>
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND c.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.vcodeActivityName != null and queryBean.vcodeActivityName != ''">
+                 AND a.VCODE_ACTIVITY_NAME like '%${queryBean.vcodeActivityName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND c.PHONE_NUMBER like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.blackReason != null and queryBean.blackReason != ''">
+                 AND b.create_user = #{queryBean.blackReason}
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    AND date(b.CREATE_TIME) between #{queryBean.startDate} and #{queryBean.endDate}
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    AND date(b.CREATE_TIME) >= #{queryBean.startDate}
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    AND #{queryBean.endDate} >= date(b.CREATE_TIME)
+                </when>
+            </choose>
+            <choose>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'b.create_time'">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, b.CREATE_TIME DESC
+              </when>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+              </when>
+              <otherwise>ORDER BY b.CREATE_TIME DESC</otherwise>
+            </choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<!-- 统计黑名单总数 -->
+	<select id="countBlacklistByBlackType" parameterType="Map" resultType="int">
+		SELECT 
+			COUNT(0) 
+		FROM
+          VPS_BLACK_LIST_INFO b
+        INNER JOIN VPS_CONSUMER_USER_INFO c ON b.BLACK_LIST_VALUE = c.USER_KEY
+        INNER JOIN vps_consumer_thirdaccount_info t ON t.USER_KEY = c.USER_KEY
+        LEFT JOIN vps_vcode_activity_cog a on b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+        WHERE 
+            b.DELETE_FLAG = '0' 
+            AND b.IF_BLACK_LIST = '1' 
+            AND b.BLACK_LIST_TYPE = '1'
+            <if test="queryBean.openid != null and queryBean.openid != ''">
+                 AND (t.OPENID = #{queryBean.openid} OR c.USER_KEY = #{queryBean.openid})
+            </if>
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND c.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.vcodeActivityName != null and queryBean.vcodeActivityName != ''">
+                 AND a.VCODE_ACTIVITY_NAME like '%${queryBean.vcodeActivityName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND c.PHONE_NUMBER like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.blackReason != null and queryBean.blackReason != ''">
+                 AND b.create_user = #{queryBean.blackReason}
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    AND date(b.CREATE_TIME) between #{queryBean.startDate} and #{queryBean.endDate}
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    AND date(b.CREATE_TIME) >= #{queryBean.startDate}
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    AND #{queryBean.endDate} >= date(b.CREATE_TIME)
+                </when>
+            </choose>
+	</select>  
+	
+<!--    依据黑名单值查询相应数据 -->
+    <select id="findByBlackListValue" resultMap="blacklistResultMap" parameterType="Map">
+       select 
+           *
+       from 
+           VPS_BLACK_LIST_INFO
+       where
+           BLACK_LIST_VALUE = #{blackListValue}
+       limit 1
+    </select>
+	
+<!-- 删除黑名单 -->
+	<delete id="deleteById" parameterType="String">
+	   delete 
+	       from VPS_BLACK_LIST_INFO
+	   where 
+	       BLACK_LIST_KEY = #{id} 
+	</delete>
+	
+<!-- 删除黑名单 -->
+	<delete id="removeByBlackListValue" parameterType="Map">
+	   delete 
+	       from VPS_BLACK_LIST_INFO
+	   where 
+	       BLACK_LIST_VALUE = #{blackListValue}
+	</delete>
+	
+	<select id="findById" resultMap="blacklistResultMap" parameterType="String">
+       select 
+           *
+       from 
+           VPS_BLACK_LIST_INFO
+       where
+           BLACK_LIST_KEY = #{id}
+       limit 1
+	</select>
+</mapper>

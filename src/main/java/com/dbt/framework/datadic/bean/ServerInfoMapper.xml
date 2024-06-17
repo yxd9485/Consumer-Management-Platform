@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.framework.datadic.dao.ServerInfoDao">
+  	<resultMap type="com.dbt.framework.datadic.bean.ServerInfo" id="serverMap">
+  		<result property="itemValue" column="item_value"/>
+  		<result property="serverName" column="server_name"/>
+  		<result property="serverProvince" column="server_province"/>
+  		<result property="appId" column="app_id"/>
+  		<result property="projectServerName" column="project_server_name"/>
+  		<result property="redisServer" column="redis_server"/>
+  		<result property="serverJdbc" column="server_jdbc"/>
+  		<result property="serverU" column="server_u"/>
+  		<result property="serverP" column="server_p"/>
+  		<result property="serverC" column="server_c"/>
+  		<result property="serverStatus" column="server_status"/>
+  		<result property="brandCode" column="brand_code"/>
+	</resultMap>
+	<select id="getAllServer" resultMap="serverMap">
+		select * from server_info where server_status=0 order by server_id 
+	</select>
+	
+	<select id="findByProjectServerName" resultMap="serverMap">
+		select * from server_info where project_server_name = #{projectServerName} limit 1
+	</select>
+</mapper>

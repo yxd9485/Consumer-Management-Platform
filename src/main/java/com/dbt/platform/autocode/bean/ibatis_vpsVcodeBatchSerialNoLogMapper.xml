@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.autocode.dao.IVpsVcodeBatchSerialNoQueryLogDao">
+
+	<resultMap type="com.dbt.platform.autocode.bean.VpsVcodeBatchSerialNoQueryLog" id="baseResultMap">
+		<result property="infoKey" column="info_key"/>
+  		<result property="batchSerialNo" column="batch_serial_no"/>
+  		<result property="queryUserPhoneNum" column="query_user_phone_num"/>
+  		<result property="orderKey" column="order_key"/>
+  		<result property="batchKey" column="batch_key"/>
+  		<result property="queryNotes" column="query_note"/>
+  		<result property="createTime" column="create_time"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.autocode.bean.VpsVcodeBatchSerialNoQueryLog" >
+		INSERT INTO vps_vcode_batch_serial_no_query_log (
+		 	 info_key, 
+		 	 batch_serial_no, 
+  			 query_user_phone_num,
+  			 order_key,
+  			 batch_key,
+  			 query_note,
+  			 create_time
+		)
+		VALUES(
+		    #{infoKey},
+		    #{batchSerialNo},
+  			#{queryUserPhoneNum},
+  			#{orderKey},
+  			#{batchKey},
+  			#{queryNotes},
+  			#{createTime}
+		)
+	</insert>
+	
+	<!-- 码源订单列表 -->
+	<select id="queryForLst" parameterType="Map" resultMap="baseResultMap">
+		select 
+		    l.*,
+		    o.ORDER_NO orderNo,
+		    o.ORDER_NAME orderName,
+		    o.CLIENT_ORDER_NO clientOrderNo,
+		    o.QRCODE_MANUFACTURE qrcodeManufacture,
+		    o.QRCODE_FACTORY_NAME qrcodeFactoryName,
+		    o.QRCODE_PRODUCT_LINE_NAME qrcodeProductLineName,
+		    o.QRCODE_WORK_GROUP qrcodeWorkGroup,
+		    o.QRCODE_MACHINE_ID qrcodeMachineId,
+		    o.SKU_KEY skuKey,
+		    s.SKU_NAME skuName,
+		    b.BATCH_DESC batchDesc
+		from vps_vcode_batch_serial_no_query_log l
+		left join vps_qrcode_order_info o on l.order_key = o.ORDER_KEY
+		left join vps_vcode_qrcode_batch_info b on l.batch_key = b.BATCH_KEY
+		left join vps_sku_info s on o.SKU_KEY = s.SKU_KEY
+		where 
+		    1 = 1
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(l.create_time) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(l.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+        order by l.create_time desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+	</select>
+	
+	<!-- 用户列表count -->
+	<select id="queryForCount" parameterType="Map" resultType="Integer">
+		select 
+            count(1)
+        from vps_vcode_batch_serial_no_query_log l
+        where 
+            1 = 1
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(l.create_time) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(l.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+	</select>
+	
+	<!-- 依据二维码序号查询记录 -->
+	<select id="findByBatchSerialNo" parameterType="Map" resultMap="baseResultMap">
+		select 
+            *
+        from 
+            vps_vcode_batch_serial_no_query_log l
+        where 
+            batch_serial_no = #{batchSerialNo}
+        limit 1
+	</select>
+	
+</mapper>

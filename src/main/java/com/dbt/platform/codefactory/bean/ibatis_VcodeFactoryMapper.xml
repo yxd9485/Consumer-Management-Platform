@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.codefactory.dao.IVpsVcodeFactoryDao">
+	<!-- 查询信息List -->
+	<select id="queryForLst" resultType="com.dbt.platform.codefactory.bean.VpsVcodeFactory" parameterType="Map">
+	SELECT
+	    id as 'id',
+		factory_name as 'factoryName',
+		factory_type as 'factoryType',
+		channel_count as 'channelCount',
+		project_server_name as 'projectServerName',
+		server_winery_name as 'serverWineryName',
+		server_Winery as 'serverWinery',
+		is_wan_batch as 'isWanBatch',
+		is_label as isLabel
+	FROM
+		vps_vcode_factory
+	WHERE
+		DELETE_FLAG = '0'
+		<if test="queryBean.factoryName != null and queryBean.factoryName != '' ">
+			AND factory_name LIKE '%${queryBean.factoryName}%'
+		</if>
+		<if test="queryBean.projectServer != null and queryBean.projectServer != ''">
+			AND project_server LIKE '%${queryBean.projectServer}%'
+		</if>
+		<if test="queryBean.factoryType != null and queryBean.factoryType != '' ">
+			AND factory_type = #{queryBean.factoryType}
+		</if>
+		<if test="queryBean.serverWinery != null and queryBean.serverWinery != '' ">
+			AND server_winery LIKE '%${queryBean.serverWinery}%'
+		</if>
+		<if test="pageInfo != null">
+			LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}		
+		</if>
+	</select>
+   
+   
+   	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+	    	count(1)
+		FROM
+			vps_vcode_factory
+		WHERE
+			DELETE_FLAG = '0'
+		<if test="queryBean.factoryName != null and queryBean.factoryName != '' ">
+			AND factory_name LIKE '%${queryBean.factoryName}%'
+		</if>
+		<if test="queryBean.projectServer != null and queryBean.projectServer != ''">
+			AND project_server LIKE '%${queryBean.projectServer}%'
+		</if>
+		<if test="queryBean.factoryType != null and queryBean.factoryType != '' ">
+			AND factory_type = #{queryBean.factoryType}
+		</if>
+		<if test="queryBean.serverWinery != null and queryBean.serverWinery != '' ">
+			AND server_winery LIKE '%${queryBean.serverWinery}%'
+		</if>
+		</select>
+	
+	
+	<select id="checkShort" resultType="int" parameterType="com.dbt.platform.codefactory.bean.VpsVcodeFactory">
+		SELECT
+	    	count(1)
+		FROM
+			vps_vcode_factory
+		WHERE
+			DELETE_FLAG = '0'
+		AND factory_short = #{factoryShort}
+		<if test="id != null and id != '' ">
+			AND id != #{id}
+		</if>
+	</select>
+	
+	<select id="findById" resultType="com.dbt.platform.codefactory.bean.VpsVcodeFactory" parameterType="String">
+		SELECT
+	    	id as 'id',
+			factory_name as 'factoryName',
+			factory_type as 'factoryType',
+			factory_short as 'factoryShort',
+			channel_count as 'channelCount',
+			project_server_name as 'projectServerName',
+			project_server as 'projectServer',
+			server_winery_name as 'serverWineryName',
+			server_winery as 'serverWinery',
+			loss_ratio as 'lossRatio',
+			batch_num as 'batchNum',
+			bag_name as 'bagName',
+			bag_tel as 'bagTel',
+			bag_email as 'bagEmail', 
+			password_name as 'passwordName',
+			password_tel as 'passwordTel',
+			password_email as 'passwordEmail',
+			is_label as 'isLabel',
+			qrcode_Format as 'qrcodeFormat',
+			is_wan_batch as 'isWanBatch',
+			qrcode_merage_flag as 'qrcodeMerageFlag'
+		FROM
+			vps_vcode_factory
+		WHERE
+			DELETE_FLAG = '0'
+		AND id = #{id}
+	</select>
+	
+	
+	<insert id="create" parameterType="com.dbt.platform.codefactory.bean.VpsVcodeFactory">
+		INSERT INTO vps_vcode_factory (
+			factory_name,
+			factory_short,
+			factory_type,
+			channel_count,
+            project_server_name,
+			project_server,
+			server_winery_name,
+			server_winery,
+			loss_ratio,
+			batch_num,
+			bag_name,
+			bag_tel,
+			bag_email,
+			password_name,
+			password_tel,
+			password_email,
+			is_label,
+			qrcode_format,
+			is_wan_batch,
+			qrcode_merage_flag,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			TRIM(#{factoryName}),
+			TRIM(#{factoryShort}),
+			#{factoryType},
+			#{channelCount},
+            #{projectServerName},
+			#{projectServer},
+			#{serverWineryName},
+			#{serverWinery},
+			#{lossRatio},
+			#{batchNum},
+			#{bagName},
+			#{bagTel},
+			#{bagEmail},
+			#{passwordName},
+			#{passwordTel},
+			#{passwordEmail},
+			#{isLabel},
+			#{qrcodeFormat},
+			#{isWanBatch},
+			#{qrcodeMerageFlag},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.codefactory.bean.VpsVcodeFactory">
+		UPDATE vps_vcode_factory 
+		<set>
+			<if test="factoryName != null and factoryName != '' ">
+				factory_name = TRIM(#{factoryName}),
+			</if>
+			<if test="factoryShort != null and factoryShort != '' ">
+				factory_short = TRIM(#{factoryShort}),
+			</if>
+			<if test="factoryType != null and factoryType != '' ">
+				factory_type = #{factoryType},
+			</if>
+			<if test="channelCount != null and channelCount != '' ">
+				channel_count = #{channelCount},
+			</if>
+			<if test="projectServerName != null and projectServerName != '' ">
+				project_server_name = #{projectServerName},
+			</if>
+			<if test="projectServer != null and projectServer != '' ">
+				project_server = #{projectServer},
+			</if>
+            <if test="serverWineryName != null and serverWineryName != '' ">
+                server_winery_name = #{serverWineryName},
+            </if>
+			<if test="serverWinery != null and serverWinery != '' ">
+				server_winery = #{serverWinery},
+			</if>
+			<if test="lossRatio != null and lossRatio != '' ">
+				loss_ratio = #{lossRatio},
+			</if>
+			<if test="batchNum != null and batchNum != '' ">
+				batch_num = #{batchNum},
+			</if>
+			<if test="bagName != null and bagName != '' ">
+				bag_name = #{bagName},
+			</if>
+			<if test="bagTel != null and bagTel != '' ">
+				bag_tel = #{bagTel},
+			</if>
+			<if test="bagEmail != null and bagEmail != '' ">
+				bag_email = #{bagEmail},
+			</if>
+			<if test="passwordName != null and passwordName != '' ">
+				password_name = #{passwordName},
+			</if>
+			<if test="passwordTel != null and passwordTel != '' ">
+				password_tel = #{passwordTel},
+			</if>
+			<if test="passwordEmail != null and passwordEmail != '' ">
+				password_email = #{passwordEmail},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != '' ">
+				delete_Flag = #{deleteFlag},
+			</if>
+			<if test="isLabel != null and isLabel != '' ">
+				is_label = #{isLabel},
+			</if>
+			<if test="qrcodeFormat != null and qrcodeFormat != '' ">
+				qrcode_format = #{qrcodeFormat},
+			</if>
+			<if test="isWanBatch != null and isWanBatch != '' ">
+				is_wan_batch = #{isWanBatch},
+			</if>
+			<if test="qrcodeMerageFlag != null and qrcodeMerageFlag != '' ">
+				qrcode_merage_flag = #{qrcodeMerageFlag},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+   <select id="findByFactoryName" resultType="com.dbt.platform.codefactory.bean.VpsVcodeFactory" parameterType="String">
+		SELECT
+	    	id as 'id',
+			factory_name as 'factoryName',
+			factory_type as 'factoryType',
+			factory_short as 'factoryShort',
+			channel_count as 'channelCount',
+			project_server_name as 'projectServerName',
+			project_server as 'projectServer',
+			server_winery_name as 'serverWineryName',
+			server_winery as 'serverWinery',
+			loss_ratio as 'lossRatio',
+			batch_num as 'batchNum',
+			bag_name as 'bagName',
+			bag_tel as 'bagTel',
+			bag_email as 'bagEmail', 
+			password_name as 'passwordName',
+			password_tel as 'passwordTel',
+			password_email as 'passwordEmail',
+			is_label as 'isLabel',
+			qrcode_format as 'qrcodeFormat',
+			is_wan_batch as 'isWanBatch',
+			qrcode_merage_flag as 'qrcodeMerageFlag'
+		FROM
+			vps_vcode_factory
+		WHERE
+			DELETE_FLAG = '0'
+		AND factory_name = #{qrcodeManufacture}
+	</select>
+   
+</mapper>

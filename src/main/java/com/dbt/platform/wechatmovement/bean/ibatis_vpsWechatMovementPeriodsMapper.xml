@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatMovementPeriodsDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatMovementPeriods" id="VpsWechatMovementPeriodsResultMap">
+		<result property="periodsKey" column="PERIODS_KEY"/>
+		<result property="totalVpoints" column="TOTAL_VPOINTS"/>
+		<result property="participantsCount" column="PARTICIPANTS_COUNT"/>
+		<result property="finishCount" column="FINISH_COUNT"/>
+		<result property="inviteeCount" column="INVITEE_COUNT"/>
+		<result property="activityMagnification" column="ACTIVITY_MAGNIFICATION"/>
+		<result property="currencyPrice" column="CURRENCY_PRICE"/>
+		<result property="finishAvgMoney" column="FINISH_AVG_MONEY"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			PERIODS_KEY,
+			TOTAL_VPOINTS,
+			PARTICIPANTS_COUNT,
+			FINISH_COUNT,
+			INVITEE_COUNT,
+			ACTIVITY_MAGNIFICATION,
+			CURRENCY_PRICE,
+			FINISH_AVG_MONEY,
+			CREATE_TIME,
+			UPDATE_TIME
+	</sql>
+	
+	<!-- 更新当期达标人数 -->
+    <update id="updateFinishInfo" parameterType="Map">
+    	UPDATE 
+    		vps_wechat_movement_periods
+    	SET 
+    		FINISH_COUNT = #{finishCount},
+    		FINISH_AVG_MONEY = #{finishAvgMoney}
+    	WHERE 
+    		PERIODS_KEY = #{periodsKey}
+    </update>
+    
+    <!-- 更新当期规则数据 -->
+    <update id="updatePeriodsRule" parameterType="Map">
+    	UPDATE 
+    		vps_wechat_movement_periods
+    	SET 
+    		CURRENCY_PRICE = #{currencyPrice},
+    		ACTIVITY_MAGNIFICATION = #{activityMagnification},
+    		BONUS_POOL = #{bonusPool}
+    	WHERE 
+    		PERIODS_KEY = #{periodsKey}
+    </update>
+    
+    
+    <!-- 获取某期微信运动数据统计 -->
+    <select id="findWechatMovemenPeriods" parameterType="String" resultMap="VpsWechatMovementPeriodsResultMap">
+    	SELECT 
+			<include refid="Base_Column_List" />
+ 		FROM 
+ 			vps_wechat_movement_periods
+ 		WHERE 
+ 			 PERIODS_KEY = #{periodsKey}
+ 		LIMIT 1
+    </select>
+</mapper>

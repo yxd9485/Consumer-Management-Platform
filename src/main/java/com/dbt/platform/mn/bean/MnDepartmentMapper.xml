@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.IMnDepartmentDao">
+    <resultMap type="com.dbt.platform.mn.bean.MnDepartmentEntity" id="MnDepartmentResultMap">
+        <result property="id" column="ID"/>
+        <result property="pid" column="PID"/>
+        <result property="dep_name" column="DEP_NAME"/>
+        <result property="mdgbigareaid" column="MDGBIGAREAID"/>
+        <result property="mdgprovinceid" column="MDGPROVINCEID"/>
+    </resultMap>
+    
+    <delete id="removeAll">
+        delete from mn_department where 1=1
+    </delete>
+    <delete id="deleteById">
+        delete from mn_department where id = #{id}
+    </delete>
+    <insert id="insert" parameterType="com.dbt.platform.mn.bean.MnDepartmentEntity">
+        INSERT INTO `mn_department`(
+            `ID`,
+            `PID`,
+            `DEP_NAME`,
+            `ORDER_NUM`,
+            `PRO_REMARK`,
+            `MDGBIGAREAID`,
+            `MDGPROVINCEID`,
+            `STATUS`,
+            `LEVEL`,
+            `CREUSER`,
+            `UPUSER`,
+            `CRETIME`,
+            `UPTIME`
+        )
+        VALUES (
+            #{id},
+            #{pid},
+            #{dep_name},
+            #{order_num},
+            #{pro_remark},
+            #{mdgbigareaid},
+            #{mdgprovinceid},
+            #{status},
+            #{level},
+            #{creuser},
+            #{upuser},
+            #{cretime},
+            #{uptime}
+            );
+
+    </insert>
+
+    <select id="findById" parameterType="String" resultMap="MnDepartmentResultMap">
+        select * from mn_department where ID = #{id}
+    </select>
+    
+    <select id="queryListByMap" parameterType="Map" resultMap="MnDepartmentResultMap">
+        select * from mn_department
+        where 1=1
+        <if test="level > 2">
+        and level = #{level}
+        </if>
+        <if test="pid > -1">
+        and pid = #{pid}
+        </if>
+    </select>
+</mapper>

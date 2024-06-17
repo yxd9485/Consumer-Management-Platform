@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.smallticket.dao.VpsTicketRecordSkuDetailDao">
+
+	<resultMap type="com.dbt.smallticket.bean.VpsTicketRecordSkuDetail" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="ticketSkuName" column="TICKET_SKU_NAME" />
+		<result property="skuKey" column="sku_key" />
+		<result property="skuNum" column="SKU_NUM" />
+		<result property="ticketSkuUnitMoney" column="TICKET_SKU_UNIT_MONEY" />
+		<result property="ticketSkuMoney" column="TICKET_SKU_MONEY" />
+		<result property="terminalInsideCode" column="TERMINAL_INSIDE_CODE" />
+	</resultMap>
+	
+	
+	<!-- 查询小票明细 -->
+	<select id="queryRecordByTicketKey" parameterType="String" resultMap="baseResultMap">
+	   select 
+	        *
+	   from
+	       vps_ticket_record_sku_detail
+	   where 
+	       TICKET_RECORD_KEY = #{infoKey}
+	</select>
+	<!-- 删除详情 -->
+	<delete id="deleteTicketSkuDetailByRecordKey"  parameterType="String">
+		DELETE from
+	       vps_ticket_record_sku_detail
+		where 
+	       TICKET_RECORD_KEY = #{infoKey}
+	</delete>
+	
+	
+	<!-- 创建详情 -->
+	<insert id="insertTicketSkuDetail" parameterType="java.util.List">
+		insert into vps_ticket_record_sku_detail (INFO_KEY, TICKET_RECORD_KEY, TERMINAL_INSIDE_CODE, TICKET_SKU_NAME,TICKET_SKU_UNIT_MONEY,TICKET_SKU_MONEY,SKU_KEY
+		,SKU_NUM,DELETE_FLAG,CREATE_USER,CREATE_TIME,UPDATE_USER,UPDATE_TIME)
+		values
+          <foreach collection ="list" item="skuDetail" index= "index" separator =",">
+              (
+                 uuid(), 
+                 #{skuDetail.ticketRecordKey},
+                 #{skuDetail.terminalInsideCode},
+                 #{skuDetail.ticketSkuName},
+                 #{skuDetail.ticketSkuUnitMoney}, 
+                 #{skuDetail.ticketSkuMoney}, 
+                 #{skuDetail.skuKey},
+                 #{skuDetail.skuNum},
+                 0,
+                 #{skuDetail.createUser},
+                 #{skuDetail.createTime},
+                 #{skuDetail.updateUser},
+                 #{skuDetail.updateTime}
+              )
+         </foreach>
+	</insert>
+	
+	
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsGiftCardRelationDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardRelation">
+        <id column="info_key" property="infoKey" />
+        <result column="goods_id" property="goodsId" />
+        <result column="gift_card_info_key" property="giftCardInfoKey" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        info_key, goods_id, gift_card_info_key
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardRelation">
+        insert into vpoints_goods_gift_card_relation (
+                   info_key,
+                  goods_id,
+                  gift_card_info_key
+        ) values (
+                #{infoKey},
+                #{goodsId},
+                #{giftCardInfoKey}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardRelation">
+        update  vpoints_goods_gift_card_relation set
+                    <if test=" infoKey!=null">
+                         info_key =  #{infoKey},
+                    </if>
+                    <if test=" goodsId!=null">
+                         goods_id =   #{goodsId},
+                    </if>
+                    <if test=" giftCardInfoKey!=null">
+                         gift_card_info_key =   #{giftCardInfoKey},
+                    </if>
+
+    </update>
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.framework.zone.dao.ISysAreaDao">
+
+	<resultMap id="resultSysArea" type="com.dbt.framework.zone.bean.SysAreaM">
+		<result property="areaCode" column="AREACODE" jdbcType="VARCHAR" />
+		<result property="areaName" column="AREANAME" jdbcType="VARCHAR" />
+		<result property="postCode" column="POSTCODE" jdbcType="VARCHAR" />
+		<result property="telCode" column="TELCODE" jdbcType="VARCHAR" />
+		<result property="parentCode" column="PARENTCODE" jdbcType="VARCHAR" />
+		<result property="level" column="LEVEL" jdbcType="VARCHAR" />
+		<result property="deleteFlag" column="DELETEFLAG" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_list">
+		area.AREACODE,
+		area.AREANAME,
+		area.POSTCODE,
+		area.TELCODE,
+		area.PARENTCODE,
+		area.LEVEL,
+		area.DELETEFLAG
+  	</sql>
+  	
+  	<select id="findRegionList" resultMap="resultSysArea">
+  		SELECT
+  			<include refid="Base_list" />
+  		FROM
+  			sys_area_m area
+		WHERE DELETEFLAG = 0
+  		ORDER BY AREACODE
+  	</select>
+  	
+  	<select id="queryAllList" resultMap="resultSysArea">
+  		SELECT
+  			<include refid="Base_list" />
+  		FROM
+  			sys_area_m area
+		WHERE DELETEFLAG = 0 AND area.AREANAME != '全部'
+  		ORDER BY AREACODE
+  	</select>
+  	
+  	<!-- 根据父ID获取子项信息 -->
+	<select id="findByParentId" resultMap="resultSysArea">
+		select
+		 <include refid="Base_list" />
+		 from SYS_AREA_M area
+		 where area.DELETEFLAG = 0
+		 	 and area.PARENTCODE = #{id}
+		 order by AREACODE
+	</select>
+	
+  	<!-- 根据父ID获取符合项目子项信息 -->
+	<select id="findByParentIdForProject" parameterType="Map" resultMap="resultSysArea">
+		select
+		 <include refid="Base_list" />
+		 from SYS_AREA_M area
+		 where area.DELETEFLAG = 0
+		 	 and area.PARENTCODE = #{parentId}
+		 <if test="projectArea != null">
+		      and (
+			      left(area.AREACODE, 2) in 
+	              <foreach collection="projectArea" item="areaPrefix" open="(" close=")" separator=",">
+	                  #{areaPrefix}
+	              </foreach>
+		          <if test="parentId == 0">
+		              or area.AREACODE = "010000"
+		          </if>
+		      )
+		 </if>
+		 order by AREACODE
+	</select>
+	
+	<select id="findById" resultMap="resultSysArea">
+		select
+		 <include refid="Base_list" />
+		from SYS_AREA_M area
+		where area.DELETEFLAG = 0
+			and area.AREACODE = #{id}
+	</select>
+	
+	<!-- 根据省份名称查询Code -->
+	<select id="findSubChildCode" resultMap="resultSysArea">
+		select   <include refid="Base_list" />
+		  from SYS_AREA_M area
+		where area.DELETEFLAG = 0
+		and area.AREANAME=#{areaname}
+		and area.LEVEL = 1
+	</select>
+	<!-- 根据名称查询Code -->
+	<select id="findChildCode" parameterType="String" resultMap="resultSysArea">
+		select   <include refid="Base_list" />
+		  from SYS_AREA_M area
+		where area.DELETEFLAG = 0
+		and area.AREANAME=#{param1}
+		and area.LEVEL = #{param2}
+		and area.PARENTCODE=#{param3}
+	</select>
+	<!-- 查询所有区域名称为“全部”的list -->
+	<select id="queryAllAreaNameIsAll" resultType="String">
+		SELECT 
+			AREACODE 
+		FROM
+			SYS_AREA_M
+		WHERE
+			DELETEFLAG = 0 
+		  	AND AREANAME = '全部' 		
+	</select>
+	
+	<!-- 根据MAP查询CODE -->
+	<select id="findCodeByMap" resultMap="resultSysArea" parameterType="Map">
+		select   <include refid="Base_list" />
+		  from SYS_AREA_M area
+		where area.DELETEFLAG = 0
+		AND area.PARENTCODE = #{parentCode}
+		and area.AREANAME=#{areaName}
+	</select>
+	<!-- 根据多个区域码信息得到多个区域信息 -->
+	<select id="queryAreamByAreaCodes" parameterType="java.util.List" resultMap="resultSysArea">
+		select
+		 <include refid="Base_list" />
+		from 
+			SYS_AREA_M area
+		where 
+			area.DELETEFLAG = 0
+			and area.AREACODE in
+			<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">   
+				#{item}   
+			</foreach> 
+		 order by AREACODE ASC
+	</select>
+	
+	<!-- 根据多个区域码信息得到多个区域信息 -->
+	<select id="queryAllAreamByAreaCodes" parameterType="java.util.List" resultMap="resultSysArea">
+		 
+		 SELECT AREACODE, AREANAME, PARENTCODE FROM (
+			select area.AREACODE, area.AREANAME, area.PARENTCODE from SYS_AREA_M area 
+			where area.DELETEFLAG = 0 and area.AREANAME != '全部' and area.AREACODE in 
+			<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">   
+				#{item}   
+			</foreach>
+			
+			UNION ALL
+			
+			SELECT b.AREACODE, b.AREANAME, b.PARENTCODE FROM 
+			(select area.AREACODE from SYS_AREA_M area 
+			where area.DELETEFLAG = 0 and area.AREANAME != '全部' and area.AREACODE in 
+			<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">   
+				#{item}   
+			</foreach>
+			) a
+			LEFT JOIN SYS_AREA_M b on a.AREACODE = b.PARENTCODE
+			WHERE b.AREANAME != '全部'
+			
+			UNION ALL
+			
+			SELECT c.AREACODE, c.AREANAME, c.PARENTCODE FROM 
+			(select area.AREACODE from SYS_AREA_M area 
+			where area.DELETEFLAG = 0 and area.AREANAME != '全部' and area.PARENTCODE in 
+			<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">   
+				#{item}   
+			</foreach>
+			) a
+			LEFT JOIN SYS_AREA_M c on a.AREACODE = c.PARENTCODE
+			WHERE c.AREANAME != '全部') t
+		ORDER BY t.AREACODE ASC
+	</select>
+</mapper>

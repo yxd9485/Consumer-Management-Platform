@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.comrecharge.dao.ICompanyRechargeDao">
+
+	<resultMap type="com.dbt.platform.comrecharge.bean.CompanyRechargeInfo" id="resultRechargeMap">
+  		<result property="rechargeKey" column="RECHARGE_KEY"/>
+  		<result property="preKey" column="PRE_KEY"/>
+  		<result property="companyKey" column="COMPANY_KEY"/>
+        <result property="contractNum" column="CONTRACT_NUM"/>
+        <result property="contractName" column="CONTRACT_NAME"/>
+        <result property="rechargeTime" column="RECHARGE_TIME"/>
+        <result property="transType" column="TRANS_TYPE"/>
+        <result property="transactUser" column="TRANSACT_USER"/>
+        <result property="rechargeMoney" column="RECHARGE_MONEY"/>
+        <result property="rechargeVpoints" column="RECHARGE_VPOINTS"/>
+        <result property="rechargeMoneyStr" column="RECHARGE_MONEY_STR"/>
+        <result property="rechargeVpointsStr" column="RECHARGE_VPOINTS_STR"/>
+        <result property="previousVpoints" column="PREVIOUS_VPOINTS"/>
+        <result property="currentVpoints" column="CURRENT_VPOINTS"/>
+        <result property="currentVpointsStr" column="CURRENT_VPOINTS_STR"/>
+        <result property="totalVpoints" column="TOTAL_VPOINTS"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.comrecharge.bean.CompanyRechargeInfo">
+		INSERT INTO vps_company_recharge_info (
+			RECHARGE_KEY,
+			PRE_KEY,
+			COMPANY_KEY,
+			CONTRACT_NUM,
+			CONTRACT_NAME,
+			RECHARGE_TIME,
+			TRANSACT_USER,
+			TRANS_TYPE,
+			RECHARGE_MONEY,
+			RECHARGE_VPOINTS,
+			PREVIOUS_VPOINTS,
+			CURRENT_VPOINTS
+		) VALUES (
+			#{rechargeKey},
+			#{preKey},
+			#{companyKey},
+			#{contractNum},
+			#{contractName},
+			#{rechargeTime},
+			#{transactUser},
+			#{transType},
+			#{rechargeMoney},
+			#{rechargeVpoints},
+			#{previousVpoints},
+			#{currentVpoints}
+		)
+	</insert>
+	
+	<select id="loadRechargeInfoByCompany" resultMap="resultRechargeMap" parameterType="map">
+		SELECT
+			r.RECHARGE_KEY,
+			r.COMPANY_KEY,
+			r.CONTRACT_NUM,
+			r.CONTRACT_NAME,
+			p.RECHARGE_TIME,
+			r.TRANS_TYPE,
+			FORMAT(r.RECHARGE_MONEY, 2) RECHARGE_MONEY_STR,
+			FORMAT(r.RECHARGE_VPOINTS, 0) RECHARGE_VPOINTS_STR,
+			FORMAT(r.CURRENT_VPOINTS, 0) CURRENT_VPOINTS_STR
+		FROM
+			vps_company_recharge_info r INNER JOIN vps_company_prerecharge_info p ON r.PRE_KEY = p.PRE_KEY
+		WHERE
+			r.COMPANY_KEY = #{companyKey}
+		ORDER BY p.RECHARGE_TIME DESC
+		LIMIT #{param.startCount}, #{param.pagePerCount}
+	</select>
+	
+	<select id="countRechargeInfoByCompany" resultType="int"
+			parameterType="com.dbt.platform.comrecharge.bean.CompanyRechargeInfo">
+		SELECT COUNT(0)
+		FROM
+			vps_company_recharge_info r INNER JOIN vps_company_prerecharge_info p ON r.PRE_KEY = p.PRE_KEY
+		WHERE
+			r.COMPANY_KEY = #{companyKey}
+	</select>
+</mapper>

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsCouponCogDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCouponCog" id="baseResultMap">
+		<result property="couponKey" column="COUPON_KEY"/>
+		<result property="couponNo" column="COUPON_NO"/>
+		<result property="couponName" column="COUPON_NAME"/>
+		<result property="couponPayType" column="COUPON_PAY_TYPE"/>
+		<result property="couponType" column="COUPON_TYPE"/>
+		<result property="moneyFullLimit" column="MONEY_FULL_LIMIT"/>
+		<result property="vpointsFullLimit" column="VPOINTS_FULL_LIMIT"/>
+		<result property="moneyFullReduction" column="MONEY_FULL_REDUCTION"/>
+		<result property="vpointsFullReduction" column="VPOINTS_FULL_REDUCTION"/>
+		<result property="moneyDirectReduction" column="MONEY_DIRECT_REDUCTION"/>
+		<result property="vpointsDirectReduction" column="VPOINTS_DIRECT_REDUCTION"/>
+		<result property="couponDiscount" column="COUPON_DISCOUNT"/>
+		<result property="discountMaxMoney" column="DISCOUNT_MAX_MONEY"/>
+		<result property="discountMaxVpoints" column="DISCOUNT_MAX_VPOINTS"/>
+		<result property="couponGoodsType" column="COUPON_GOODS_TYPE"/>
+		<result property="goodsId" column="GOODS_ID"/>
+		<result property="couponChannel" column="COUPON_CHANNEL"/>
+		<result property="couponNum" column="COUPON_NUM"/>
+		<result property="couponReceiveNum" column="COUPON_RECEIVE_NUM"/>
+		<result property="couponSurplusNum" column="COUPON_SURPLUS_NUM"/>
+		<result property="receiveStartDate" column="RECEIVE_START_DATE"/>
+		<result property="receiveEndDate" column="RECEIVE_END_DATE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="expireDateType" column="EXPIRE_DATE_TYPE"/>
+		<result property="expireDateLimit" column="EXPIRE_DATE_LIMIT"/>
+		<result property="expireDateDays" column="EXPIRE_DATE_DAYS"/>
+		<result property="couponActivityImgUrl" column="COUPON_ACTIVITY_IMG_URL"/>
+		<result property="couponDesc" column="COUPON_DESC"/>
+		<result property="personDayLimit" column="PERSON_DAY_LIMIT"/>
+		<result property="personWeekLimit" column="PERSON_WEEK_LIMIT"/>
+		<result property="personMonthLimit" column="PERSON_MONTH_LIMIT"/>
+		<result property="personTotalLimit" column="PERSON_TOTAL_LIMIT"/>
+		<result property="crowdLimitType" column="CROWD_LIMIT_TYPE"/>
+		<result property="userGroupIds" column="USER_GROUP_IDS"/>
+		<result property="expireRemindDay" column="EXPIRE_REMIND_DAY"/>
+		<result property="areaValidLimit" column="area_valid_limit"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCouponCollect" id="couponCollectMapper"></resultMap>
+	
+	<insert id="create" parameterType="com.dbt.vpointsshop.bean.VpointsCouponCog">
+		INSERT INTO vpoints_coupon_cog (
+			COUPON_KEY,
+			COUPON_NO,
+			COUPON_NAME,
+			COUPON_PAY_TYPE,
+			COUPON_TYPE,
+			MONEY_FULL_LIMIT,
+			VPOINTS_FULL_LIMIT,
+			MONEY_FULL_REDUCTION,
+			VPOINTS_FULL_REDUCTION,
+			MONEY_DIRECT_REDUCTION,
+			VPOINTS_DIRECT_REDUCTION,
+			COUPON_DISCOUNT,
+			DISCOUNT_MAX_MONEY,
+			DISCOUNT_MAX_VPOINTS,
+			COUPON_GOODS_TYPE,
+			GOODS_ID,
+			COUPON_CHANNEL,
+			area_valid_limit,
+			COUPON_NUM,
+			RECEIVE_START_DATE,
+			RECEIVE_END_DATE,
+			START_DATE,
+			END_DATE,
+			EXPIRE_DATE_TYPE,
+			EXPIRE_DATE_LIMIT,
+			EXPIRE_DATE_DAYS,
+			COUPON_ACTIVITY_IMG_URL,
+			COUPON_DESC,
+			PERSON_DAY_LIMIT,
+			PERSON_WEEK_LIMIT,
+			PERSON_MONTH_LIMIT,
+			PERSON_TOTAL_LIMIT,
+			CROWD_LIMIT_TYPE,
+			USER_GROUP_IDS,
+			EXPIRE_REMIND_DAY,
+			DELETE_FLAG,
+			CREATE_USER,
+			CREATE_TIME,
+			UPDATE_USER,
+			UPDATE_TIME
+		) VALUES (
+			#{couponKey},
+		    #{couponNo},
+		    #{couponName},
+		    #{couponPayType},
+		    #{couponType},
+		    #{moneyFullLimit},
+		    #{vpointsFullLimit},
+		    #{moneyFullReduction},
+		    #{vpointsFullReduction},
+		    #{moneyDirectReduction},
+		    #{vpointsDirectReduction},
+		    #{couponDiscount},
+		    #{discountMaxMoney},
+		    #{discountMaxVpoints},
+		    #{couponGoodsType},
+		    #{goodsId},
+		    #{couponChannel},
+		    #{areaValidLimit},
+		    #{couponNum},
+		    #{receiveStartDate},
+		    #{receiveEndDate},
+		    #{startDate},
+		    #{endDate},
+		    #{expireDateType},
+		    #{expireDateLimit},
+		    #{expireDateDays},
+		    #{couponActivityImgUrl},
+		    #{couponDesc},
+		    #{personDayLimit},
+		    #{personWeekLimit},
+		    #{personMonthLimit},
+		    #{personTotalLimit},
+		    #{crowdLimitType},
+		    #{userGroupIds},
+		    #{expireRemindDay},
+			'0',
+			#{createUser},
+			#{createTime},
+			#{updateUser},
+			#{updateTime}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsCouponCog">
+		UPDATE
+			vpoints_coupon_cog
+		<set>
+            coupon_name = #{couponName},
+            coupon_pay_type = #{couponPayType},
+            coupon_type = #{couponType},
+            money_full_limit = #{moneyFullLimit},
+            vpoints_full_limit = #{vpointsFullLimit},
+            money_full_reduction = #{moneyFullReduction},
+            vpoints_full_reduction = #{vpointsFullReduction},
+            money_direct_reduction = #{moneyDirectReduction},
+            vpoints_direct_reduction = #{vpointsDirectReduction},
+            coupon_discount = #{couponDiscount},
+            discount_max_money = #{discountMaxMoney},
+            discount_max_vpoints = #{discountMaxVpoints},
+            coupon_goods_type = #{couponGoodsType},
+            goods_id = #{goodsId},
+            coupon_channel = #{couponChannel},
+            area_valid_limit = #{areaValidLimit},
+            coupon_num = #{couponNum},
+            receive_start_date = #{receiveStartDate},
+            receive_end_date = #{receiveEndDate},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            expire_date_type = #{expireDateType},
+            expire_date_limit = #{expireDateLimit},
+            expire_date_days = #{expireDateDays},
+            coupon_activity_img_url = #{couponActivityImgUrl},
+            coupon_desc = #{couponDesc},
+            person_day_limit = #{personDayLimit},
+            person_week_limit = #{personWeekLimit},
+            person_month_limit = #{personMonthLimit},
+            person_total_limit = #{personTotalLimit},
+            crowd_limit_type = #{crowdLimitType},
+            user_group_ids = #{userGroupIds},
+            expire_remind_day = #{expireRemindDay},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+        </set>
+		WHERE
+			coupon_key = #{couponKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="baseResultMap" >
+		SELECT
+			*
+		FROM
+			vpoints_coupon_cog 
+		WHERE
+			coupon_key = #{id}
+	</select>
+	
+	<update id="deleteById" parameterType="Map">
+	   update 
+	       vpoints_coupon_cog
+	   set
+           delete_flag = '1',
+           update_user = #{updateUser},
+           update_time = #{updateTime}
+       where
+           coupon_key = #{couponKey}
+	</update>
+	
+	<select id="loadActivityList" parameterType="Map" resultMap="baseResultMap" >
+		SELECT a.* FROM(
+			SELECT
+				cog.coupon_key,
+				cog.coupon_no,
+				CASE 
+					WHEN DATE(NOW()) >= cog.RECEIVE_START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1' 
+					WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				cog.coupon_name,
+				cog.coupon_type,
+	            cog.coupon_goods_type,
+				cog.coupon_num,
+				cog.coupon_receive_num,
+				cog.coupon_num - cog.coupon_receive_num as coupon_surplus_num,
+				cog.receive_start_date,
+				cog.receive_end_date,
+				cog.start_date,
+				cog.end_date,
+				cog.CREATE_TIME
+			FROM
+				vpoints_coupon_cog cog
+			WHERE
+				cog.DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND cog.coupon_no like '%${queryBean.keyword}%' or cog.coupon_name like '%${queryBean.keyword}%'
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+	        	</when>
+	         	<when test="queryBean.startDate != null and queryBean.startDate != ''">
+	            	AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+	        	</when>
+			</choose>
+            <if test="queryBean.couponType != null and queryBean.couponType != ''">
+                AND cog.coupon_type = #{queryBean.couponType}
+            </if>
+            <if test="queryBean.couponGoodsType != null and queryBean.couponGoodsType != ''">
+                AND cog.coupon_goods_type = #{queryBean.couponGoodsType}
+            </if>
+            <if test="queryBean.couponChannel != null and queryBean.couponChannel != ''">
+                AND cog.coupon_channel = #{queryBean.couponChannel}
+            </if>
+            <if test="queryBean.isBegin != null and queryBean.isBegin != ''">
+                AND isBegin = #{queryBean.isBegin}
+            </if>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="countActivityList" parameterType="Map" resultType="Integer" >
+		SELECT COUNT(1) FROM(
+			SELECT
+                CASE 
+                    WHEN DATE(NOW()) >= cog.RECEIVE_START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1' 
+                    WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+                    ELSE '0'
+                END AS isBegin
+            FROM
+                vpoints_coupon_cog cog
+            WHERE
+                cog.DELETE_FLAG != '1'
+            <if test="queryBean.keyword != null and queryBean.keyword != ''">
+                AND cog.coupon_no like '%${queryBean.keyword}%' or cog.coupon_name like '%${queryBean.keyword}%'
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+                </when>
+            </choose>
+            <if test="queryBean.couponType != null and queryBean.couponType != ''">
+                AND cog.coupon_type = #{queryBean.couponType}
+            </if>
+            <if test="queryBean.couponGoodsType != null and queryBean.couponGoodsType != ''">
+                AND cog.coupon_goods_type = #{queryBean.couponGoodsType}
+            </if>
+            <if test="queryBean.couponChannel != null and queryBean.couponChannel != ''">
+                AND cog.coupon_channel = #{queryBean.couponChannel}
+            </if>
+            <if test="queryBean.isBegin != null and queryBean.isBegin != ''">
+                AND isBegin = #{queryBean.isBegin}
+            </if>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+	</select>
+	
+	<select id="findCouponCollect" parameterType="String" resultMap="couponCollectMapper">
+		SELECT 
+			couponNum,
+			couponReceiveNum,
+			useNum,
+			userNum,
+			totalPay,
+			totalVpoints,
+			totalDiscountsPay,
+			totalDiscountsVpoints,
+			totalNum,
+			TRUNCATE(totalPay / totalNum, 2) as orderPayPrice,
+			TRUNCATE(totalVpoints / totalNum, 2) as orderVpointsPrice,
+			TRUNCATE(totalDiscountsPay / totalPay, 4) * 100 as discountsPayRatio,
+			TRUNCATE(totalDiscountsVpoints / totalPay, 4) * 100 as discountsVpointsRatio
+		FROM (
+			SELECT 
+				c.COUPON_NUM as couponNum,
+				c.COUPON_RECEIVE_NUM as couponReceiveNum,
+				COUNT(DISTINCT(e.coupon_receive_info_key)) as useNum,
+				COUNT(DISTINCT(e.user_key)) as userNum,
+				SUM(e.exchange_pay) as totalPay,
+				SUM(e.exchange_vpoints) as totalVpoints,
+				SUM(e.coupon_discount_pay) as totalDiscountsPay,
+				SUM(e.coupon_discount_vpoints) as totalDiscountsVpoints,
+				SUM(e.exchange_num) as totalNum
+			FROM vpoints_coupon_cog c
+			LEFT JOIN vpoints_exchange_log e on c.COUPON_KEY = e.COUPON_KEY AND e.exchange_status NOT IN('-1','1','3','5','9')
+			WHERE c.COUPON_KEY = #{couponKey}
+			GROUP BY c.COUPON_KEY
+		) a
+	</select>
+	
+	<!-- 有效优惠券列表 -->
+	<select id="queryValidCouponList" parameterType="Map" resultMap="baseResultMap" >
+        SELECT
+            *
+        FROM
+            vpoints_coupon_cog
+        WHERE
+            delete_flag = '0'
+            <if test="allFlag != '1'.toString">
+	            and CURDATE() <![CDATA[<=]]> end_date
+	            and coupon_num > coupon_receive_num
+	            <if test="couponNoLst != null and couponNoLst.size() > 0">
+		            <foreach collection="couponNoLst" item="couponNo" open=" or coupon_no in (" close=")" separator=",">
+		                #{couponNo}
+		            </foreach>
+	            </if>
+            </if>
+        order by create_time desc
+    </select>
+    
+    
+    <select id="findByCouponCog" parameterType="String" resultType="com.dbt.vpointsshop.bean.VpointsCouponCog" >
+		SELECT
+			coupon_Key as 'couponKey',
+			expire_Date_Type as 'expireDateType',
+			expire_Date_Limit as 'expireDateLimit',
+			expire_Date_Days as 'expireDateDays',
+			start_date as 'startDate',
+			end_date  as 'endDate'
+		FROM
+			vpoints_coupon_cog 
+		WHERE
+			coupon_key = #{id}
+	</select>
+	
+	<!-- 	优惠券领取数量+1 -->
+	<update id="updateReceiveNum" parameterType="String">
+	    update 
+	        vpoints_coupon_cog
+	    set
+	        coupon_receive_num = IFNULL(coupon_receive_num, '0') + 1
+	    where 
+	        coupon_key = #{couponKey}
+	        and coupon_num > coupon_receive_num
+	</update>
+	
+	<select id="queryAllCouponCog"  resultMap="baseResultMap">
+		select * from vpoints_coupon_cog t where t.delete_flag='0'
+		and DATE(NOW()) <![CDATA[<]]> t.END_DATE
+	</select>
+	
+<!-- 	依据优惠券主键删除相关的商品限制 -->
+	<delete id="removeGoodsLimitByCouponKey" parameterType="String">
+	   delete from vpoints_coupon_cog_goods_limit
+	   where coupon_key = #{couponKey}
+	</delete>
+	
+<!-- 	批量插入优惠券相关的商品限制 -->
+	<insert id="batchWritGoodsLimit" parameterType="Map">
+	   insert into vpoints_coupon_cog_goods_limit (
+	       info_key,
+	       coupon_key,
+	       goods_id,
+	       create_user,
+	       create_time
+	   ) values 
+	   <foreach collection="goodsIdAry" item="goodsId" separator=",">
+	   (
+	       UUID(),
+	       #{couponKey},
+	       #{goodsId},
+	       #{createUser},
+	       #{createTime}
+	   )
+	   </foreach>
+	</insert>
+	
+<!-- 	依据优惠券主键获取相关的商品限制 -->
+	<select id="queryGoodsLimitByCouponKey" parameterType="String" resultType="com.dbt.vpointsshop.bean.VpointsCouponCogGoodsLimit">
+	   select
+	       info_key as 'infoKey',
+	       coupon_key as 'couponKey',
+	       goods_id as 'goodsId'
+	   from 
+	       vpoints_coupon_cog_goods_limit
+	   where
+	       coupon_key = #{couponKey}
+	</select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.fission.dao.IVpsVcodeActivateShareRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.fission.bean.VpsVcodeActivateShareRecord">
+        <id column="id" property="id" />
+        <result column="qrcode_content" property="qrcodeContent" />
+        <result column="rule_key" property="ruleKey" />
+        <result column="receive_time" property="receiveTime" />
+        <result column="share_user_key" property="shareUserKey" />
+        <result column="receive_num" property="receiveNum" />
+        <result column="get_num" property="getNum" />
+        <result column="activation_amount_total" property="activationAmountTotal" />
+        <result column="activation_point_total" property="activationPointTotal" />
+        <result column="reward_amount_total" property="rewardAmountTotal" />
+        <result column="reward_point_total" property="rewardPointTotal" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+    <select id="selectOverDeadline" resultMap="BaseResultMap">
+        select
+        pr.id,
+        pr.qrcode_content,
+        pr.get_num,prize_desc,
+        pr.rule_key,
+        pr.receive_time,
+        pr.share_user_key,
+        pr.receive_num,
+        pr.activation_amount_total,
+        pr.reward_amount_total,
+        pr.reward_point_total,
+        pr.activation_user_key_list,
+        pr.prize_type,
+        pr.sku_key,
+        pr.activation_user_key_list,
+        pr.create_time,
+        rc.receive_time_limit
+        from vps_vcode_activate_share_record pr
+        left join vps_vcode_activate_red_envelope_rule_cog rc
+        on pr.rule_key = rc.activity_key
+        <where>
+            pr.create_time &lt; DATE_SUB(DATE_FORMAT(now(),'%Y-%m-%d 00:00:00'),INTERVAL rc.receive_time_limit day)
+            and pr.get_num = 0
+            and pr.receive_num = 0
+            and pr.activation_amount_total = 0
+            and pr.reward_amount_total = 0
+        </where>
+    </select>
+
+</mapper>

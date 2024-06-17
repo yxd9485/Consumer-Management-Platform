@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.comrecharge.dao.ICompanyPrerechargeDao">
+
+    <resultMap type="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo" id="resultPrerechargeMap">
+        <result property="preKey" column="PRE_KEY"/>
+        <result property="companyKey" column="COMPANY_KEY"/>
+        <result property="companyName" column="COMPANY_NAME"/>
+        <result property="contractNum" column="CONTRACT_NUM"/>
+        <result property="contractName" column="CONTRACT_NAME"/>
+        <result property="rechargeTime" column="RECHARGE_TIME"/>
+        <result property="transType" column="TRANS_TYPE"/>
+        <result property="transStatus" column="TRANS_STATUS"/>
+        <result property="rechargeMoney" column="RECHARGE_MONEY"/>
+        <result property="rechargeMoneyChar" column="RECHARGE_MONEY"/>
+        <result property="rechargeVpoints" column="RECHARGE_VPOINTS"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    
+    <insert id="create" parameterType="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo">
+        INSERT INTO vps_company_prerecharge_info (
+            PRE_KEY,
+            COMPANY_KEY,
+            CONTRACT_NUM,
+            CONTRACT_NAME,
+            RECHARGE_TIME,
+            TRANS_TYPE,
+            TRANS_STATUS,
+            RECHARGE_MONEY,
+            RECHARGE_VPOINTS,
+            TRADE_USER,
+            remark
+        ) VALUES (
+            #{preKey},
+            #{companyKey},
+            #{contractNum},
+            #{contractName},
+            #{rechargeTime},
+            #{transType},
+            #{transStatus},
+            #{rechargeMoney},
+            #{rechargeVpoints},
+            #{tradeUser},
+            #{remark}
+            
+        )
+    </insert>
+    
+    <update id="update" parameterType="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo">
+        update
+            vps_company_prerecharge_info
+        <set>
+            <if test="contractNum != null and contractNum != ''">
+                CONTRACT_NUM = #{contractNum},
+            </if>
+            <if test="contractName != null and contractName != ''">
+                CONTRACT_NAME = #{contractName},
+            </if>
+            <if test="rechargeMoney != null and rechargeMoney != ''">
+                RECHARGE_MONEY = #{rechargeMoney},
+            </if>
+            <if test="rechargeVpoints != null and rechargeVpoints != ''">
+                RECHARGE_VPOINTS = #{rechargeVpoints},
+            </if>
+            <if test="transType != null and transType != ''">
+                TRANS_TYPE = #{transType},
+            </if>
+            <if test="transStatus != null and transStatus != ''">
+                TRANS_STATUS = #{transStatus},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where
+            PRE_KEY = #{preKey}
+    </update>
+
+    <select id="loadPreInfoList" resultMap="resultPrerechargeMap" parameterType="Map">
+        SELECT
+            p.PRE_KEY,
+            p.CONTRACT_NUM,
+            p.CONTRACT_NAME,
+            p.RECHARGE_TIME,
+            p.TRANS_TYPE,
+            p.TRANS_STATUS,
+            CAST(p.RECHARGE_MONEY AS CHAR) RECHARGE_MONEY,
+            p.RECHARGE_VPOINTS,
+            p.remark,
+        <if test="query.permissionType == 'finance_recharge' ">
+            IF(p.TRANS_STATUS="2","1",p.TRANS_STATUS) AS sort ,
+        </if>
+
+        <if test="query.permissionType == 'market_confirm' ">
+            IF(p.TRANS_STATUS="2","3",p.TRANS_STATUS) AS sort ,
+        </if>
+
+        (SELECT COMPANY_NAME FROM vps_company_info c WHERE p.COMPANY_KEY = c.COMPANY_KEY) COMPANY_NAME
+        FROM
+            vps_company_prerecharge_info p
+        WHERE
+            1=1
+
+           <if test="(query.permissionType == 'market_confirm')and (query.transStatus == null or query.transStatus == '' or query.transStatus == -1)">
+            AND TRANS_STATUS  != 3
+           </if>
+            <if test="query.transStatus != null and query.transStatus != '' and query.transStatus != -1">
+            AND TRANS_STATUS = #{query.transStatus}
+            </if>
+            <if test="query.transType != null and query.transType != '' and query.transType != -1">
+            AND TRANS_TYPE = #{query.transType}
+            </if>
+        <if test="query.keyword != null and query.keyword != '' ">
+            AND (CONTRACT_NUM  like "%${query.keyword}%"  or CONTRACT_NAME like "%${query.keyword}%" )
+        </if>
+
+        <choose>
+            <when test="params.orderCol == null and query.permissionType == 'finance_recharge'">
+                ORDER BY sort DESC, recharge_time DESC
+            </when>
+            <when test="params.orderCol == null  and query.permissionType == 'market_confirm'">
+                ORDER BY sort asc, recharge_time DESC
+            </when>
+            <when test="params.orderCol != null and params.orderCol != ''and query.permissionType == 'market_confirm' ">
+                ORDER BY sort asc, ${params.orderCol} ${params.orderType}
+            </when>
+            <when test="params.orderCol != null and params.orderCol != ''and query.permissionType == 'finance_recharge' ">
+                ORDER BY sort DESC, ${params.orderCol} ${params.orderType}
+            </when>
+            <otherwise>
+
+                <if test="query.permissionType == 'finance_recharge'">
+                    ORDER BY sort DESC,
+                </if>
+                <if test="query.permissionType == 'market_confirm'">
+                    ORDER BY sort asc,
+                </if>
+                recharge_time DESC</otherwise>
+        </choose>
+        LIMIT #{params.startCount}, #{params.pagePerCount}
+    </select>
+
+
+
+    <select id="loadPreInfoListCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT
+      count(1)
+        FROM
+        vps_company_prerecharge_info p
+        WHERE
+        1=1
+
+        <if test="(query.permissionType == 'market_confirm')and (query.transStatus == null or query.transStatus == '' or query.transStatus == -1)">
+            AND TRANS_STATUS  != 3
+        </if>
+        <if test="query.transStatus != null and query.transStatus != '' and query.transStatus != -1">
+            AND TRANS_STATUS = #{query.transStatus}
+        </if>
+        <if test="query.transType != null and query.transType != '' and query.transType != -1">
+            AND TRANS_TYPE = #{query.transType}
+        </if>
+        <if test="query.keyword != null and query.keyword != '' ">
+            AND (CONTRACT_NUM  like "%${query.keyword}%"  or CONTRACT_NAME like "%${query.keyword}%" )
+        </if>
+
+    </select>
+    <select id="countPreInfoList" resultType="int"
+            parameterType="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo">
+        SELECT
+            COUNT(0)
+        FROM
+            vps_company_prerecharge_info
+        WHERE
+            1=1
+        <if test="permissionType == 'finance_recharge'and transStatus==null">
+            AND TRANS_STATUS  != 3
+        </if>
+            <if test="transStatus != null and transStatus != ''">
+            AND TRANS_STATUS = #{transStatus}
+            </if>
+            <if test="transType != null and transType != '' and transType != -1">
+            AND TRANS_TYPE = #{transType}
+            </if>
+    </select>
+
+    
+
+    <select id="findById" resultMap="resultPrerechargeMap" parameterType="String">
+        SELECT
+            p.PRE_KEY,
+            p.COMPANY_KEY,
+            p.CONTRACT_NUM,
+            p.CONTRACT_NAME,
+            p.RECHARGE_TIME,
+            p.TRANS_TYPE,
+            p.TRANS_STATUS,
+            p.RECHARGE_MONEY,
+            p.RECHARGE_VPOINTS,
+            p.TRADE_USER,
+            p.remark,
+            (SELECT COMPANY_NAME FROM vps_company_info c WHERE p.COMPANY_KEY = c.COMPANY_KEY) COMPANY_NAME
+        FROM
+            vps_company_prerecharge_info p
+        WHERE
+            PRE_KEY = #{preKey}
+    </select>
+
+    <update id="updateStatus" parameterType="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo">
+        UPDATE
+            vps_company_prerecharge_info
+        SET
+            <if test="terminalTime != null and terminalTime != '' ">
+            TERMINAL_TIME = #{terminalTime},
+            </if>
+            TRANS_STATUS = #{transStatus}
+        WHERE
+            PRE_KEY = #{preKey}
+    </update>
+
+    <update id="updateCompanyPrerechargeInfo" parameterType="com.dbt.platform.comrecharge.bean.CompanyPrerechargeInfo">
+        UPDATE
+        vps_company_prerecharge_info
+        SET
+        <if test="contractNum != null and contractNum != '' ">
+            CONTRACT_NUM = #{contractNum},
+        </if>
+        <if test="contractName != null and contractName != '' ">
+            CONTRACT_NAME = #{contractName},
+        </if>
+        <if test="rechargeMoney != null and rechargeMoney != '' ">
+            RECHARGE_MONEY = #{rechargeMoney},
+        </if>
+        <if test="transType != null and transType != '' ">
+            TRANS_TYPE = #{transType}
+        </if>
+        <if test="transType != null and transType != '' ">
+            remark = #{remark}
+        </if>
+        WHERE
+        PRE_KEY = #{preKey}
+    </update>
+
+    <update id="deleteById" parameterType="String">
+        DELETE FROM
+            vps_company_prerecharge_info
+        WHERE
+            PRE_KEY = #{preKey}
+    </update>
+
+    <update id="confirmUpdate" parameterType="Map">
+        UPDATE
+        vps_company_prerecharge_info
+        SET
+        <if test="transStatus != null and transStatus != '' ">
+            TRANS_STATUS = #{transStatus}
+        </if>
+        where
+            PRE_KEY = #{preKey}
+    </update>
+
+
+</mapper>

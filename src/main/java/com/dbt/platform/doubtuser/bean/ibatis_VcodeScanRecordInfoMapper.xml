@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.doubtuser.dao.IVCodeScanRecordDao">
+
+	<resultMap type="com.dbt.platform.doubtuser.bean.VCodeScanRecordInfo" id="sacnRecordResultMap">
+		<result property="infokey" column="INFO_KEY"/>
+  		<result property="userkey" column="USER_KEY"/>
+  		<result property="vcodeactivitykey" column="VCODE_ACTIVITY_KEY"/>
+  		<result property="lastscantime" column="LAST_SCAN_TIME"/>
+  		<result property="currentscancounts" column="CURRENT_SCAN_COUNTS"/>
+  		<result property="monthscancounts" column="MONTH_SCAN_COUNTS"/>
+  		<result property="totalscancounts" column="TOTAL_SCAN_COUNTS"/>
+	</resultMap>
+	
+	<!-- 重置用户扫码次数 -->
+	<update id="resetVcodeScanCounts" parameterType="Map">
+		UPDATE 
+			VPS_VCODE_SCAN_RECORD_INFO 
+		SET 
+			CURRENT_SCAN_COUNTS = 0,
+		    MONTH_SCAN_COUNTS = 0,
+			BLACK_TOTAL_SCAN_COUNTS = 0,
+		    UPDATE_TIME = now()
+		WHERE 
+			USER_KEY = #{userkey}
+		<if test="vcodeactivitykey != null and vcodeactivitykey != ''">
+		AND 
+			VCODE_ACTIVITY_KEY = #{vcodeactivitykey}
+		</if>
+		AND 
+			DELETE_FLAG = '0' 
+	</update>
+	<!-- 重置用户扫码次数 -->
+	<update id="resetVcodeScanCountsNew" parameterType="Map">
+		UPDATE
+			VPS_VCODE_SCAN_RECORD_INFO_NEW
+		SET
+			CURRENT_SCAN_COUNTS = 0,
+		    MONTH_SCAN_COUNTS = 0,
+			BLACK_TOTAL_SCAN_COUNTS = 0,
+		    UPDATE_TIME = now()
+		WHERE
+			USER_KEY = #{userkey}
+		<if test="vcodeactivitykey != null and vcodeactivitykey != ''">
+		AND
+			VCODE_ACTIVITY_KEY = #{vcodeactivitykey}
+		</if>
+		AND
+			DELETE_FLAG = '0'
+	</update>
+
+
+</mapper>

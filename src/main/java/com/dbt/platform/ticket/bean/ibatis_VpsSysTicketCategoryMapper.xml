@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsSysTicketCategoryDao">
+
+    <resultMap type="com.dbt.platform.ticket.bean.VpsSysTicketCategory" id="baseResult">
+        <result property="categoryKey" column="CATEGORY_KEY"/>
+        <result property="categoryType" column="CATEGORY_TYPE"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="categoryDesc" column="CATEGORY_DESC"/>
+        <result property="jumpId" column="JUMP_ID"/>
+        <result property="categoryPicUrl" column="CATEGORY_PIC_URL"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+    <resultMap id="baseResultAll" type="com.dbt.platform.ticket.bean.VpsSysTicketCategory" extends="baseResult">
+        <association property="sysTicketInfoList" column="CATEGORY_KEY" fetchType="eager"
+                     select="com.dbt.platform.ticket.dao.IVpsSysTicketInfoDao.queryDenominationList"></association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        CATEGORY_KEY,
+			CATEGORY_TYPE,
+			CATEGORY_NAME,
+			CATEGORY_DESC,
+            JUMP_ID,
+			CATEGORY_PIC_URL,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+    </sql>
+
+    <insert id="create" parameterType="com.dbt.platform.ticket.bean.VpsSysTicketCategory">
+        INSERT INTO vps_sys_ticket_category_info (CATEGORY_KEY,
+                                                  CATEGORY_TYPE,
+                                                  CATEGORY_NAME,
+                                                  CATEGORY_DESC,
+                                                  JUMP_ID,
+                                                  CATEGORY_PIC_URL,
+                                                  DELETE_FLAG,
+                                                  CREATE_TIME,
+                                                  CREATE_USER,
+                                                  UPDATE_TIME,
+                                                  UPDATE_USER)
+        VALUES (uuid(),
+                #{categoryType},
+                #{categoryName},
+                #{categoryDesc},
+                #{jumpId},
+                #{categoryPicUrl},
+                '0',
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser})
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.ticket.bean.VpsSysTicketCategory">
+        UPDATE vps_sys_ticket_category_info
+        <set>
+            <if test="categoryName != null and categoryName != ''">
+				CATEGORY_NAME = #{categoryName},
+            </if>
+				JUMP_ID = #{jumpId},
+            <if test="categoryDesc != null and categoryDesc != ''">
+				CATEGORY_DESC = #{categoryDesc},
+            </if>
+			CATEGORY_PIC_URL = #{categoryPicUrl},
+        </set>
+		WHERE CATEGORY_KEY = #{categoryKey}
+    </update>
+
+    <select id="loadTicketCategory" resultMap="baseResult">
+        SELECT *
+        FROM vps_sys_ticket_category_info
+        WHERE DELETE_FLAG = '0'
+        ORDER BY category_type
+    </select>
+
+    <select id="findById" resultMap="baseResult">
+        SELECT *
+        FROM vps_sys_ticket_category_info
+        WHERE CATEGORY_KEY = #{id}
+        LIMIT 1
+    </select>
+
+    <select id="findTicketDenomination" resultMap="baseResultAll" parameterType="Map">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM vps_sys_ticket_category_info
+        WHERE DELETE_FLAG = '0'
+        <if test="queryBean.categoryName != null and queryBean.categoryName != ''">
+            and CATEGORY_NAME like '%${queryBean.categoryName}%'
+        </if>
+        <if test="queryBean.categoryKey != null and queryBean.categoryKey != ''">
+            and CATEGORY_KEY = #{queryBean.categoryKey}
+        </if>
+        order by create_time desc
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="countTicketActivityList" resultType="int" parameterType="Map">
+        SELECT
+        count(*)
+        FROM vps_sys_ticket_category_info
+        WHERE DELETE_FLAG = '0'
+        <if test="queryBean.categoryName != null and queryBean.categoryName != ''">
+            and CATEGORY_NAME like '%${queryBean.categoryName}%'
+        </if>
+        <if test="queryBean.categoryKey != null and queryBean.categoryKey != ''">
+            and CATEGORY_KEY = #{queryBean.categoryKey}
+        </if>
+    </select>
+
+    <select id="queryTicketCategoryByName" resultMap="baseResult" parameterType="string">
+        SELECT *
+        FROM vps_sys_ticket_category_info
+        WHERE DELETE_FLAG = '0'
+          and CATEGORY_NAME = #{categoryName}
+        limit 1
+    </select>
+
+	<update id="doTicketCategoryDel" parameterType="string">
+		update vps_sys_ticket_category_info set DELETE_FLAG = '1' where CATEGORY_KEY = #{categoryKey}
+	</update>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IActivateBatchLogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VpsActivateBatchLog" id="vpsActivateBatchLogResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="batchKey" column="BATCH_KEY"/>
+        <result property="batchDesc" column="BATCH_DESC"/>
+  		<result property="activateOpenid" column="ACTIVATE_OPENID"/>
+  		<result property="activateUserName" column="ACTIVATE_USER_NAME"/>
+  		<result property="activatePhone" column="ACTIVATE_PHONE"/>
+  		<result property="activateFactoryName" column="ACTIVATE_FACTORY_NAME"/>
+  		<result property="activateTime" column="ACTIVATE_TIME"/>
+  		<result property="startDate" column="START_DATE"/>
+  		<result property="endDate" column="END_DATE"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+        BATCH_KEY, 
+ 		BATCH_DESC,
+ 		ACTIVATE_OPENID,
+ 		ACTIVATE_USER_NAME,
+ 		ACTIVATE_PHONE,
+ 		ACTIVATE_FACTORY_NAME,
+ 		ACTIVATE_TIME,
+ 		START_DATE,
+ 		END_DATE
+  	</sql>
+  	
+  	<insert id="create" parameterType="com.dbt.platform.activity.bean.VpsActivateBatchLog">
+  		INSERT INTO vps_activate_batch_log
+  		VALUES
+  		(
+  			UUID(),
+  			#{batchKey},
+  			#{batchDesc},
+  			#{activateOpenid},
+  			#{activateUserName},
+  			#{activatePhone},
+  			#{activateFactoryName},
+  			#{activateTime},
+  			#{startDate},
+  			#{endDate}
+  		)
+  	</insert>
+  	
+  	<select id="queryList" parameterType="Map" resultMap="vpsActivateBatchLogResultMap">
+  		SELECT
+  			<include refid="Base_Column_List" />
+  		FROM 
+  			vps_activate_batch_log
+  		WHERE
+  			BATCH_KEY = #{batchKey}
+  		ORDER BY ACTIVATE_TIME DESC
+  			
+  	</select>
+</mapper>

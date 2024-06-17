@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsVcodeTicketInfoDao">
+
+	<resultMap type="com.dbt.platform.ticket.bean.VpsVcodeTicketInfo" id="baseResult">
+		<result property="ticketKey" column="TICKET_KEY"/>
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="ticketNo" column="TICKET_NO"/>
+		<result property="ticketUrl" column="TICKET_URL"/>
+		<result property="ticketLimit" column="TICKET_LIMIT"/>
+		<result property="ticketLimitNum" column="TICKET_LIMIT_NUM"/>
+		<result property="ticketCount" column="TICKET_COUNT"/>
+		<result property="jumpFlag" column="JUMP_FLAG"/>
+		<result property="fileName" column="FILE_NAME"/>
+		<result property="ticketUseCount" column="TICKET_USE_COUNT"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			TICKET_KEY,
+			ACTIVITY_KEY,
+			TICKET_NO,
+			TICKET_URL,
+			JUMP_FLAG,
+			TICKET_LIMIT,
+			TICKET_LIMIT_NUM,
+			TICKET_COUNT,
+			FILE_NAME,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+	<insert id="create" parameterType="com.dbt.platform.ticket.bean.VpsVcodeTicketInfo">
+		INSERT INTO vps_vcode_ticket_info(
+			TICKET_KEY,
+			ACTIVITY_KEY,
+			TICKET_NO,
+			TICKET_URL,
+			TICKET_LIMIT,
+			TICKET_LIMIT_NUM,
+			TICKET_COUNT,
+			JUMP_FLAG,
+			FILE_NAME,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		)
+		VALUES(
+			#{ticketKey},
+			#{activityKey},
+			#{ticketNo},
+			#{ticketUrl},
+			#{ticketLimit},
+			#{ticketLimitNum},
+			#{ticketCount},
+		    #{jumpFlag},
+			#{fileName},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+
+	<update id="updateTicketInfo" parameterType="Map">
+		UPDATE vps_vcode_ticket_info 
+		<set>
+			<if test="ticketUrl != null and ticketUrl != ''">
+				TICKET_URL = #{ticketUrl},
+			</if>
+			<if test="jumpFlag != null and jumpFlag != ''">
+				JUMP_FLAG = #{jumpFlag},
+			</if>
+			<if test="ticketLimitNum > 0 ">
+				TICKET_LIMIT_NUM = #{ticketLimitNum},
+			</if>
+			<if test="ticketCount > 0">
+				TICKET_COUNT = IFNULL(TICKET_COUNT, 0) + #{ticketCount},
+			</if>
+			TICKET_LIMIT = #{ticketLimit},
+			FILE_NAME = #{fileName},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE TICKET_KEY = #{ticketKey}
+	</update>
+	
+	<select id="queryListByActivityKey" parameterType="String" resultMap="baseResult">
+		SELECT 
+			t.TICKET_KEY,
+			t.ACTIVITY_KEY,
+			t.TICKET_NO,
+			s.TICKET_URL,
+			t.TICKET_LIMIT,
+			t.TICKET_LIMIT_NUM,
+			s.TICKET_COUNT,
+			s.FILE_NAME,
+			s.TICKET_NAME as ticketName,
+			s.TICKET_TYPE as ticketType,
+		    t.TICKET_USE_COUNT
+		FROM vps_vcode_ticket_info t
+		LEFT JOIN vps_sys_ticket_info s on t.TICKET_NO = s.TICKET_NO
+		WHERE t.ACTIVITY_KEY = #{activityKey}
+	</select>
+	
+	<select id="findTicketInfoForMap" parameterType="Map" resultMap="baseResult">
+		SELECT 
+			TICKET_KEY,
+			ACTIVITY_KEY,
+			TICKET_NO,
+			TICKET_URL,
+			TICKET_LIMIT,
+			TICKET_LIMIT_NUM,
+			TICKET_COUNT,
+			FILE_NAME
+		FROM vps_vcode_ticket_info 
+		WHERE ACTIVITY_KEY = #{activityKey}
+		AND TICKET_NO = #{ticketNo}
+		limit 1
+	</select>
+
+	<select id="findByTicketNo" parameterType="string" resultMap="baseResult">
+		SELECT
+			*
+		FROM vps_vcode_ticket_info
+		WHERE TICKET_NO = #{ticketNo}
+		limit 1
+	</select>
+</mapper>

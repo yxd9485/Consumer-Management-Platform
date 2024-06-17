@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.VpointsExchangeDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsExchangeLog" id="exchangeMap">
+        <result property="firstName" column="firstName" />
+        <result property="secondName" column="secondName" />
+        <result property="exchangeId" column="exchangeId" />
+        <result property="companyName" column="companyName" />
+        <result property="exchangeChannel" column="exchangeChannel" />
+        <result property="exchangeType" column="exchangeType" />
+        <result property="goodsName" column="goodsName" />
+        <result property="goodsShortName" column="goodsShortName" />
+        <result property="userKey" column="userKey" />
+        <result property="nickName" column="nickName" />
+        <result property="exchangeNum" column="exchangeNum" />
+        <result property="exchangeVpoints" column="exchangeVpoints" />
+        <result property="exchangeTime" column="exchangeTime" />
+        <result property="userName" column="userName" />
+        <result property="phoneNum" column="phoneNum" />
+        <result property="address" column="address" />
+        <result property="customerMessage" column="customerMessage" />
+        <result property="idCard" column="idCard" />
+        <result property="earnMoney" column="earnMoney" />
+        <result property="earnVpoints" column="earnVpoints" />
+		<result property="expressCompany" column="expressCompany" />
+		<result property="expressNumber" column="expressNumber" />
+		<result property="expressStatus" column="expressStatus" />
+		<result property="expressSendTime" column="expressSendTime" />
+		<result property="expressSendMessage" column="expressSendMessage" />
+		<result property="expressSignTime" column="expressSignTime" />
+		<result property="goodsClientNo" column="goodsClientNo" />
+		<result property="brandId" column="brandId" />
+		<result property="brandName" column="brandName" />
+		<result property="verificationId" column="verificationId" />
+		<result property="daicaiMoney" column="daicaiMoney" />
+		<result property="goodsId" column="goodsId" />
+		<result property="couponKey" column="coupon_key" />
+        <result property="couponReceiveInfoKey" column="coupon_receive_info_key" />
+        <result property="couponDiscountPay" column="coupon_discount_pay" />
+        <result property="couponDiscountVpoints" column="coupon_discount_vpoints" />
+        <result property="revokeOrderReason" column="revoke_order_reason" />
+		<result property="giftCardExchangeId" column="gift_card_exchange_id"></result>
+		<result property="isGiftCard" column="is_gift_card" />
+		<result property="giftCardStatus" column="gift_card_status" />
+		<result property="giftCardReceiveTime" column="giftCardReceiveTime" />
+		<result property="goodsOriginalPrice" column="goods_original_price" />
+		<result property="halfPriceActivityInfoKey" column="half_price_activity_info_key" />
+		<result property="exchangeActivityInfoKey" column="exchange_activity_info_key" />
+		<result property="categoryParent" column="category_parent" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsExchangeLog" id="exchangeResultMap">
+        <result property="exchangeId" column="exchange_Id" />
+        <result property="companyName" column="company_Name" />
+        <result property="exchangeChannel" column="exchange_Channel" />
+        <result property="exchangeType" column="exchange_Type" />
+        <result property="goodsName" column="goods_Name" />
+        <result property="goodsShortName" column="goods_short_Name" />
+		<result property="prizeName" column="prize_Name" />
+        <result property="userKey" column="user_Key" />
+        <result property="nickName" column="nick_Name" />
+        <result property="exchangeNum" column="exchange_Num" />
+        <result property="exchangeVpoints" column="exchange_Vpoints" />
+        <result property="exchangePay" column="exchange_pay" />
+        <result property="exchangeTime" column="exchange_Time" />
+        <result property="exchangeStatus" column="exchange_status" />
+        <result property="groupBuyingStatus" column="group_buying_status" />
+        <result property="refundPay" column="refund_pay" />
+        <result property="refundVpoints" column="refund_vpoints" />
+        <result property="userName" column="user_name" />
+        <result property="phoneNum" column="phone_Num" />
+        <result property="address" column="address" />
+        <result property="customerMessage" column="customer_message" />
+        <result property="idCard" column="id_Card" />
+        <result property="earnMoney" column="earn_Money" />
+        <result property="earnVpoints" column="earn_Vpoints" />
+		<result property="expressCompany" column="express_company" />
+		<result property="expressNumber" column="express_number" />
+		<result property="expressStatus" column="express_status" />
+		<result property="expressSendTime" column="express_send_time" />
+		<result property="expressSendMessage" column="express_send_message" />
+		<result property="expressSignTime" column="express_sign_time" />
+		<result property="goodsClientNo" column="goods_client_no" />
+		<result property="brandId" column="brand_id" />
+		<result property="brandName" column="brand_name" />
+		<result property="verificationId" column="VERIFICATION_ID" />
+		<result property="daicaiMoney" column="daicai_money" />
+		<result property="goodsId" column="goods_id" />
+		<result property="transactionId" column="transaction_id" />
+        <result property="goodsReturnReason" column="goods_return_reason" />
+        <result property="goodsReturnTime" column="goods_return_time" />
+        <result property="goodsReturnAudit" column="goods_return_audit" />
+        <result property="goodsReturnExpressCompany" column="goods_return_express_company" />
+        <result property="goodsReturnExpressNumber" column="goods_return_express_number" />
+        <result property="couponKey" column="coupon_key" />
+        <result property="couponReceiveInfoKey" column="coupon_receive_info_key" />
+        <result property="couponDiscountPay" column="coupon_discount_pay" />
+        <result property="couponDiscountVpoints" column="coupon_discount_vpoints" />
+        <result property="revokeOrderReason" column="revoke_order_reason" />
+        <result property="updateTime" column="update_time" />
+        <result property="returnComment" column="return_comment" />
+        <result property="returnImageUrl" column="return_image_url" />
+        <result property="giftGoodsNum" column="gift_goods_num" />
+		<result property="isGiftCard" column="is_gift_card" />
+		<result property="giftCardExchangeId" column="gift_card_exchange_id" />
+		<result property="giftCardStatus" column="gift_card_status" />
+		<result property="giftCardReceiveTime" column="giftCardReceiveTime" />
+		<result property="couponName" column="couponName" />
+		<result property="payTime" column="pay_time" />
+		<result property="returnPayTime" column="return_pay_time" />
+		<result property="returnTransactionId" column="return_transaction_id" />
+		<result property="orderType" column="order_type" />
+		<result property="goodsOriginalPrice" column="goods_original_price" />
+		<result property="halfPriceActivityInfoKey" column="half_price_activity_info_key" />
+		<result property="exchangeActivityInfoKey" column="exchange_activity_info_key" />
+		<result property="giftCardName" column="giftCardName" />
+		<result property="giftCardInfoKey" column="gift_card_info_key" />
+		<result property="giftCardType" column="giftCardType" />
+		<result property="categoryParent" column="category_parent" />
+		<result property="categoryType" column="category_type" />
+		<result property="goodsSpecification" column="goods_specification" />
+		<result property="expressOrderFlag" column="express_order_flag" />
+		<result property="expressOrderId" column="express_order_id" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsPrizeBean" id="prizeMap">
+        <result property="firstName" column="firstName" />
+        <result property="secondName" column="secondName" />
+        <result property="exchangeId" column="exchangeId" />
+        <result property="companyName" column="companyName" />
+        <result property="exchangeChannel" column="exchangeChannel" />
+        <result property="goodsName" column="goodsName" />
+        <result property="userKey" column="userKey" />
+        <result property="nickName" column="nickName" />
+        <result property="earnTime" column="earnTime" />
+        <result property="phoneNum" column="phoneNum" />
+        <result property="address" column="address" />
+        <result property="idCard" column="idCard" />
+        <result property="realName" column="realName" />
+        <result property="skuName" column="skuName" />
+        <result property="prizeVcode" column="prizeVcode" />
+        <result property="openid" column="openid" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsRechargeLog" id="rechargeMap">
+        <result property="exchangeId" column="exchangeId" />
+        <result property="ztRechargeId" column="ztRechargeId" />
+        <result property="companyName" column="companyName" />
+        <result property="userKey" column="userKey" />
+        <result property="nickName" column="nickName" />
+        <result property="phoneNum" column="phoneNum" />
+        <result property="rechargeMoney" column="rechargeMoney" />
+        <result property="exchargeVpoints" column="exchargeVpoints" />
+        <result property="exchangeStatus" column="exchangeStatus" />
+        <result property="exchangeTime" column="exchangeTime" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsSeckillOrderStatistics" id="soStatisticsMap"></resultMap>
+	
+	<select id="findById" parameterType="String" resultMap="exchangeResultMap">
+	   select
+	       t.*,
+	       date_format(t.gift_card_receive_time,'%Y-%m-%d') as giftCardReceiveTime,
+	       g.goods_client_no,
+	       g.goods_name,
+	       g.goods_specification,
+	       g.goods_short_name,
+	       b.brand_name,
+	       b.brand_id,
+           CONCAT(r.GRAND_PRIZE_TYPE, '-', r.PRIZE_NAME) as quanYiType
+	   from 
+	       vpoints_exchange_log t
+	   left join vpoints_goods_info g on t.goods_id = g.goods_id
+       left join vpoints_brand_info b on g.brand_id = b.brand_id
+       left join vps_vcode_prize_record r on t.prize_record_info_key = r.INFO_KEY
+	   where 
+	       t.exchange_id = #{id}
+	</select>
+	<select id="getExchangeList" parameterType="Map" resultMap="exchangeMap">
+		SELECT
+			t.exchange_id as exchangeId,
+			t.exchange_channel as exchangeChannel,
+			t.exchange_type as exchangeType,
+			a.category_name as firstName,
+			a.category_type as category_parent,
+			c.category_type as category_type,
+			c.category_name as secondName,
+			g.goods_name as goodsName,
+			f.prize_name as prizeName,
+			t.user_key as userKey,
+			t.exchange_num as exchangeNum,
+			t.exchange_vpoints as exchangeVpoints,
+			t.user_name as userName,
+			t.phone_num as phoneNum,
+			t.address as address,
+			t.customer_message as customerMessage,
+			t.id_card as idCard,
+			t.exchange_time as exchangeTime,
+			t.earn_money as earnMoney,
+			t.earn_vpoints as earnVpoints
+		FROM
+			vpoints_exchange_log t
+		LEFT JOIN vps_vcode_prize_record f ON t.exchange_id = f.exchange_id
+		LEFT JOIN vpoints_goods_info g ON g.goods_id = t.goods_id
+		LEFT JOIN vpoints_category_type c ON c.category_type = g.category_type
+		LEFT JOIN vpoints_category_type a ON c.category_parent = a.category_type
+		where 1=1
+			<if test="bean.categoryParent != null and bean.categoryParent != ''">
+				and c.category_parent = #{bean.categoryParent}
+			</if>
+			<if test="bean.categoryType != null and bean.categoryType != ''">
+				and c.category_type = #{bean.categoryType}
+			</if>
+			<if test="bean.goodsName != null and bean.goodsName != ''">
+				and (g.goods_name like '%${bean.goodsName}%' or f.prize_name like '%${bean.goodsName}%')
+			</if>
+			<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+				and t.exchange_channel  = #{bean.exchangeChannel}
+			</if>
+			<if test="bean.exchangeType != null and bean.exchangeType != ''">
+				and t.exchange_type  = #{bean.exchangeType}
+			</if>
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.exchangeId != null and bean.exchangeId != ''">
+				and t.exchange_id  = #{bean.exchangeId}
+			</if>
+			<if test="bean.exchangeStartTime != null and bean.exchangeStartTime != ''">
+				and t.exchange_time  <![CDATA[ >= ]]> #{bean.exchangeStartTime}
+			</if>
+			<if test="bean.exchangeEndTime != null and bean.exchangeEndTime != ''">
+				and t.exchange_time  <![CDATA[ <= ]]> #{bean.exchangeEndTime}
+			</if>
+        <choose>
+            <when test="param.orderCol == null and param.orderCol == '' and param.orderType == '' and param.orderType ==null">
+                ORDER BY exchange_time DESC
+            </when>
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType !='' and param.orderType !=null ">
+                ORDER BY  ${param.orderCol} ${param.orderType}
+            </when>
+            <otherwise>
+            	order by exchange_time desc
+            </otherwise>
+        </choose>
+		limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getExchangeCount" parameterType="Map" resultType="int">
+		select count(*)  FROM
+			vpoints_exchange_log t
+		LEFT JOIN vpoints_goods_info g ON g.goods_id = t.goods_id
+		LEFT JOIN vpoints_category_type c ON c.category_type = g.category_type
+		LEFT JOIN vpoints_category_type a ON c.category_parent = a.category_type
+		where 1=1
+			<if test="bean.categoryParent != null and bean.categoryParent != ''">
+				and c.category_parent = #{bean.categoryParent}
+			</if>
+			<if test="bean.categoryType != null and bean.categoryType != ''">
+				and c.category_type = #{bean.categoryType}
+			</if>
+			<if test="bean.goodsName != null and bean.goodsName != ''">
+				and g.goods_name like '%${bean.goodsName}%'
+			</if>
+			<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+				and t.exchange_channel  = #{bean.exchangeChannel}
+			</if>
+			<if test="bean.exchangeType != null and bean.exchangeType != ''">
+				and t.exchange_type  = #{bean.exchangeType}
+			</if>
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.exchangeId != null and bean.exchangeId != ''">
+				and t.exchange_id  = #{bean.exchangeId}
+			</if>
+			<if test="bean.exchangeStartTime != null and bean.exchangeStartTime != ''">
+				and t.exchange_time  <![CDATA[ >= ]]> #{bean.exchangeStartTime}
+			</if>
+			<if test="bean.exchangeEndTime != null and bean.exchangeEndTime != ''">
+				and t.exchange_time  <![CDATA[ <= ]]> #{bean.exchangeEndTime}
+			</if>
+	</select>
+	<select id="getPrizeList" parameterType="Map" resultMap="prizeMap">
+		select t.INFO_KEY as infoKey,t.user_key as userKey,t.PHONE_NUM as phoneNum,
+		g.exchange_channel as exchangeChannel,a.category_name as firstName,
+		a.category_type as category_parent,c.category_name as secondName,t.exchange_id as exchangeId,
+		g.goods_name as goodsName,t.EARN_TIME as earnTime,
+		s.SKU_NAME as skuName,t.PRIZE_VCODE as prizeVcode,t.ADDRESS as address,t.USER_NAME as realName,t.ID_CARD as idCard
+		 from vps_vcode_prize_record t 
+		LEFT JOIN vps_sku_info s on s.SKU_KEY=t.SKU_KEY 
+		left join vpoints_goods_info g on g.goods_id=t.GOODS_ID 
+		LEFT JOIN vpoints_category_type c ON c.category_type = g.category_type  
+		LEFT JOIN vpoints_category_type a ON c.category_parent = a.category_type  
+		where t.exchange_channel in ('1', '2')
+			<if test="bean.infoKey != null and bean.infoKey != ''">
+				and t.info_key = #{bean.infoKey}
+			</if>
+			<if test="bean.categoryParent != null and bean.categoryParent != ''">
+				and c.category_parent = #{bean.categoryParent}
+			</if>
+			<if test="bean.categoryType != null and bean.categoryType != ''">
+				and c.category_type = #{bean.categoryType}
+			</if>
+			<if test="bean.goodsName != null and bean.goodsName != ''">
+				and g.goods_name like '%${bean.goodsName}%'
+			</if>
+			<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+				and t.exchange_channel  = #{bean.exchangeChannel}
+			</if>
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.earnStartTime != null and bean.earnStartTime != ''">
+				and t.earn_time  <![CDATA[ >= ]]> #{bean.earnStartTime}
+			</if>
+			<if test="bean.earnEndTime != null and bean.earnEndTime != ''">
+				and t.earn_time  <![CDATA[ <= ]]> #{bean.earnEndTime}
+			</if>
+        <choose>
+            <when test="param.orderCol == null and param.orderCol == '' and param.orderType == '' and param.orderType ==null">
+                ORDER BY  t.earn_time desc
+            </when>
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType !='' and param.orderType !=null ">
+                ORDER BY ${param.orderCol} ${param.orderType}
+            </when>
+
+            <otherwise> ORDER BY t.earn_time desc</otherwise>
+        </choose>
+			/*order by t.earn_time desc*/  limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getPrizeCount" parameterType="Map" resultType="int">
+		select count(*)  
+			 from vps_vcode_prize_record t 
+		LEFT JOIN vps_sku_info s on s.SKU_KEY=t.SKU_KEY 
+		left join vpoints_goods_info g on g.goods_id=t.GOODS_ID 
+		LEFT JOIN vpoints_category_type c ON c.category_type = g.category_type  
+		LEFT JOIN vpoints_category_type a ON c.category_parent = a.category_type  
+		where t.exchange_channel in ('1', '2')
+			<if test="bean.infoKey != null and bean.infoKey != ''">
+				and t.info_key = #{bean.infoKey}
+			</if>
+			<if test="bean.categoryParent != null and bean.categoryParent != ''">
+				and c.category_parent = #{bean.categoryParent}
+			</if>
+			<if test="bean.categoryType != null and bean.categoryType != ''">
+				and c.category_type = #{bean.categoryType}
+			</if>
+			<if test="bean.goodsName != null and bean.goodsName != ''">
+				and g.goods_name like '%${bean.goodsName}%'
+			</if>
+			<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+				and t.exchange_channel  = #{bean.exchangeChannel}
+			</if>
+
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.earnStartTime != null and bean.earnStartTime != ''">
+				and t.earn_time  <![CDATA[ >= ]]> #{bean.earnStartTime}
+			</if>
+			<if test="bean.earnEndTime != null and bean.earnEndTime != ''">
+				and t.earn_time  <![CDATA[ <= ]]> #{bean.earnEndTime}
+			</if>
+	</select>
+	<select id="getRechargeList" parameterType="Map" resultMap="rechargeMap">
+		SELECT
+			t.exchange_id as exchangeId,
+			t.zt_recharge_id as ztRechargeId,
+			t.user_key as userKey,
+			t.phone_num as phoneNum,
+			t.recharge_money as rechargeMoney,
+			t.exchange_vpoints as exchangeVpoints,
+			t.exchange_status as exchangeStatus,
+			t.group_buying_status as groupBuyingStatus,
+			t.exchange_time as exchangeTime
+		FROM
+			vpoints_recharge_log t
+		where 1=1
+
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.exchangeId != null and bean.exchangeId != ''">
+				and t.exchange_id  = #{bean.exchangeId}
+			</if>
+			<if test="bean.ztRechargeId != null and bean.ztRechargeId != ''">
+				and t.zt_recharge_id  = #{bean.ztRechargeId}
+			</if>
+			<if test="bean.phoneNum != null and bean.phoneNum != ''">
+				and t.phone_num  = #{bean.phoneNum}
+			</if>
+			<if test="bean.exchangeStartTime != null and bean.exchangeStartTime != ''">
+				and t.exchange_time  <![CDATA[ >= ]]> #{bean.exchangeStartTime}
+			</if>
+			<if test="bean.exchangeEndTime != null and bean.exchangeEndTime != ''">
+				and t.exchange_time  <![CDATA[ <= ]]> #{bean.exchangeEndTime}
+			</if>
+        <choose>
+            <when test="param.orderCol == null and param.orderCol == '' and param.orderType == '' and param.orderType ==null">
+                ORDER BY  t.exchange_time desc
+            </when>
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType !='' and param.orderType !=null ">
+                ORDER BY  ${param.orderCol} ${param.orderType}
+            </when>
+
+            <otherwise> ORDER BY t.exchange_time desc</otherwise>
+        </choose>
+		/*	order by t.exchange_time desc*/  limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getRechargeCount" parameterType="Map" resultType="int">
+		select count(*)  FROM
+			vpoints_recharge_log t
+		where 1=1
+			<if test="bean.userKey != null and bean.userKey != ''">
+				and t.user_key  = #{bean.userKey}
+			</if>
+			<if test="bean.exchangeId != null and bean.exchangeId != ''">
+				and t.exchange_id  = #{bean.exchangeId}
+			</if>
+			<if test="bean.ztRechargeId != null and bean.ztRechargeId != ''">
+				and t.zt_recharge_id  = #{bean.ztRechargeId}
+			</if>
+			<if test="bean.phoneNum != null and bean.phoneNum != ''">
+				and t.phone_num  = #{bean.phoneNum}
+			</if>
+			<if test="bean.exchangeStartTime != null and bean.exchangeStartTime != ''">
+				and t.exchange_time  <![CDATA[ >= ]]> #{bean.exchangeStartTime}
+			</if>
+			<if test="bean.exchangeEndTime != null and bean.exchangeEndTime != ''">
+				and t.exchange_time  <![CDATA[ <= ]]> #{bean.exchangeEndTime}
+			</if>
+	</select>
+	<select id="getNickNameByKey" parameterType="String" resultType="String">
+	select t.nick_name from vps_consumer_user_info t where t.user_key=#{userKey}
+	</select>
+	<select id="getOpenidByKey" parameterType="String" resultType="String">
+	select t.openid from vps_consumer_thirdaccount_info t where t.user_key=#{userKey}
+	</select>
+	
+<!-- 	订单管理列表 -->
+	<select id="queryForExpressLst" resultMap="exchangeResultMap" parameterType="Map">
+        select 
+		    e.exchange_id,
+		    e.exchange_Channel,
+		    g.brand_id,
+		    g.goods_name,
+		    g.goods_client_no,
+		    e.exchange_status,
+		    e.group_buying_status as groupBuyingStatus,
+		    e.exchange_num,
+		    e.exchange_vpoints / e.exchange_num as unitVpoints,
+		    e.exchange_vpoints,
+		    e.exchange_pay,
+		    g.real_vpoints - e.exchange_vpoints as discountsVpoints,
+		    g.real_pay - e.exchange_pay as discountsMoney,
+		    e.refund_pay,
+		    e.refund_vpoints,
+		    e.user_key,
+		    e.user_name,
+		    e.phone_num,
+		    e.address,
+		    e.customer_message,
+		    e.exchange_time,
+		    e.express_company,
+		    e.express_number,
+		    e.express_send_time,
+		    e.express_send_message,
+            e.EXPRESS_SIGN_TIME,
+		    e.express_status,
+		    e.quanYiType,
+		    e.transaction_id,
+		    e.goods_return_time,
+		    e.goods_return_reason,
+		    e.goods_return_audit,
+		    e.goods_return_express_company,
+		    e.goods_return_express_number,
+		    e.group_buying_status as groupBuyingStatus,
+		    e.coupon_key,
+		    e.coupon_name as couponName,
+		    e.coupon_receive_info_key,
+		    e.coupon_discount_pay,
+		    e.coupon_discount_vpoints,
+		    e.revoke_order_reason,
+		    e.update_time,
+		    e.gift_goods_name as giftGoodsName,
+		    e.gift_goods_num,
+		    e.is_gift_card,
+		    e.gift_card_status,
+		    e.goods_original_price,
+			DATE_FORMAT(e.pay_time, '%Y-%m-%d %k:%i:%s') as pay_time,
+		    e.return_pay_time,
+		    e.return_transaction_id,
+		    e.gift_card_exchange_id,
+		    e.gift_card_info_key,
+		    e.gift_card_pay,
+		    e.express_order_flag,
+		    e.express_order_id,
+		    e.category_type,
+			<if test="queryBean.giftCardInfoKey!='' and queryBean.giftCardInfoKey!= null ">
+				cog.gift_card_name giftCardName,
+				cog.gift_card_type giftCardType,
+			</if>
+		    e.order_type
+        from
+            vpoints_exchange_log e
+        left join vpoints_goods_info g on g.goods_id = e.goods_id
+        <if test="queryBean.giftCardInfoKey!='' and queryBean.giftCardInfoKey!= null ">
+			left join VPOINTS_GOODS_GIFT_CARD_COG cog on e.gift_card_info_key = cog.info_key
+		</if>
+
+        where
+            e.exchange_type = '1'
+		<if test="queryBean.giftCardInfoKey!='' and queryBean.giftCardInfoKey!= null ">
+            and gift_card_info_key = #{queryBean.giftCardInfoKey}
+		</if>
+        <if test="queryBean.exchangeId != null and queryBean.exchangeId != ''">
+            and e.exchange_id like '%${queryBean.exchangeId}%'
+        </if>
+        <if test="queryBean.seckillActivityKey != null and queryBean.seckillActivityKey != ''">
+            and e.seckill_activity_key = #{queryBean.seckillActivityKey}
+        </if>
+        <if test="queryBean.groupBuyingActivityKey != null and queryBean.groupBuyingActivityKey != ''">
+            and e.group_buying_activity_key = #{queryBean.groupBuyingActivityKey}
+            and e.exchange_status != '-1'
+        </if>
+        <if test="queryBean.couponKey != null and queryBean.couponKey != ''">
+            and e.coupon_key = #{queryBean.couponKey}
+        </if>
+        <if test="queryBean.userKey != null and queryBean.userKey != ''">
+            and e.user_key = #{queryBean.userKey}
+        </if>
+        <if test="queryBean.brandId != null and queryBean.brandId != ''">
+            and g.brand_id = #{queryBean.brandId}
+        </if>
+        <if test="queryBean.brandId == null or queryBean.brandId == '' and (queryBean.brandIdLst != null and queryBean.brandIdLst.size() > 0)">
+            and g.brand_id in
+            <foreach collection="queryBean.brandIdLst" item="brandIdItem" open="(" close=")" separator=",">
+                #{brandIdItem}
+            </foreach>
+        </if>
+        <if test="queryBean.goodsId != null and queryBean.goodsId != ''">
+            and e.goods_id in (${queryBean.goodsId})
+        </if>
+        <if test="queryBean.expressNumber != null and queryBean.expressNumber != ''">
+            and (e.express_number like '%${queryBean.expressNumber}%' or e.goods_return_express_number like '%${queryBean.expressNumber}%')
+        </if>
+        <if test="queryBean.userName != null and queryBean.userName != ''">
+            and (e.user_name like '%${queryBean.userName}%'
+                or e.phone_num like '%${queryBean.userName}%'
+                or e.address like '%${queryBean.userName}%')
+        </if>
+        <if test="queryBean.transactionId != null and queryBean.transactionId != ''">
+            and e.transaction_id = #{queryBean.transactionId}
+        </if>
+        <if test="queryBean.quanYiType != null and queryBean.quanYiType != ''">
+            and e.quanYiType = #{queryBean.quanYiType}
+        </if>
+        <if test="queryBean.halfPriceActivityInfoKey != null and queryBean.halfPriceActivityInfoKey != ''">
+            and e.half_price_activity_info_key = #{queryBean.halfPriceActivityInfoKey}
+        </if>
+        <if test="queryBean.startExchangePay != 0 ">
+            and e.exchange_pay >= #{queryBean.startExchangePay}
+        </if>
+        <if test="queryBean.endExchangePay != 0 ">
+            and e.exchange_pay &lt;= #{queryBean.endExchangePay}
+        </if>
+        <choose>
+            <when test="queryBean.payType == '0'.toString()">
+                and e.exchange_vpoints > 0 and e.exchange_pay = 0
+            </when>
+            <when test="queryBean.payType == '1'.toString()">
+                and e.exchange_pay > 0 and e.exchange_vpoints = 0
+            </when>
+            <when test="queryBean.payType == '3'.toString()">
+                and e.exchange_vpoints > 0 and e.exchange_pay > 0
+            </when>
+			<when test="queryBean.payType == '4'.toString()">
+				and (e.is_gift_card = '1' or e.gift_card_info_key is not null)
+			</when>
+        </choose>
+          <choose>
+			<when test="queryBean.giftCardStatus=='1' ">
+				and e.gift_card_status = '1'
+			</when>
+			<when test="queryBean.giftCardStatus =='0' ">
+			  and (e.gift_card_status = '0' or e.gift_card_status is null )
+			</when>
+        </choose>
+        <if test="queryBean.exchangeStartDate != null and queryBean.exchangeStartDate != ''">
+            and left(e.exchange_time, 10) >= #{queryBean.exchangeStartDate}
+        </if>
+        <if test="queryBean.exchangeEndDate != null and queryBean.exchangeEndDate != ''">
+            and left(e.exchange_time, 10) <![CDATA[<=]]> #{queryBean.exchangeEndDate}
+        </if>
+        <if test="queryBean.sendStartDate != null and queryBean.sendStartDate != ''">
+            and left(e.express_send_time, 10) >= #{queryBean.sendStartDate}
+        </if>
+        <if test="queryBean.sendEndDate != null and queryBean.sendEndDate != ''">
+            and left(e.express_send_time, 10) <![CDATA[<=]]> #{queryBean.sendEndDate}
+        </if>
+        <if test="queryBean.signStartDate != null and queryBean.signStartDate != ''">
+            and left(e.express_sign_time, 10) >= #{queryBean.signStartDate}
+        </if>
+        <if test="queryBean.signEndDate != null and queryBean.signEndDate != ''">
+            and left(e.express_sign_time, 10) <![CDATA[<=]]> #{queryBean.signEndDate}
+        </if>
+        <if test="queryBean.orderType != null and queryBean.orderType != ''">
+            and e.order_type = #{queryBean.orderType}
+        </if>
+        <if test="queryBean.goodsName != null and queryBean.goodsName != ''">
+			and g.goods_name like concat('%',#{queryBean.goodsName},'%')
+        </if>
+        <if test="projectServerName == 'henanpz'">
+            <choose>
+                <!-- 河南操作员查看订单 -->
+                <when test="queryBean.platformNickName == '河南订单'">
+                    and (e.exchange_time <![CDATA[<]]> #{queryBean.vpointsOrderAreaTime} or (e.exchange_time >= #{queryBean.vpointsOrderAreaTime} and e.address not like '浙江省%'))
+                </when>
+                <!-- 浙江操作员查看订单 -->
+                <when test="queryBean.platformNickName == '浙江订单'">
+                    and e.exchange_time >= #{queryBean.vpointsOrderAreaTime} and e.address like '浙江省%'
+                </when>
+            </choose>
+        </if>
+        <choose>
+<!--             待发货 -->
+            <when test="queryBean.tabsFlag == '0'.toString()">
+                and e.exchange_status = '0' and e.express_status = '0'
+                and IFNULL(e.group_buying_status, '0') = '0'
+            </when>
+<!--             已发货 -->
+            <when test="queryBean.tabsFlag == '1'.toString()">
+                and e.exchange_status = '0' and e.express_status = '1'
+            </when>
+<!--             已完成 -->
+            <when test="queryBean.tabsFlag == '2'.toString()">
+                and e.exchange_status = '0' and e.express_status = '2'
+            </when>
+<!--             全部订单或退货 -->
+            <when test="queryBean.tabsFlag == '3'.toString() or queryBean.tabsFlag == '4'.toString() ">
+                <choose>
+<!--                待付中 -->
+		            <when test="queryBean.orderStatus == '0'.toString()">
+		                and e.exchange_status = '-1'
+		            </when>
+<!--                待发货 -->
+		            <when test="queryBean.orderStatus == '1'.toString()">
+		                and e.exchange_status = '0' and e.express_status = '0'
+		                and IFNULL(e.group_buying_status, '0') = '0'
+		            </when>
+<!--                已发货 -->
+		            <when test="queryBean.orderStatus == '2'.toString()">
+		                and e.exchange_status = '0' and e.express_status = '1'
+		            </when>
+<!--                已完成 -->
+		            <when test="queryBean.orderStatus == '3'.toString()">
+		                and e.exchange_status = '0' and e.express_status = '2'
+		            </when>
+<!--                兑换失败 -->
+                    <when test="queryBean.orderStatus == '4'.toString()">
+                        and e.exchange_status = '1'
+                    </when>
+<!--                兑换中 -->
+                    <when test="queryBean.orderStatus == '5'.toString()">
+                        and e.exchange_status = '2' 
+                    </when>
+<!--                订单已关闭 -->
+                    <when test="queryBean.orderStatus == '6'.toString()">
+                        and e.exchange_status = '3'
+                    </when>
+<!--                微信退款申请 -->
+                    <when test="queryBean.orderStatus == '7'.toString()">
+                        and e.exchange_status = '4'
+                    </when>
+<!--                待发货已撤单 -->
+                    <when test="queryBean.orderStatus == '8'.toString()">
+                        and e.exchange_status = '5'
+                    </when>
+<!--                微信退款退款失败 -->
+                    <when test="queryBean.orderStatus == '9'.toString()">
+                        and e.exchange_status = '6'
+                    </when>
+<!--                退货审核中 -->
+                    <when test="queryBean.orderStatus == '10'.toString()">
+                        and e.exchange_status = '7'
+                    </when>
+<!--                退货已驳回 -->
+                    <when test="queryBean.orderStatus == '11'.toString()">
+                        and e.exchange_status = '0' and e.goods_Return_Audit is not null
+                    </when>
+<!--                待提交退货物流 -->
+                    <when test="queryBean.orderStatus == '12'.toString()">
+                        and e.exchange_status = '10'
+                    </when>
+<!--                退货处理中 -->
+                    <when test="queryBean.orderStatus == '13'.toString()">
+                        and e.exchange_status = '8'
+                    </when>
+<!--                退货已完成 -->
+                    <when test="queryBean.orderStatus == '14'.toString()">
+                        and e.exchange_status = '9'
+                    </when>
+<!--                退货订单全部状态 -->
+                    <when test="queryBean.tabsFlag == '4'.toString()">
+                        and e.exchange_status in ('7', '8', '9', '10')
+                    </when>
+                </choose>
+            </when>
+            <!-- 数据核销专用 -->
+            <when test="queryBean.tabsFlag == '5'.toString()">
+            	and e.exchange_status NOT IN('-1','1','3','5','9') 
+            	and IFNULL(e.group_buying_status, '0') = '0'
+            </when>
+        </choose>
+        <if test="pageInfo != null">
+	        <choose>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'e.exchange_time'">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, e.exchange_time DESC
+	          </when>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+	          </when>
+	          <otherwise>
+	          	<choose>
+            		<when test="projectServerName == 'henanpz'">
+            			order by IFNULL(e.update_time, e.exchange_time) DESC		
+            		</when>
+            		<otherwise>
+            			order by e.exchange_time DESC
+            		</otherwise>
+            	</choose>
+	          </otherwise>
+	        </choose>
+	        <if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+		        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	        </if>
+        </if>
+    </select>
+    
+<!--    订单管理列表记录条数 -->
+    <select id="queryForExpressCount" resultType="int" parameterType="Map">
+        SELECT
+            COUNT(*)
+        FROM
+            vpoints_exchange_log e
+        left join vpoints_goods_info g on e.goods_id = g.goods_id
+        where 
+            e.exchange_type = '1'
+		<if test="queryBean.giftCardInfoKey!='' and queryBean.giftCardInfoKey!= null ">
+			and gift_card_info_key = #{queryBean.giftCardInfoKey}
+		</if>
+        <if test="queryBean.exchangeId != null and queryBean.exchangeId != ''">
+            and e.exchange_id like '%${queryBean.exchangeId}%'
+        </if>
+        <if test="queryBean.seckillActivityKey != null and queryBean.seckillActivityKey != ''">
+            and e.seckill_activity_key = #{queryBean.seckillActivityKey}
+        </if>
+        <if test="queryBean.groupBuyingActivityKey != null and queryBean.groupBuyingActivityKey != ''">
+            and e.group_buying_activity_key = #{queryBean.groupBuyingActivityKey}
+            and e.exchange_status != '-1'
+        </if>
+        <if test="queryBean.couponKey != null and queryBean.couponKey != ''">
+            and e.coupon_key = #{queryBean.couponKey}
+        </if>
+        <if test="queryBean.userKey != null and queryBean.userKey != ''">
+            and e.user_key = #{queryBean.userKey}
+        </if>
+        <if test="queryBean.brandId != null and queryBean.brandId != ''">
+            and g.brand_id = #{queryBean.brandId}
+        </if>
+        <if test="queryBean.brandId == null or queryBean.brandId == '' and (queryBean.brandIdLst != null and queryBean.brandIdLst.size() > 0)">
+            and g.brand_id in
+            <foreach collection="queryBean.brandIdLst" item="brandIdItem" open="(" close=")" separator=",">
+                #{brandIdItem}
+            </foreach>
+        </if>
+        <if test="queryBean.goodsId != null and queryBean.goodsId != ''">
+            and e.goods_id in (${queryBean.goodsId})
+        </if>
+        <if test="queryBean.expressNumber != null and queryBean.expressNumber != ''">
+            and (e.express_number like '%${queryBean.expressNumber}%' or e.goods_return_express_number like '%${queryBean.expressNumber}%')
+        </if>
+        <if test="queryBean.userName != null and queryBean.userName != ''">
+            and (e.user_name like '%${queryBean.userName}%'
+                or e.phone_num like '%${queryBean.userName}%'
+                or e.address like '%${queryBean.userName}%')
+        </if>
+        <if test="queryBean.transactionId != null and queryBean.transactionId != ''">
+            and e.transaction_id = #{queryBean.transactionId}
+        </if>
+        <if test="queryBean.quanYiType != null and queryBean.quanYiType != ''">
+            and e.quanYiType = #{queryBean.quanYiType}
+        </if>
+
+		<if test="queryBean.halfPriceActivityInfoKey != null and queryBean.halfPriceActivityInfoKey != ''">
+			and e.half_price_activity_info_key = #{queryBean.halfPriceActivityInfoKey}
+		</if>
+		<if test="queryBean.startExchangePay != 0  ">
+			and e.exchange_pay >= #{queryBean.startExchangePay}
+		</if>
+		<if test="queryBean.endExchangePay != 0  ">
+			and e.exchange_pay &lt;= #{queryBean.endExchangePay}
+		</if>
+        <choose>
+            <when test="queryBean.payType == '0'.toString()">
+                and e.exchange_vpoints > 0 and e.exchange_pay = 0
+            </when>
+            <when test="queryBean.payType == '1'.toString()">
+                and e.exchange_pay > 0 and e.exchange_vpoints = 0
+            </when>
+            <when test="queryBean.payType == '3'.toString()">
+                and e.exchange_vpoints > 0 and e.exchange_pay > 0
+            </when>
+			<when test="queryBean.payType == '4'.toString()">
+				and (e.is_gift_card = '1' or e.gift_card_info_key is not null)
+			</when>
+        </choose>
+		<choose>
+			<when test="queryBean.giftCardStatus=='1' ">
+				and e.gift_card_status = '1'
+			</when>
+			<when test="queryBean.giftCardStatus =='0' ">
+				and (e.gift_card_status = '0' or e.gift_card_status is null )
+			</when>
+		</choose>
+        <if test="queryBean.exchangeStartDate != null and queryBean.exchangeStartDate != ''">
+            and left(e.exchange_time, 10) >= #{queryBean.exchangeStartDate}
+        </if>
+        <if test="queryBean.exchangeEndDate != null and queryBean.exchangeEndDate != ''">
+            and left(e.exchange_time, 10) <![CDATA[<=]]> #{queryBean.exchangeEndDate}
+        </if>
+        <if test="queryBean.sendStartDate != null and queryBean.sendStartDate != ''">
+            and left(e.express_send_time, 10) >= #{queryBean.sendStartDate}
+        </if>
+        <if test="queryBean.sendEndDate != null and queryBean.sendEndDate != ''">
+            and left(e.express_send_time, 10) <![CDATA[<=]]> #{queryBean.sendEndDate}
+        </if>
+        <if test="queryBean.signStartDate != null and queryBean.signStartDate != ''">
+            and left(e.express_sign_time, 10) >= #{queryBean.signStartDate}
+        </if>
+        <if test="queryBean.signEndDate != null and queryBean.signEndDate != ''">
+            and left(e.express_sign_time, 10) <![CDATA[<=]]> #{queryBean.signEndDate}
+        </if>
+		<if test="queryBean.orderType != null and queryBean.orderType != ''">
+			and e.order_type = #{queryBean.orderType}
+		</if>
+		<if test="queryBean.goodsName != null and queryBean.goodsName != ''">
+			and g.goods_name like concat('%',#{queryBean.goodsName},'%')
+		</if>
+        <if test="projectServerName == 'henanpz'">
+            <choose>
+                <!-- 河南操作员查看订单 -->
+                <when test="queryBean.platformNickName == '河南订单'">
+                    and (e.exchange_time <![CDATA[<]]> #{queryBean.vpointsOrderAreaTime} or (e.exchange_time >= #{queryBean.vpointsOrderAreaTime} and e.address not like '浙江省%'))
+                </when>
+                <!-- 浙江操作员查看订单 -->
+                <when test="queryBean.platformNickName == '浙江订单'">
+                    and e.exchange_time >= #{queryBean.vpointsOrderAreaTime} and e.address like '浙江省%'
+                </when>
+            </choose>
+        </if>
+        <choose>
+<!--             待发货 -->
+            <when test="queryBean.tabsFlag == '0'.toString()">
+                and e.exchange_status = '0' and e.express_status = '0' 
+                and IFNULL(e.group_buying_status, '0') = '0'
+            </when>
+<!--             已发货 -->
+            <when test="queryBean.tabsFlag == '1'.toString()">
+                and e.exchange_status = '0' and e.express_status = '1'
+            </when>
+<!--             已完成 -->
+            <when test="queryBean.tabsFlag == '2'.toString()">
+                and e.exchange_status = '0' and e.express_status = '2'
+            </when>
+<!--             全部订单或退货 -->
+            <when test="queryBean.tabsFlag == '3'.toString() or queryBean.tabsFlag == '4'.toString() ">
+                <choose>
+<!--                待付中 -->
+                    <when test="queryBean.orderStatus == '0'.toString()">
+                        and e.exchange_status = '-1'
+                    </when>
+<!--                待发货 -->
+                    <when test="queryBean.orderStatus == '1'.toString()">
+                        and e.exchange_status = '0' and e.express_status = '0'
+                        and IFNULL(e.group_buying_status, '0') = '0'
+                    </when>
+<!--                已发货 -->
+                    <when test="queryBean.orderStatus == '2'.toString()">
+                        and e.exchange_status = '0' and e.express_status = '1'
+                    </when>
+<!--                已完成 -->
+                    <when test="queryBean.orderStatus == '3'.toString()">
+                        and e.exchange_status = '0' and e.express_status = '2'
+                    </when>
+<!--                兑换失败 -->
+                    <when test="queryBean.orderStatus == '4'.toString()">
+                        and e.exchange_status = '1'
+                    </when>
+<!--                兑换中 -->
+                    <when test="queryBean.orderStatus == '5'.toString()">
+                        and e.exchange_status = '2' 
+                    </when>
+<!--                订单已关闭 -->
+                    <when test="queryBean.orderStatus == '6'.toString()">
+                        and e.exchange_status = '3'
+                    </when>
+<!--                微信退款申请 -->
+                    <when test="queryBean.orderStatus == '7'.toString()">
+                        and e.exchange_status = '4'
+                    </when>
+<!--                待发货已撤单 -->
+                    <when test="queryBean.orderStatus == '8'.toString()">
+                        and e.exchange_status = '5'
+                    </when>
+<!--                微信退款退款失败 -->
+                    <when test="queryBean.orderStatus == '9'.toString()">
+                        and e.exchange_status = '6'
+                    </when>
+<!--                退货审核中 -->
+                    <when test="queryBean.orderStatus == '10'.toString()">
+                        and e.exchange_status = '7'
+                    </when>
+<!--                退货已驳回 -->
+                    <when test="queryBean.orderStatus == '11'.toString()">
+                        and e.exchange_status = '0' and e.goods_Return_Audit is not null
+                    </when>
+<!--                待提交退货物流 -->
+                    <when test="queryBean.orderStatus == '12'.toString()">
+                        and e.exchange_status = '10'
+                    </when>
+<!--                退货处理中 -->
+                    <when test="queryBean.orderStatus == '13'.toString()">
+                        and e.exchange_status = '8'
+                    </when>
+<!--                退货已完成 -->
+                    <when test="queryBean.orderStatus == '14'.toString()">
+                        and e.exchange_status = '9'
+                    </when>
+<!--                退货订单全部状态 -->
+                    <when test="queryBean.tabsFlag == '4'.toString()">
+                        and e.exchange_status in ('7', '8', '9', '10')
+                    </when>
+                    
+                </choose>
+            </when>
+            <!-- 数据核销专用 -->
+            <when test="queryBean.tabsFlag == '5'.toString()">
+            	and e.exchange_status NOT IN('-1','1','3','5','9')
+            	and IFNULL(e.group_buying_status, '0') = '0'
+            </when>
+        </choose>
+    </select>
+    
+	<!-- 更新退货申请审核状态 -->
+    <update id="updateGoodsReturnAudit" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+            exchange_status = #{exchangeStatus},
+            exchange_msg = #{exchangeMsg},
+            goods_return_audit_status = #{goodsReturnAuditStatus},
+            goods_return_audit = #{goodsReturnAudit},
+            goods_return_audit_user = #{goodsReturnAuditUser},
+            goods_return_audit_time = NOW()
+        where
+            exchange_id = #{exchangeId}
+    </update>
+    
+	<!-- 更新订单的物流信息 -->
+    <update id="updateExpressInfo" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+            express_status = '1',
+            express_send_time = IFNULL(express_send_time, NOW()),
+            <if test="expressSendMessage != null and expressSendMessage != ''">
+            	express_send_message = #{expressSendMessage},
+            </if>
+            <if test="expressCompany != null and expressCompany != ''">
+            	express_company = #{expressCompany},
+            </if>
+            express_number = #{expressNumber}
+        where
+            exchange_id = #{exchangeId}
+    </update>
+    
+    <!-- 更新订单收货信息 -->
+    <update id="updateOrderAddress" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+        	user_name = #{userName},
+        	phone_num = #{phoneNum},
+        	address = #{address},
+            update_time = NOW()
+        where
+            exchange_id = #{exchangeId}
+    </update>
+    
+<!--     更新订单签收状态，发货后15天 -->
+    <update id="updateExpressSignJob" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+            express_status = '2',
+            express_sign_time = NOW()
+        where
+            express_status = '1' and timestampdiff(SECOND, express_send_time, NOW()) >= 1296000
+            <if test="serverName == 'hebei'">
+                and exchange_Channel = '6'
+            </if>
+            <if test="serverName == 'henanpz'">
+                and exchange_Channel = '9'
+            </if>
+    </update>
+    
+<!--     获取截止日期前所有未核销订单 -->
+    <select id="queryVerificationByDate" parameterType="Map" resultMap="exchangeResultMap">
+        select 
+            e.exchange_id,
+            e.exchange_num,
+            e.exchange_vpoints,
+            b.brand_name,
+            g.goods_id,
+            g.goods_name,
+            g.goods_client_no,
+            g.daicai_money,
+            e.express_send_time
+        from 
+            vpoints_exchange_log e, vpoints_goods_info g, vpoints_brand_info b
+        where 
+            e.goods_id = g.goods_id and g.brand_id = b.brand_id 
+            and e.exchange_type = '1'
+            and e.exchange_status = '0'
+            AND IFNULL(e.group_buying_status,'0') = '0'
+            and IFNULL(e.verification_id, '') = ''
+            and IFNULL(e.express_send_time, '') != ''
+            and DATE(e.express_send_time) <![CDATA[<=]]> #{verificationEndDate}
+            and b.brand_id in
+            <foreach collection="brandKeys" item="brankKey" open="(" separator="," close=")">
+            	#{brankKey}
+            </foreach>
+    </select>
+    
+<!--     更新核销主键-->
+    <update id="updateVerificationId" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+	        verification_id = #{verificationId}
+        where
+            exchange_id = #{exchangeId}
+    </update>
+    
+<!--     清除核销主键-->
+    <update id="updateVerificationIdForClear" parameterType="Map">
+        update 
+            vpoints_exchange_log
+        set
+	        verification_id = null
+        where
+            verification_id = #{verificationId}
+    </update>
+    
+    <!-- 更新订单状态 -->
+    <update id="updateOrderStatus" parameterType="Map">
+    	update 
+            vpoints_exchange_log
+        set
+	        exchange_status = #{exchangeStatus},
+	        <if test="expressStatus != null and expressStatus != ''">
+	           express_status = #{expressStatus},
+	        </if>
+	        update_time = NOW()
+        where
+            exchange_id = #{exchangeId}
+    </update>
+    
+    <select id="findOrderStatistics" parameterType="Map" resultMap="soStatisticsMap">
+    	SELECT 
+			count(1) as orderCount,
+			g.goods_remains as goodsRemains,
+			SUM(e.exchange_pay) as totalMoney,
+			SUM(e.exchange_vpoints) as totalVpoints,
+			SUM(g.real_pay - e.exchange_pay) as discountsMoney,
+			SUM(g.real_vpoints - e.exchange_vpoints) as discountsVpoints
+		FROM vpoints_exchange_log e
+		INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+		WHERE e.exchange_status NOT IN('-1','1','3','5', '9', '10') 
+		<if test="exchangeFlag == '2'.toString()">
+			AND e.group_buying_activity_key = #{activityKey}
+			AND IFNULL(e.group_buying_status,'0') = '0'
+			GROUP BY e.group_buying_activity_key
+		</if>
+		<if test="exchangeFlag == '3'.toString()">
+			AND e.seckill_activity_key = #{activityKey}
+			GROUP BY e.seckill_activity_key
+		</if>
+    </select>
+	<!-- 查询七天前未领取礼品卡订单 -->
+	<select id="queryAllNotReceiveGiftCardOrder" resultMap="exchangeMap">
+	SELECT
+			l.exchange_id exchangeId,
+			l.user_key userKey,
+			l.user_key userKey,
+			l.exchange_time exchangeTime,
+			l.goods_id goodsId
+		FROM
+			vpoints_exchange_log l
+		WHERE
+			l.is_gift_card = '1' and l.gift_card_status = '0'
+			and l.exchange_status = '0'
+			 and DateDiff(now(),l.exchange_time) >#{days}
+
+	</select>
+	<select id="queryExchangeLogByGiftCardExchangeId" resultMap="exchangeMap">
+		select t.exchange_id exchangeId,
+			t.user_key userKey,
+			t.gift_card_exchange_id
+		 from vpoints_exchange_log t
+     where t.exchange_id = #{giftCardExchangeId}
+	</select>
+	<update id="updateSfJsdExchangeOrder">
+		update
+		vpoints_exchange_log
+		set
+		<if test="expressOrderId!=null and expressOrderId!=''">
+			EXPRESS_ORDER_ID = #{expressOrderId},
+		</if>
+		<if test="expressCompany!=null and expressCompany!=''">
+			EXPRESS_COMPANY = #{expressCompany},
+		</if>
+		<if test="expressNumber!=null and expressNumber!=''">
+			EXPRESS_NUMBER = #{expressNumber},
+		</if>
+		<if test="expressStatus!=null and expressStatus!=''">
+			EXPRESS_STATUS = #{expressStatus},
+		</if>
+		<if test="expressSendTime!=null and expressSendTime!=''">
+			EXPRESS_SEND_TIME = #{expressSendTime},
+		</if>
+		<if test="expressSendMessage!=null and expressSendMessage!=''">
+			EXPRESS_SEND_MESSAGE = #{expressSendMessage},
+		</if>
+		<if test="exchangeStatus!=null and exchangeStatus!=''">
+			exchange_status = #{exchangeStatus},
+		</if>
+		<if test="shopOrderId!=null and shopOrderId!=''">
+			shop_order_id = #{shopOrderId},
+		</if>
+		EXPRESS_ORDER_FLAG = '1'
+		where
+		<if test="exchangeId!=null and exchangeId!=''">
+			exchange_id = #{exchangeId}
+		</if>
+		<if test="exchangeId==null">
+			EXPRESS_ORDER_ID = #{expressOrderId}
+		</if>
+	</update>
+	<select id="findByShopOrderId" resultMap="exchangeResultMap" parameterType="Map">
+		select
+		e.exchange_id,
+		e.exchange_Channel,
+		a.category_type as category_parent,
+		g.brand_id,
+		g.goods_name,
+		g.goods_client_no,
+		e.exchange_status,
+		e.group_buying_status as groupBuyingStatus,
+		e.exchange_num,
+		e.exchange_vpoints / e.exchange_num as unitVpoints,
+		e.exchange_vpoints,
+		e.exchange_pay,
+		g.real_vpoints - e.exchange_vpoints as discountsVpoints,
+		g.real_pay - e.exchange_pay as discountsMoney,
+		e.refund_pay,
+		e.refund_vpoints,
+		e.user_key,
+		e.user_name,
+		e.phone_num,
+		e.address,
+		e.customer_message,
+		e.exchange_time,
+		e.express_company,
+		e.express_number,
+		e.express_send_time,
+		e.express_send_message,
+		e.EXPRESS_SIGN_TIME,
+		e.express_status,
+		e.quanYiType,
+		e.transaction_id,
+		e.goods_return_time,
+		e.goods_return_reason,
+		e.goods_return_audit,
+		e.goods_return_express_company,
+		e.goods_return_express_number,
+		e.group_buying_status as groupBuyingStatus,
+		e.coupon_key,
+		e.coupon_name as couponName,
+		e.coupon_receive_info_key,
+		e.coupon_discount_pay,
+		e.coupon_discount_vpoints,
+		e.revoke_order_reason,
+		e.update_time,
+		e.gift_goods_name as giftGoodsName,
+		e.gift_goods_num,
+		e.is_gift_card,
+		e.gift_card_status,
+		e.goods_original_price,
+		DATE_FORMAT(e.pay_time, '%Y-%m-%d %k:%i:%s') as pay_time,
+		e.return_pay_time,
+		e.return_transaction_id,
+		e.gift_card_exchange_id,
+		e.gift_card_info_key,
+		e.gift_card_pay,
+		e.order_type
+		from
+		vpoints_exchange_log e
+		left join vpoints_goods_info g on g.goods_id = e.goods_id
+
+		where shop_order_id = #{shopOrderId}
+	</select>
+</mapper>

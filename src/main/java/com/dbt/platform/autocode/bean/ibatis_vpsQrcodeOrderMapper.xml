@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.autocode.dao.IVpsQrcodeOrderDao">
+
+	<resultMap type="com.dbt.platform.autocode.bean.VpsQrcodeOrder" id="baseResultMap">
+		<result property="orderKey" column="order_key"/>
+  		<result property="companyKey" column="company_key"/>
+  		<result property="orderNo" column="order_no"/>
+  		<result property="clientOrderNo" column="client_order_no"/>
+  		<result property="orderName" column="order_name"/>
+  		<result property="skuKey" column="sku_key"/>
+  		<result property="qrcodeManufacture" column="qrcode_manufacture"/>
+  		<result property="brewery" column="brewery"/>
+  		<result property="qrcodeFormat" column="qrcode_format"/>
+		<result property="qrcodeType" column="qrcode_type"/>
+  		<result property="fileFormat" column="file_format"/>
+  		<result property="channelCount" column="channel_count"/>
+  		<result property="packagePassword" column="package_password"/>
+  		<result property="isWanBatch" column="is_wan_batch"/>
+  		<result property="orderStatus" column="order_status"/>
+  		<result property="userPhone" column="user_phone"/>
+  		<result property="importFlag" column="import_flag"/>
+  		<result property="importTime" column="import_time"/>
+  		<result property="imageUrl" column="image_Url"/>
+  		<result property="orderQrcodeCount" column="order_Qrcode_Count"/>	
+  		<result property="orderTime" column="order_time"/>	
+  		<result property="qrcodeFactoryId" column="QRCODE_FACTORY_ID"/>
+  		<result property="qrcodeFactoryName" column="QRCODE_FACTORY_NAME"/>
+  		<result property="qrcodeProductLineId" column="QRCODE_PRODUCT_LINE_ID"/>
+  		<result property="qrcodeProductLineName" column="QRCODE_PRODUCT_LINE_NAME"/>
+  		<result property="qrcodeWorkGroup" column="QRCODE_WORK_GROUP"/>
+  		<result property="qrcodeMachineId" column="QRCODE_MACHINE_ID"/>
+  		<result property="qrcodePercent" column="qrcode_percent"/>
+  		<result property="prizeDesc" column="prize_desc"/>
+  		<result property="noPrizeDesc" column="no_prize_desc"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createUser" column="create_user"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateUser" column="update_user"/>
+  		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<resultMap id="allQrcodeOrderResultMap" type="com.dbt.platform.autocode.bean.VpsQrcodeOrder" extends="baseResultMap">
+       <association property="batchInfoList" column="order_key" 
+                select="com.dbt.platform.activity.dao.IVcodeQrcodeBatchInfoDao.queryVcodeQrcodeBatchInfoByOrderKey"></association>
+    </resultMap>
+
+	<resultMap id="allQrcodeOrderAndPrefixResultMap" type="com.dbt.platform.autocode.bean.VpsQrcodeOrder" extends="baseResultMap">
+		<association property="batchInfoList" column="order_key"
+					 select="com.dbt.platform.activity.dao.IVcodeQrcodeBatchInfoDao.queryVcodeQrcodeBatchInfoAndPrefixByOrderKey"></association>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.autocode.bean.VpsQrcodeOrder" >
+		INSERT INTO vps_qrcode_order_info(
+		 	 order_key, 
+		 	 company_key, 
+  			 order_no,
+  			 client_order_no,
+  			 order_name,
+  			 sku_key,
+  			 qrcode_manufacture,
+  			 brewery,
+  			 qrcode_format,
+			 qrcode_type,
+  			 file_format,
+  			 channel_count,
+  			 package_password,
+  			 is_wan_batch,
+  			 user_phone,
+  			 IMAGE_URL,
+  			 order_Qrcode_Count,
+  			 order_time,
+  			 QRCODE_FACTORY_ID,
+  			 QRCODE_FACTORY_NAME,
+  			 QRCODE_PRODUCT_LINE_ID,
+  			 QRCODE_PRODUCT_LINE_NAME,
+  			 QRCODE_WORK_GROUP,
+  			 QRCODE_MACHINE_ID,
+  			 qrcode_percent,
+  			 prize_desc,
+  			 no_prize_desc,
+  			 delete_flag,
+  			 create_user,
+  			 create_time,
+  			 update_user,
+			 update_time
+		)
+		VALUES(
+		    #{orderKey},
+		    #{companyKey},
+  			#{orderNo},
+  			#{clientOrderNo},
+  			#{orderName},
+  			#{skuKey},
+  			#{qrcodeManufacture},
+			#{brewery},
+  			#{qrcodeFormat},
+			#{qrcodeType},
+  			#{fileFormat},
+     		#{channelCount},
+  			#{packagePassword},
+  			#{isWanBatch},
+  			#{userPhone},
+  			#{imageUrl},
+  			#{orderQrcodeCount},
+  			#{orderTime},
+  			#{qrcodeFactoryId},
+  			#{qrcodeFactoryName},
+  			#{qrcodeProductLineId},
+  			#{qrcodeProductLineName},
+  			#{qrcodeWorkGroup},
+  			#{qrcodeMachineId},
+  			#{qrcodePercent},
+  			#{prizeDesc},
+  			#{noPrizeDesc},
+  			#{deleteFlag},
+  			#{createUser},
+  			#{createTime},
+  			#{updateUser},
+  			#{updateTime}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.autocode.bean.VpsQrcodeOrder">
+		update vps_qrcode_order_info 
+		<set>
+			 order_name = #{orderName},
+			 sku_key = #{skuKey},
+  			 qrcode_manufacture = #{qrcodeManufacture},
+  			 brewery = #{brewery},
+  			 qrcode_format = #{qrcodeFormat},
+			 qrcode_type = #{qrcodeType},
+  			 file_format = #{fileFormat},
+  			 channel_count = #{channelCount},
+  			 package_password = #{packagePassword},
+  			 is_wan_batch = #{isWanBatch},
+  			 order_status = #{orderStatus},
+  			 user_phone = #{userPhone},
+  			 order_Qrcode_Count=#{orderQrcodeCount},
+  			 order_time = #{orderTime},
+  			 image_Url = #{imageUrl},
+  			 qrcode_percent = #{qrcodePercent},
+  			 prize_desc = #{prizeDesc},
+  			 no_prize_desc = #{noPrizeDesc},
+  			 update_user = #{updateUser},
+			 update_time = #{updateTime}
+		</set>
+		 where order_key=#{orderKey}
+	</update>
+	
+	<!-- 更新码源订单状态 -->
+	<update id="updateOrderStatus" parameterType="Map">
+		update vps_qrcode_order_info 
+		<set>
+			update_time = NOW(),
+			order_status = #{orderStatus}
+		</set>
+		 where order_key=#{orderKey}
+	</update>
+	
+	<!-- 更新码源回传状态 -->
+	<update id="updateOrderImportFlag" parameterType="Map">
+		update vps_qrcode_order_info 
+		<set>
+			import_flag = #{importFlag},
+			import_time = NOW(),
+			update_time = NOW(),
+			update_user = #{optUserKey}
+				
+		</set>
+		 where order_key=#{orderKey}
+	</update>
+	
+	<!-- 码源订单列表 -->
+	<select id="queryForLst" parameterType="Map" resultMap="allQrcodeOrderResultMap">
+		select
+		 	qr.*,
+		 	sku.sku_name skuName,
+		 	case WHEN qr.IMPORT_FLAG = '1' then '6' else qr.ORDER_STATUS end orderAndImportStatus
+		from 
+		 	vps_qrcode_order_info qr
+		left join vps_sku_info sku on qr.sku_key = sku.sku_key
+		where 
+		    qr.delete_flag = '0'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and qr.company_Key like #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and qr.order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and qr.client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.orderName != null and queryBean.orderName != ''">
+            and qr.order_name like '%${queryBean.orderName}%'
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+            and qr.sku_key = #{queryBean.skuKey}
+        </if>
+        <if test="queryBean.qrcodeManufacture != null and queryBean.qrcodeManufacture != ''">
+            and qr.qrcode_manufacture = #{queryBean.qrcodeManufacture}
+        </if>
+        <if test="queryBean.brewery != null and queryBean.brewery != ''">
+            and qr.brewery = #{queryBean.brewery}
+        </if>
+        <if test="queryBean.orderStatus != null and queryBean.orderStatus != ''">
+            and qr.order_status = #{queryBean.orderStatus}
+        </if>
+        <if test="queryBean.importFlag != null and queryBean.importFlag != ''">
+            and qr.import_flag = #{queryBean.importFlag}
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(qr.create_time) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(qr.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'qr.create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, qr.CREATE_TIME DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY qr.CREATE_TIME DESC</otherwise>
+        </choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<!-- 用户列表count -->
+	<select id="queryForCount" parameterType="Map" resultType="Integer">
+		select
+		 	count(1)
+		from 
+		 	vps_qrcode_order_info  
+        where 
+            delete_flag = '0'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and company_Key like #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.orderName != null and queryBean.orderName != ''">
+            and order_name like '%${queryBean.orderName}%'
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+            and sku_key = #{queryBean.skuKey}
+        </if>
+        <if test="queryBean.qrcodeManufacture != null and queryBean.qrcodeManufacture != ''">
+            and qrcode_manufacture = #{queryBean.qrcodeManufacture}
+        </if>
+        <if test="queryBean.brewery != null and queryBean.brewery != ''">
+            and brewery = #{queryBean.brewery}
+        </if>
+        <if test="queryBean.orderStatus != null and queryBean.orderStatus != ''">
+            and order_status = #{queryBean.orderStatus}
+        </if>
+        <if test="queryBean.importFlag != null and queryBean.importFlag != ''">
+            and import_flag = #{queryBean.importFlag}
+        </if>
+         <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(create_time) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+	</select>
+	
+	<!-- 查询订单List -->
+	<select id="queryByList" parameterType="Map" resultMap="allQrcodeOrderResultMap">
+		select
+		 	*	
+		from 
+		 	vps_qrcode_order_info 
+		  where delete_flag = '0'
+		  <if test="orderStatus != null and orderStatus != ''">
+		  	and order_status = #{orderStatus}
+		  </if>
+	</select>
+	
+	<delete id="deleteById" parameterType="String">
+		delete from vps_qrcode_order_info where order_key=#{orderKey}
+	</delete>
+	
+	<select id="findById" parameterType="String" resultMap="allQrcodeOrderResultMap">
+		select
+		 	*	
+		from 
+		 	vps_qrcode_order_info 
+		  where order_key = #{orderKey}
+		  limit 1
+	</select>
+	
+<!-- 	依据码源订单编号获取记录 -->
+	<select id="findByOrderNo" parameterType="String" resultMap="allQrcodeOrderResultMap">
+		select
+		 	o.*,
+		 	s.sku_name as 'skuName'
+		from 
+		 	vps_qrcode_order_info o
+		left join vps_sku_info s on s.sku_key = o.sku_key  	 
+		  where o.order_no = #{orderNo}
+	</select>
+    
+<!--     获取最大编号 -->
+    <select id="findMaxOrderNo" resultType="int" parameterType="Map">
+        SELECT 
+            IFNULL(MAX(CAST(substr(order_no, ${startIndex}) AS SIGNED)),0) AS num 
+        FROM 
+            vps_qrcode_order_info
+        where
+            delete_flag = '0'
+    </select>
+    
+<!--     获取未生成或生成失败的2分钟前自动下单的码源订单 -->
+    <select id="queryFailedOrderForAuto" resultMap="baseResultMap">
+        select 
+            * 
+        from 
+            vps_qrcode_order_info
+        where
+            delete_flag = '0'
+            and create_user = 'AUTO'
+            and DATE_SUB(NOW(), INTERVAL 2 MINUTE) > create_time 
+            and order_status in ('0', '2')
+        order by create_time
+    </select>
+<!--     自动码源订单相关批次绑定活动并激活 -->
+    <update id="updateAutoQrcodeQrderBatchBindActivity">
+        update 
+            vps_vcode_qrcode_batch_info b , vps_qrcode_order_info o , vps_vcode_activity_cog a , `vps_vcode_activity_cog_sku_relation` r
+        set 
+            b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY, b.ADJUST_USER = 'admin', b.status = '4', b.ADJUST_TIME = now(), b.start_date = curdate(), b.end_date = date_add(curdate(), INTERVAL 540 DAY), b.contract_year = year(curdate())
+        where 
+            b.order_key = o.order_key and o.sku_key = r.`SKU_KEY` and a.`VCODE_ACTIVITY_KEY` = r.`VCODE_ACTIVITY_KEY` 
+            and o.delete_flag = '0' and b.delete_flag = '0' and b.status = '3' and a.`END_DATE` >= curdate() and o.order_qrcode_count >= 100 and o.`CREATE_USER` = 'AUTO' and o.`CREATE_TIME` > '2023-09-01';
+    </update>
+	<select id="queryExportDataForLst" parameterType="Map" resultMap="allQrcodeOrderAndPrefixResultMap">
+		select
+		qr.*,
+		sku.sku_name skuName,
+		case WHEN qr.IMPORT_FLAG = '1' then '6' else qr.ORDER_STATUS end orderAndImportStatus
+		from
+		vps_qrcode_order_info qr
+		left join vps_sku_info sku on qr.sku_key = sku.sku_key
+		where
+		qr.delete_flag = '0'
+		<if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+			and qr.company_Key like #{queryBean.companyKey}
+		</if>
+		<if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+			and qr.order_no like '%${queryBean.orderNo}%'
+		</if>
+		<if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+			and qr.client_order_no like '%${queryBean.clientOrderNo}%'
+		</if>
+		<if test="queryBean.orderName != null and queryBean.orderName != ''">
+			and qr.order_name like '%${queryBean.orderName}%'
+		</if>
+		<if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+			and qr.sku_key = #{queryBean.skuKey}
+		</if>
+		<if test="queryBean.qrcodeManufacture != null and queryBean.qrcodeManufacture != ''">
+			and qr.qrcode_manufacture = #{queryBean.qrcodeManufacture}
+		</if>
+		<if test="queryBean.brewery != null and queryBean.brewery != ''">
+			and qr.brewery = #{queryBean.brewery}
+		</if>
+		<if test="queryBean.orderStatus != null and queryBean.orderStatus != ''">
+			and qr.order_status = #{queryBean.orderStatus}
+		</if>
+		<if test="queryBean.importFlag != null and queryBean.importFlag != ''">
+			and qr.import_flag = #{queryBean.importFlag}
+		</if>
+		<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			AND date(qr.create_time) >= #{queryBean.startDate}
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND date(qr.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+		</if>
+		ORDER BY qr.CREATE_TIME DESC
+
+	</select>
+    
+</mapper>

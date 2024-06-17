@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.appuser.dao.IVpsConsumerUserInfoDao">
+
+	<resultMap type="com.dbt.platform.appuser.bean.VpsConsumerUserInfo" id="vpsConsumerUserInfoResultMap">
+		<result property="userKey" column="user_key"/>
+  		<result property="nickName" column="nick_name"/>
+  		<result property="gender" column="gender"/>
+  		<result property="phoneNumber" column="phone_number"/>
+  		<result property="headImgUrl" column="headimg_url"/>
+  		<result property="province" column="province"/>
+  		<result property="city" column="city"/>
+  		<result property="county" column="county"/>
+  		<result property="userType" column="user_type"/>
+  		<result property="userStatus" column="user_status"/>
+  		<result property="isLuckyUser" column="is_lucky_user"/>
+  		<result property="registerTime" column="register_time"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateTime" column="update_time"/>
+		<result property="mnRealName" column="mn_real_name"/>
+		<result property="idCard" column="id_card"/>
+		<result property="userRole" column="user_role"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         user_key, 
+  			 nick_name,
+  			 gender,
+  			 phone_number,
+  			 headimg_url,
+  			 province,
+  			 city,
+  			 county,
+  			 user_type,
+  			 user_status,
+  			 is_lucky_user,
+  			 register_time,
+  			 delete_flag,
+  			 create_time,
+			 update_time 
+  	</sql>
+	<insert id="create" parameterType="com.dbt.platform.appuser.bean.VpsConsumerUserInfo" 
+		useGeneratedKeys="true"  keyProperty="userKey">
+		INSERT INTO vps_consumer_user_info(
+		 user_key, 
+  			nick_name,
+  			gender,
+  			headimg_url,
+  			province,
+  			city,
+  			county,
+  			user_type,
+  			register_time,
+  			delete_flag,
+  			create_time,
+  			 update_time 
+		)
+		VALUES(
+		    #{userKey},
+			
+  			#{nickName},
+			
+  			#{gender},
+			
+			#{headImgUrl},
+			
+  			#{province},
+			
+  			#{city},
+			
+  			#{county},
+			
+  			#{userType},
+			
+  			#{registerTime},
+			
+  			#{deleteFlag},
+			
+  			#{createTime},
+			
+  			#{updateTime}
+		)
+	</insert>
+	
+	<!-- 修改用户信息 -->
+	<update id="update" parameterType="com.dbt.platform.appuser.bean.VpsConsumerUserInfo">
+		update vps_consumer_user_info 
+		<set>
+				update_time = NOW(),
+				<if test="nickName != null and nickName!=''">
+					nick_name = #{nickName},
+				</if>
+				<if test="gender != null and gender!=''">
+					gender = #{gender},
+				</if>
+				<if test="phoneNumber != null and phoneNumber!=''">
+					phone_number = #{phoneNumber},
+				</if>
+				<if test="headImgUrl != null and headImgUrl !=''">
+					headimg_url = #{headImgUrl},
+				</if>
+				<if test="province != null and province!=''">
+					province = #{province},
+				</if>
+				<if test="city != null and city!=''">
+					city = #{city},
+				</if>
+				<if test="county != null and county!=''">
+					county = #{county},
+				</if>
+				<if test="userType != null and userType!=''">
+					user_type = #{userType},
+				</if>
+				<if test="userStatus >= 0">
+					user_status = #{userStatus},
+				</if>
+				<if test="registerTime!=null and registerTime!=''">
+					register_time=#{registerTime},
+				</if>
+				<if test="isLuckyUser >= 0">
+					is_lucky_user = #{isLuckyUser}
+				</if>
+		</set>
+		 where user_key=#{userKey}
+	</update>
+	
+	<!-- 修改幸運用戶 -->
+	<update id="updateIsLuckyUser" parameterType="Map">
+		update vps_consumer_user_info set
+			update_time = NOW(),
+			is_lucky_user = #{isLuckyUser},
+			user_status = '0'
+		where user_key=#{userKey}
+	</update>
+    <update id="updateConsumerUserStatus" parameterType="java.util.Set">
+			update vps_consumer_user_info set
+			USER_STATUS ='0'
+		   where user_key in
+			<foreach collection="set" item="user_key" open="(" close=")" separator=",">
+				#{user_key}
+			</foreach>
+	</update>
+
+    <!-- 用户列表List -->
+	<select id="findUserInfoList" parameterType="Map" resultMap="vpsConsumerUserInfoResultMap">
+		select
+		 	c.*,
+		 	t.openid
+		from 
+		 	vps_consumer_user_info c, vps_consumer_thirdaccount_info t
+		  where c.user_key = t.user_key
+		  <if test="queryBean.isLuckyUser != null and queryBean.isLuckyUser != ''">
+               AND c.is_lucky_user = #{queryBean.isLuckyUser} 
+          </if>
+		  <if test="queryBean.userKey != null and queryBean.userKey != ''">
+               AND (t.OPENID = #{queryBean.userKey} OR c.USER_KEY = #{queryBean.userKey})
+          </if>
+          <if test="queryBean.nickName != null and queryBean.nickName != ''">
+               AND c.NICK_NAME like '%${queryBean.nickName}%' 
+          </if>
+          <if test="queryBean.phoneNumber != null and queryBean.phoneNumber != ''">
+               AND c.PHONE_NUMBER like '%${queryBean.phoneNumber}%' 
+          </if>
+          <if test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </if>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<!-- 用户列表count -->
+	<select id="findUserInfoCount" parameterType="Map" resultType="Integer">
+		select
+		 	count(1)
+		from  
+            vps_consumer_user_info c
+          where 1=1
+          <if test="queryBean.userKey != null and queryBean.userKey != ''">
+               AND (c.USER_KEY = #{queryBean.userKey} 
+               		OR c.USER_KEY = (select t.user_key from vps_consumer_thirdaccount_info t where t.OPENID = #{queryBean.userKey}))
+          </if>
+          <if test="queryBean.isLuckyUser != null and queryBean.isLuckyUser != ''">
+               AND c.is_lucky_user = #{queryBean.isLuckyUser} 
+          </if>
+          <if test="queryBean.nickName != null and queryBean.nickName != ''">
+               AND c.NICK_NAME like '%${queryBean.nickName}%' 
+          </if>
+          <if test="queryBean.phoneNumber != null and queryBean.phoneNumber != ''">
+               AND c.PHONE_NUMBER like '%${queryBean.phoneNumber}%' 
+          </if>
+	</select>
+	
+	<!-- 根据userkey查询用户信息 -->
+	<select id="queryUserInfoByUserkey" parameterType="String" resultMap="vpsConsumerUserInfoResultMap">
+		select
+		 	<include refid="Base_Column_List"/>	
+		from 
+		 	vps_consumer_user_info 
+		  where user_key=#{userKey}
+	</select>
+	
+	<!-- 根据openid查询用户信息 -->
+	<select id="queryUserInfoByOpenid" parameterType="String" resultMap="vpsConsumerUserInfoResultMap">
+		select 
+			 u.user_key, 
+  			 u.nick_name,
+  			 u.gender,
+  			 u.phone_number,
+  			 u.headimg_url,
+  			 u.province,
+  			 u.city,
+  			 u.county,
+  			 u.user_type,
+  			 u.user_status,
+  			 u.is_lucky_user,
+  			 u.register_time,
+  			 u.delete_flag,
+  			 u.create_time,
+			 u.update_time  
+		from vps_consumer_user_info u
+		inner join vps_consumer_thirdaccount_info t on t.user_key = u.user_key
+		where t.openid=#{openid} 
+		limit 1 
+	</select>
+
+	<select id="findById" parameterType="String" resultMap="vpsConsumerUserInfoResultMap">
+		select
+			u.user_key,
+			u.nick_name,
+			u.gender,
+			u.phone_number,
+			u.headimg_url,
+			u.province,
+			u.city,
+			u.county,
+			u.user_type,
+			u.user_status,
+			u.is_lucky_user,
+			u.register_time,
+			u.delete_flag,
+			u.create_time,
+			u.update_time
+		from vps_consumer_user_info u
+		where u.user_key=#{userkey}
+			limit 1
+	</select>
+	
+	<select id="queryByPhoneNumAndRole" parameterType="Map"  resultMap="vpsConsumerUserInfoResultMap">
+	   select 
+	       u.* 
+	   from 
+	       vps_consumer_user_info u, vps_consumer_user_role r , vps_consumer_account_info a
+       where 
+            u.`USER_KEY` = r.`USER_KEY` and u.user_key = a.user_key
+            and u.`PHONE_NUMBER` = #{phoneNumber} 
+            and r.`USER_ROLE` = #{userRole}
+       order by a.ACCOUNT_MONEY desc, u.create_time
+       limit 1
+	</select>
+
+	<select id="queryUserInfoByUserkeys" resultType="com.dbt.platform.appuser.bean.VpsConsumerUserInfo" resultMap="vpsConsumerUserInfoResultMap">
+		select u.user_key, u.mn_real_name, aes_decrypt(unhex(id_card),#{aesEncryptKey}) id_card, r.user_role
+		from vps_consumer_user_info u left join vps_consumer_user_role r on u.user_key = r.user_key
+		where u.user_key in
+		<foreach collection="userKeys" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+</mapper>

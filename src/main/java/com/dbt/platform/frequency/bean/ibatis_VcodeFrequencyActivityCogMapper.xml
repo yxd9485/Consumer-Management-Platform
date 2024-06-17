@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.frequency.dao.FrequencyActivityDao">
+
+    <resultMap type="com.dbt.platform.frequency.bean.VpsVcodeActivityFrequencyCog" id="baseResult">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="companyKey" column="COMPANY_KEY"/>
+        <result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+        <result property="frequencyNo" column="FREQUENCY_NO"/>
+        <result property="frequencyName" column="FREQUENCY_NAME"/>
+        <result property="validTimeRange" column="VALID_TIME_RANGE"/>
+        <result property="minValidTime" column="MIN_VALID_TIME"/>
+        <result property="maxValidTime" column="MAX_VALID_TIME"/>
+        <result property="restrictTimeType" column="RESTRICT_TIME_TYPE"/>
+        <result property="restrictUserCount" column="RESTRICT_USER_COUNT"/>
+        <result property="freItems" column="FRE_ITEMS"/>
+        <result property="areaRange" column="AREA_RANGE"/>
+        <result property="status" column="STATUS"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_USER"/>
+        <result property="createUser" column="CREATE_TIME"/>
+        <result property="updateTime" column="UPDATE_USER"/>
+        <result property="updateUser" column="UPDATE_TIME"/>
+    </resultMap>
+
+    <select id="queryForList" parameterType="map" resultMap="baseResult">
+        SELECT * FROM (
+        SELECT
+        f.*,
+        CASE
+        WHEN NOW() >= f.MIN_VALID_TIME AND NOW() <![CDATA[<=]]> f.MAX_VALID_TIME THEN '1'
+        WHEN NOW() > f.MAX_VALID_TIME THEN '2'
+        ELSE '0'
+        END AS isBegin
+        FROM
+        vps_vcode_activity_frequency_cog f
+        WHERE
+        f.DELETE_FLAG = '0'
+        <if test="queryBean.frequencyNo != null and queryBean.frequencyNo != ''">
+            and f.FREQUENCY_NO like '%${queryBean.frequencyNo}%'
+        </if>
+        <if test="queryBean.frequencyName != null and queryBean.frequencyName != ''">
+            and f.FREQUENCY_NAME like '%${queryBean.frequencyName}%'
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and f.status = #{queryBean.status}
+        </if>
+        ) a
+        WHERE 1=1
+            <if test="queryBean.isBegin != null and queryBean.isBegin != ''">
+                and a.isBegin = #{queryBean.isBegin}
+            </if>
+        ORDER BY
+        a.isBegin DESC, a.CREATE_TIME DESC
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        SELECT count(*) FROM (
+        SELECT
+        f.*,
+        CASE
+        WHEN NOW() >= f.MIN_VALID_TIME AND NOW() <![CDATA[<=]]> f.MAX_VALID_TIME THEN '1'
+        WHEN NOW() > f.MAX_VALID_TIME THEN '2'
+        ELSE '0'
+        END AS isBegin
+        FROM
+        vps_vcode_activity_frequency_cog f
+        WHERE
+        f.DELETE_FLAG = '0'
+        <if test="queryBean.frequencyNo != null and queryBean.frequencyNo != ''">
+            and f.FREQUENCY_NO like '%${queryBean.frequencyNo}%'
+        </if>
+        <if test="queryBean.frequencyName != null and queryBean.frequencyName != ''">
+            and f.FREQUENCY_NAME like '%${queryBean.frequencyName}%'
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and f.status = #{queryBean.status}
+        </if>
+        ) a
+        WHERE 1=1
+        <if test="queryBean.isBegin != null and queryBean.isBegin != ''">
+            and a.isBegin = #{queryBean.isBegin}
+        </if>
+    </select>
+
+    <insert id="create" parameterType="com.dbt.platform.frequency.bean.VpsVcodeActivityFrequencyCog">
+        insert into vps_vcode_activity_frequency_cog(INFO_KEY,
+                                                     COMPANY_KEY,
+                                                     VCODE_ACTIVITY_KEY,
+                                                     FREQUENCY_NO,
+                                                     FREQUENCY_NAME,
+                                                     VALID_TIME_RANGE,
+                                                     MIN_VALID_TIME,
+                                                     MAX_VALID_TIME,
+                                                     RESTRICT_TIME_TYPE,
+                                                     RESTRICT_USER_COUNT,
+                                                     FRE_ITEMS,
+                                                     AREA_RANGE,
+                                                     STATUS,
+                                                     DELETE_FLAG,
+                                                     CREATE_USER,
+                                                     CREATE_TIME,
+                                                     UPDATE_USER,
+                                                     UPDATE_TIME)
+        values (#{infoKey},
+                #{companyKey},
+                #{vcodeActivityKey},
+                #{frequencyNo},
+                #{frequencyName},
+                #{validTimeRange},
+                #{minValidTime},
+                #{maxValidTime},
+                #{restrictTimeType},
+                #{restrictUserCount},
+                #{freItems},
+                #{areaRange},
+                #{status},
+                #{deleteFlag},
+                #{createUser},
+                #{createTime},
+                #{updateUser},
+                #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.frequency.bean.VpsVcodeActivityFrequencyCog">
+        UPDATE vps_vcode_activity_frequency_cog SET
+        <if test="vcodeActivityKey != null and vcodeActivityKey != ''">
+            VCODE_ACTIVITY_KEY = #{vcodeActivityKey},
+        </if>
+        FREQUENCY_NAME = #{frequencyName},
+        VALID_TIME_RANGE = #{validTimeRange},
+        MIN_VALID_TIME = #{minValidTime},
+        MAX_VALID_TIME = #{maxValidTime},
+        RESTRICT_TIME_TYPE = #{restrictTimeType},
+        RESTRICT_USER_COUNT = #{restrictUserCount},
+        FRE_ITEMS = #{freItems},
+        AREA_RANGE = #{areaRange},
+        STATUS = #{status},
+        UPDATE_TIME = #{updateTime},
+        UPDATE_USER = #{updateUser}
+        WHERE INFO_KEY = #{infoKey}
+    </update>
+    
+    <select id="findById" parameterType="string" resultMap="baseResult">
+        select *
+        from vps_vcode_activity_frequency_cog
+        where INFO_KEY = #{infoKey}
+    </select>
+    
+<!--     校验扫码活动指定时间内是否参与有效的频次活动 -->
+    <select id="validCogByVcodeActivityKey" parameterType="Map" resultMap="baseResult">
+        select 
+            *
+        from 
+            vps_vcode_activity_frequency_cog
+        where DELETE_FLAG != '1' and status = '1'
+            <if test="infoKey != null and infoKey != ''">
+	            and info_key != #{infoKey}
+            </if>
+            and VCODE_ACTIVITY_KEY like concat('%',#{vcodeActivityKey}, '%')
+            and #{beginDate} <![CDATA[<=]]> MAX_VALID_TIME 
+            and #{endDate} >= MIN_VALID_TIME
+    </select>
+
+    <delete id="deleteById" parameterType="Map">
+        UPDATE vps_vcode_activity_frequency_cog SET
+                                                     DELETE_FLAG = '1',
+                                                     UPDATE_TIME = NOW(),
+                                                     UPDATE_USER = #{updateUser}
+        WHERE INFO_KEY = #{infoKey}
+    </delete>
+</mapper>

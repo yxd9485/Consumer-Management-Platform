@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityVpointsCogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityVpointsCog" id="baseResultMap">
+		<result property="vpointsCogKey" column="vpoints_cog_key"/>
+		<result property="vcodeActivityKey" column="vcode_activity_key"/>
+		<result property="rebateRuleKey" column="REBATE_RULE_KEY"/>
+        <result property="prizeType" column="PRIZE_TYPE"/>
+        <result property="isWaitActivation" column="IS_WAIT_ACTIVATION"/>
+		<result property="scanType" column="SCAN_TYPE"/>
+		<result property="randomType" column="RANDOM_TYPE"/>
+		<result property="minMoney" column="MIN_MONEY"/>
+		<result property="maxMoney" column="MAX_MONEY"/>
+		<result property="minVpoints" column="MIN_VPOINTS"/>
+		<result property="maxVpoints" column="MAX_VPOINTS"/>
+		<result property="prizePercent" column="PRIZE_PERCENT"/>
+		<result property="prizePercentWarn" column="PRIZE_PERCENT_WARN"/>
+        <result property="cardNo" column="card_no"/>
+        <result property="cardName" column="card_name"/>
+		<result property="cogAmounts" column="cog_amounts"/>
+		<result property="restAmounts" column="rest_amounts"/>
+		<result property="codeContentUrl" column="code_content_url"/>
+		<result property="rangeVal" column="range_val"/>
+		<result property="scanNum" column="SCAN_NUM"/>
+		<result property="prizePayMoney" column="PRIZE_PAY_MONEY"/>
+		<result property="allowanceType" column="ALLOWANCE_TYPE"/>
+		<result property="allowanceMoney" column="ALLOWANCE_MONEY"/>
+		<result property="prizeDiscount" column="PRIZE_DISCOUNT"/>
+		<result property="sequenceNum" column="sequence_num"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+		<result property="isScanqrcodeWaitActivation" column="IS_SCANQRCODE_WAIT_ACTIVATION"/>
+		<result property="waitActivationPrizeKey" column="WAIT_ACTIVATION_PRIZE_KEY"/>
+		<result property="waitActivationMinMoney" column="WAIT_ACTIVATION_MIN_MONEY"/>
+		<result property="waitActivationMaxMoney" column="WAIT_ACTIVATION_MAX_MONEY"/>
+	</resultMap>
+
+    <!-- 批量插入 -->
+	<insert id="batchWrite" parameterType="Map">
+		INSERT INTO vps_vcode_activity_vpoints_cog (
+			VPOINTS_COG_KEY,
+			VCODE_ACTIVITY_KEY,
+			REBATE_RULE_KEY,
+			PRIZE_TYPE,
+            IS_WAIT_ACTIVATION,
+			SCAN_TYPE,
+			RANDOM_TYPE,
+			MIN_MONEY,
+			MAX_MONEY,
+			MIN_VPOINTS,
+			MAX_VPOINTS,
+			PRIZE_PERCENT,
+			PRIZE_PERCENT_WARN,
+            CARD_NO,
+            CARD_NAME,
+			COG_AMOUNTS,
+			REST_AMOUNTS,
+			RANGE_VAL,
+			SCAN_NUM,
+			CODE_CONTENT_URL,
+			PRIZE_PAY_MONEY,
+			ALLOWANCE_TYPE,
+			ALLOWANCE_MONEY,
+			PRIZE_DISCOUNT,
+			SEQUENCE_NUM,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER,
+            IS_SCANQRCODE_WAIT_ACTIVATION,
+            WAIT_ACTIVATION_PRIZE_KEY,
+            WAIT_ACTIVATION_MIN_MONEY,
+            WAIT_ACTIVATION_MAX_MONEY
+		) VALUES
+		<foreach collection="vpointsCogList" item="vpointsCog" separator=",">
+		(
+			#{vpointsCog.vpointsCogKey},
+			#{vpointsCog.vcodeActivityKey},
+			#{vpointsCog.rebateRuleKey},
+			#{vpointsCog.prizeType},
+			#{vpointsCog.isWaitActivation},
+			#{vpointsCog.scanType},
+			#{vpointsCog.randomType},
+			#{vpointsCog.minMoney},
+			#{vpointsCog.maxMoney},
+			#{vpointsCog.minVpoints},
+			#{vpointsCog.maxVpoints},
+			#{vpointsCog.prizePercent},
+			#{vpointsCog.prizePercentWarn},
+            #{vpointsCog.cardNo},
+            #{vpointsCog.cardName},
+			#{vpointsCog.cogAmounts},
+			#{vpointsCog.restAmounts},
+			#{vpointsCog.rangeVal},
+			#{vpointsCog.scanNum},
+			#{vpointsCog.codeContentUrl},
+			#{vpointsCog.prizePayMoney},
+			#{vpointsCog.allowanceType},
+			#{vpointsCog.allowanceMoney},
+			#{vpointsCog.prizeDiscount},
+			#{vpointsCog.sequenceNum},
+			'0',
+			#{vpointsCog.createTime},
+			#{vpointsCog.createUser},
+			#{vpointsCog.updateTime},
+			#{vpointsCog.updateUser},
+			#{vpointsCog.isScanqrcodeWaitActivation},
+			#{vpointsCog.waitActivationPrizeKey},
+			#{vpointsCog.waitActivationMinMoney},
+			#{vpointsCog.waitActivationMaxMoney}
+		)
+		</foreach>
+	</insert>
+
+	<!-- 复制奖项配置 -->
+	<insert id="copyActivityVpointsItem" parameterType="Map">
+		INSERT INTO vps_vcode_activity_vpoints_cog (
+            VPOINTS_COG_KEY,
+            VCODE_ACTIVITY_KEY,
+            REBATE_RULE_KEY,
+            PRIZE_TYPE,
+            SCAN_TYPE,
+            RANDOM_TYPE,
+            MIN_MONEY,
+            MAX_MONEY,
+            MIN_VPOINTS,
+            MAX_VPOINTS,
+            PRIZE_PERCENT,
+            PRIZE_PERCENT_WARN,
+            CARD_NO,
+            CARD_NAME,
+            COG_AMOUNTS,
+            REST_AMOUNTS,
+            RANGE_VAL,
+            SCAN_NUM,
+            CODE_CONTENT_URL,
+            PRIZE_PAY_MONEY,
+            ALLOWANCE_TYPE,
+            ALLOWANCE_MONEY,
+            PRIZE_DISCOUNT,
+            SEQUENCE_NUM,
+            DELETE_FLAG,
+            CREATE_TIME,
+            CREATE_USER,
+            UPDATE_TIME,
+            UPDATE_USER
+		) 
+		SELECT 
+			UUID(),
+			#{vcodeActivityKey},
+			#{newRebateRuleKey},
+			PRIZE_TYPE,
+            SCAN_TYPE,
+            RANDOM_TYPE,
+            MIN_MONEY,
+            MAX_MONEY,
+            MIN_VPOINTS,
+            MAX_VPOINTS,
+            PRIZE_PERCENT,
+            PRIZE_PERCENT_WARN,
+            CARD_NO,
+            CARD_NAME,
+            COG_AMOUNTS,
+            COG_AMOUNTS,
+            RANGE_VAL,
+            SCAN_NUM,
+            CODE_CONTENT_URL,
+            PRIZE_PAY_MONEY,
+            ALLOWANCE_TYPE,
+            ALLOWANCE_MONEY,
+            PRIZE_DISCOUNT,
+            SEQUENCE_NUM,
+            DELETE_FLAG,
+            NOW(),
+            #{optUserKey},
+            NOW(),
+            #{optUserKey}
+		FROM 
+			vps_vcode_activity_vpoints_cog
+		WHERE 
+			REBATE_RULE_KEY = #{copyRebateRuleKey}
+		AND 
+			DELETE_FLAG = '0'
+	</insert>
+	
+	<!-- 根据V码活动key，查询活动积分分布配置 -->
+	<select id="queryVpointsCogByvcodeActivityKey" parameterType="String" resultMap="baseResultMap">
+		select
+			*
+		from 
+			vps_vcode_activity_vpoints_cog  
+		where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+			AND DELETE_FLAG = '0'
+	</select>
+	
+	 <!-- 批量更新活动积分配置剩余数量 -->
+    <update id="updateBathWaitActivityVpointsCog" parameterType="java.util.List">
+        UPDATE 
+            VPS_VCODE_ACTIVITY_VPOINTS_COG 
+        SET 
+            REST_AMOUNTS = 
+                CASE VPOINTS_COG_KEY
+                <foreach collection="list" item="item" index="index" open="" close="" separator="">
+                    WHEN #{item.vpointsCogKey} THEN IF(REST_AMOUNTS > #{item.rangeVal},REST_AMOUNTS - #{item.rangeVal}, 0)
+                </foreach>
+                ELSE REST_AMOUNTS
+                END,
+            UPDATE_TIME = NOW() 
+        WHERE DELETE_FLAG = '0' 
+            AND 
+                VPOINTS_COG_KEY IN 
+                <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                    #{item.vpointsCogKey}
+                </foreach>
+    </update>
+    
+    <!-- 根据活动规则主键停用中奖配置项     -->
+    <update id="removeByrebateRuleKey" parameterType="Map">
+        UPDATE
+            vps_vcode_activity_vpoints_cog
+        SET
+            DELETE_FLAG = '1',
+            UPDATE_TIME = #{updateTime},
+            UPDATE_USER = #{updateUser}
+        WHERE
+            REBATE_RULE_KEY = #{rebateRuleKey}
+            AND DELETE_FLAG = '0'
+    </update>
+    <delete id="deleteByrebateRuleKey" parameterType="Map">
+        delete from vps_vcode_activity_vpoints_cog where REBATE_RULE_KEY in (#{commmonKey},#{specialKey})
+    </delete>
+	
+    <!-- 根据活动规则主键查询相应配置项 -->
+    <select id="queryVpointsCogByrebateRuleKey" parameterType="String" resultMap="baseResultMap">
+        select
+            *
+        from 
+            vps_vcode_activity_vpoints_cog  
+        where REBATE_RULE_KEY = #{rebateRuleKey}
+            AND DELETE_FLAG = '0'
+        ORDER by SCAN_TYPE, SEQUENCE_NUM, PRIZE_TYPE, VCODE_VPOINTS, VCODE_MONEY
+    </select>
+	
+    <!-- 获取活动规则下需要占比预警的奖项 -->
+    <select id="cWarnVpointsCogByRebateRuleKey" parameterType="Map" resultMap="baseResultMap">
+        select
+            *
+        from 
+            vps_vcode_activity_vpoints_cog  
+        where 
+            DELETE_FLAG = '0'
+            and PRIZE_PERCENT_WARN > 0
+            <foreach collection="rebateRuleKeyAry" item="rebateRuleKey" open=" and REBATE_RULE_KEY in (" separator=", " close=")">
+                #{rebateRuleKey}
+            </foreach>
+        ORDER by REBATE_RULE_KEY
+    </select>
+	
+    <!-- 获取占比预警规则奖项部个数 -->
+    <select id="countWarnVpointsCogByRebateRuleKey" parameterType="Map" resultMap="baseResultMap">
+        select
+            v.REBATE_RULE_KEY,
+            v.SCAN_TYPE,
+            sum(v.COG_AMOUNTS) COG_AMOUNTS, 
+            sum(v.REST_AMOUNTS) REST_AMOUNTS,
+            sum(v.RANGE_VAL) RANGE_VAL,
+            r.AREACODE areaCode,
+            r.RULE_TYPE ruleType,
+            r.BEGIN_DATE beginDate,
+            r.END_DATE endDate,
+            r.BEGIN_TIME beginTime,
+            r.END_TIME endTime
+        from  vps_vcode_activity_vpoints_cog v
+        inner join vps_vcode_activity_rebate_rule_cog r on v.REBATE_RULE_KEY = r.REBATE_RULE_KEY
+        where 
+            v.DELETE_FLAG = '0'
+            and IFNULL(v.SCAN_NUM, '') = ''
+            <foreach collection="rebateRuleKeyAry" item="rebateRuleKey" open=" and v.REBATE_RULE_KEY in (" separator=", " close=")">
+                #{rebateRuleKey}
+            </foreach>
+        GROUP BY v.REBATE_RULE_KEY, v.SCAN_TYPE 
+        order by v.REBATE_RULE_KEY, v.SCAN_TYPE
+    </select>
+	
+    <!-- 获取活动规则下需要占比预警的奖项 -->
+    <select id="queryWarnVpointsCogByRebateRuleKey" parameterType="Map" resultMap="baseResultMap">
+        select
+            v.*
+        from 
+            vps_vcode_activity_vpoints_cog v, vps_vcode_activity_rebate_rule_cog r  
+        where 
+            v.REBATE_RULE_KEY = r.REBATE_RULE_KEY
+            and v.DELETE_FLAG = '0' and r.DELETE_FLAG = '0'
+            and IFNULL(v.SCAN_NUM, '') = ''
+            and v.PRIZE_PERCENT_WARN > 0
+            AND (
+                    <!-- 节假日和时间段 -->
+                    (#{nowTime} >= r.BEGIN_DATE AND #{nowTime} <![CDATA[<=]]> r.END_DATE)
+                    <!-- 周几 -->
+                    OR (#{weekSeveral} >= r.BEGIN_DATE AND #{weekSeveral} <![CDATA[<=]]> r.END_DATE)
+                    <!-- 每天 -->
+                    OR RULE_TYPE = '4'
+                ) 
+        ORDER by REBATE_RULE_KEY, SCAN_TYPE 
+    </select>
+    
+<!-- 	获取规则下商城优惠券NO -->
+    <select id="queryCouponNoByRebateRuleKey" resultType="String" parameterType="String">
+        SELECT
+            t.prize_type
+        FROM
+            vps_vcode_activity_vpoints_cog t
+        inner join vpoints_coupon_cog c on t.prize_type = c.coupon_no
+        WHERE
+            t.DELETE_FLAG = 0
+            and t.REBATE_RULE_KEY = #{rebateRuleKey}
+    </select>
+</mapper>

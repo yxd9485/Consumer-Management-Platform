@@ -1,0 +1,49 @@
+@CHARSET "UTF-8";
+
+label {
+	display: inline !important;
+}
+
+.paginate {
+	width: 100%;
+}
+
+.page-limit {
+	height: 22px;
+	line-height: 22px;
+}
+
+.page-limit > input {
+	width: 40px;
+	margin: 0 8px;
+	padding: 0 4px;
+}
+
+.page-pager {
+	height: 22px;
+	line-height: 22px;
+	font-weight: normal !important;
+}
+
+.page-pager > span {
+	margin-left: 1.2em;
+	margin-right: 2px;
+}
+
+.def-disabled {
+	color: #a1a1a1 !important;
+	cursor: default;
+	font-weight: normal;
+}
+
+.def-normal {
+	color: #369;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.def-normal:hover {
+	color: #4d77cc;
+	text-decoration: underline;
+}
+

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatActivityBasicInfoDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatActivityBasicInfo" id="VpsWechatActivityBasicInfoResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="startTime" column="START_TIME"/>
+		<result property="endTime" column="END_TIME"/>
+		<result property="currencyPrice" column="CURRENCY_PRICE"/>
+		<result property="attentionVpoints" column="ATTENTION_VPOINTS"/>
+		<result property="finishUserInfoVpoints" column="FINISH_USER_INFO_VPOINTS"/>
+		<result property="inviteFriendsLimit" column="INVITE_FRIENDS_LIMIT"/>
+		<result property="inviteFriendsVpoints" column="INVITE_FRIENDS_VPOINTS"/>
+		<result property="activityPayVpoints" column="ACTIVITY_PAY_VPOINTS"/>
+		<result property="activityWeekPayVpoints" column="ACTIVITY_WEEK_PAY_VPOINTS"/>
+		<result property="activityMaxnum" column="ACTIVITY_MAXNUM"/>
+		<result property="stepLimit" column="STEP_LIMT"/>
+		<result property="weeksReachMoney" column="WEEKS_REACH_MONEY"/>
+		<result property="isExtractLimit" column="IS_EXTRACT_LIMIT"/>
+		<result property="extractLimit" column="EXTRACT_LIMIT"/>
+        <result property="activityMagnification" column="ACTIVITY_MAGNIFICATION"/>
+        <result property="bonusPool" column="BONUS_POOL"/>       
+        <result property="phoneNum" column="PHONE_NUM"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			DATE_FORMAT(START_TIME,'%Y-%m-%d') as START_TIME,
+			DATE_FORMAT(END_TIME,'%Y-%m-%d') as END_TIME,
+			CURRENCY_PRICE,
+			ATTENTION_VPOINTS,
+			FINISH_USER_INFO_VPOINTS,
+			INVITE_FRIENDS_VPOINTS,
+			INVITE_FRIENDS_LIMIT,
+			ACTIVITY_PAY_VPOINTS,
+			ACTIVITY_WEEK_PAY_VPOINTS,
+			ACTIVITY_MAXNUM,
+			STEP_LIMT,
+			WEEKS_REACH_MONEY,
+			IS_EXTRACT_LIMIT,
+			EXTRACT_LIMIT,
+			ACTIVITY_MAGNIFICATION,
+			BONUS_POOL,
+			PHONE_NUM,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+	<!-- 查询微信活动配置信息（最新的一条记录） -->
+	<select id="findWechatActivityBasicInfo" resultMap="VpsWechatActivityBasicInfoResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM 
+			VPS_WECHAT_ACTIVITY_BASIC_INFO
+		WHERE 
+			DELETE_FLAG = '0'
+		ORDER BY 
+			CREATE_TIME DESC
+		LIMIT 1
+	</select>
+	
+	<insert id="savePopssActivityBaseInfo" parameterType="com.dbt.platform.wechatmovement.bean.VpsWechatActivityBasicInfo">
+		insert into vps_wechat_activity_basic_info(
+			info_key,
+			start_time,
+			end_time,
+			currency_price,
+			attention_vpoints,
+			finish_user_info_vpoints,
+			invite_friends_vpoints,
+			invite_friends_limit,
+			activity_pay_vpoints,
+			activity_week_pay_vpoints,
+			activity_maxnum,
+			step_limt,
+			weeks_reach_money,
+			is_extract_limit,
+			extract_limit,
+			activity_magnification,
+			bonus_pool,
+			phone_num,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			delete_flag
+		)
+		values (
+			UUID(), 
+			#{startTime},
+			#{endTime},
+			#{currencyPrice},
+			#{attentionVpoints},
+			#{finishUserInfoVpoints},
+			#{inviteFriendsVpoints},
+			#{inviteFriendsLimit},
+			#{activityPayVpoints},
+			#{activityWeekPayVpoints},
+			#{activityMaxnum},
+			#{stepLimit},
+			#{weeksReachMoney},
+			#{isExtractLimit},
+			#{extractLimit},
+			#{activityMagnification},
+			#{bonusPool},
+			#{phoneNum},
+			#{createUser},
+			now(),
+			#{updateUser},
+			now(),
+			'0'
+		)
+	</insert>
+	
+	<select id="queryPopssActivityInfoList" parameterType="Map" resultMap="VpsWechatActivityBasicInfoResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM 
+			VPS_WECHAT_ACTIVITY_BASIC_INFO
+		WHERE 
+			DELETE_FLAG = '0'
+		ORDER BY 
+			CREATE_TIME DESC
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryPopssActivityInfoCount" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM 
+			VPS_WECHAT_ACTIVITY_BASIC_INFO
+		WHERE 
+			DELETE_FLAG = '0'
+	</select>
+</mapper>

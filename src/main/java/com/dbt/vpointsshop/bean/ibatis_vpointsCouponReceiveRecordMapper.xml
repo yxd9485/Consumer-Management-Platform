@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsCouponReceiveRecordDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCouponReceiveRecord" id="baseResultMap">
+		<result property="infoKey" column="info_key"/>
+		<result property="userKey" column="user_key"/>
+		<result property="couponKey" column="coupon_key"/>
+		<result property="receiveStatus" column="receive_status"/>
+		<result property="receiveTime" column="receive_time"/>
+		<result property="useTime" column="use_time"/>
+		<result property="expireTime" column="expire_time"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="county" column="county"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+		<result property="exchange_id" column="exchange_id"/>
+		<result property="discountMoney" column="discount_money"/>
+		<result property="discountVpoints" column="discount_vpoints"/>
+	</resultMap>
+	
+	<select id="queryReceiveRecordList" parameterType="Map" resultMap="baseResultMap">
+		SELECT
+			a.*,
+			u.NICK_NAME as nickName,
+			u.PHONE_NUMBER as phoneNumber
+		FROM (
+			SELECT * FROM vpoints_coupon_receive_record_1 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_2 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_3 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_4 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_5 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_6 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_7 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_8 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_9 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_10 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_11 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_12 WHERE COUPON_KEY = #{couponKey}
+		) a
+		LEFT JOIN vps_consumer_user_info u on a.USER_KEY = u.USER_KEY
+		WHERE 1=1
+		<if test="pageInfo != null">
+			ORDER BY a.receive_Time DESC
+			LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+		</if>
+	</select>
+	
+	<select id="countReceiveRecordList" parameterType="Map" resultType="Integer">
+		SELECT 
+			COUNT(a.COUPON_KEY)
+		FROM (
+			SELECT * FROM vpoints_coupon_receive_record_1 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_2 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_3 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_4 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_5 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_6 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_7 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_8 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_9 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_10 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_11 WHERE COUPON_KEY = #{couponKey}
+			UNION ALL
+			SELECT * FROM vpoints_coupon_receive_record_12 WHERE COUPON_KEY = #{couponKey}
+		) a
+	</select>
+	
+<!-- 	查询要提醒的记录 -->
+	<select id="queryExpireRemind" parameterType="Map" resultMap="baseResultMap">
+	   select 
+	       r.*,
+	       t.pa_openid as 'paOpenid',
+           t.MEMBER_OPENID as 'memberOpenid',
+	       c.coupon_name as 'couponName'
+	   from vpoints_coupon_receive_record_${splitTableSuffix} r
+       inner join vps_consumer_thirdaccount_info t on r.user_key = t.user_key
+       inner join vpoints_coupon_cog c on r.COUPON_KEY = c.COUPON_KEY
+       where 
+           (IFNULL(t.pa_openid, '') != '' OR IFNULL(t.MEMBER_OPENID, '') != '')
+           and c.EXPIRE_REMIND_DAY > 0 
+           and r.EXPIRE_SEND_FLAG = '0'
+           and now() between ADDDATE(r.EXPIRE_TIME,INTERVAL -c.EXPIRE_REMIND_DAY DAY) and r.EXPIRE_TIME
+       order by r.RECEIVE_TIME 
+       limit 3000
+	</select>
+	
+<!-- 	更新提醒标志 -->
+	<update id="updateExpireRemindFlag">
+	   update
+	       vpoints_coupon_receive_record_${splitTableSuffix}
+	   set
+	       EXPIRE_SEND_FLAG = '1'
+	   where
+	       info_key in (
+	           <foreach collection="infoKeyLst" item="infoKey" separator=",">
+	               #{infoKey}
+	           </foreach>
+	       )
+	</update>
+	
+		<insert id="addReceive" parameterType="com.dbt.vpointsshop.bean.VpointsCouponReceiveRecord">
+	   insert into vpoints_coupon_receive_record_${splitTableSuffix} (
+	       info_key,
+	       user_key,
+	       coupon_key,
+	       receive_status,
+	       receive_time,
+	       use_time,
+	       expire_time,
+	       province,
+	       city,
+	       county
+	   ) values (
+	       #{infoKey},
+	       #{userKey},
+	       #{couponKey},
+	       #{receiveStatus},
+	       #{receiveTime},
+	       #{useTime},
+	       #{expireTime},
+	       #{province},
+	       #{city},
+	       #{county}
+	   )
+	</insert>
+</mapper>

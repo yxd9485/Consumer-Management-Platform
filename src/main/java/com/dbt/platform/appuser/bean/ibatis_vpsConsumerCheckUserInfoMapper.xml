@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.appuser.dao.IVpsConsumerCheckUserInfoDao">
+
+	<resultMap type="com.dbt.platform.appuser.bean.VpsConsumerCheckUserInfo" id="resultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="openid" column="OPENID"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="phoneNum" column="PHONE_NUM"/>
+		<result property="province" column="PROVINCE"/>
+		<result property="city" column="CITY"/>
+		<result property="county" column="COUNTY"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="userStatus" column="USER_STATUS"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+	</resultMap>
+	
+	<!-- 核销用户列表List -->
+	<select id="findCheckUserInfoList" parameterType="Map" resultMap="resultMap">
+		select c.*,t.terminal_Name as 'terminalName',t.address as 'terminalAddress', 
+			IF(t.address is not null
+			   ,CONCAT_WS('-',c.PROVINCE,c.CITY,c.COUNTY,t.address)
+			   ,CONCAT_WS('-',c.PROVINCE,c.CITY,c.COUNTY,c.address)) as 'userAddress' 
+		   from vps_consumer_check_user_info c
+		  left join vps_terminal_info t on t.terminal_key = c.terminal_key and t.delete_flag = '0'
+		  where c.delete_flag = '0'
+		  <if test="queryBean.openid != null and queryBean.openid != ''">
+               AND c.OPENID = #{queryBean.openid}
+          </if>
+          <if test="queryBean.userName != null and queryBean.userName != ''">
+               AND c.USER_NAME like '%${queryBean.userName}%' 
+          </if>
+          <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+               AND c.PHONE_NUM like '%${queryBean.phoneNum}%' 
+          </if>
+          <if test="queryBean.userStatus != null and queryBean.userStatus != ''">
+               AND c.USER_STATUS = #{queryBean.userStatus} 
+          </if>
+           <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+               AND t.terminal_name like '%${queryBean.terminalName}%' 
+          </if>
+          <if test="pageInfo != null">
+          <choose>
+            <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+                ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, c.CREATE_TIME DESC
+            </when>
+            <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+            </when>
+            <otherwise>ORDER BY c.CREATE_TIME DESC</otherwise>
+          </choose>
+          LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+          </if>
+          <if test="pageInfo == null">
+          	ORDER BY c.CREATE_TIME DESC
+          </if>
+	</select>
+	
+	<!-- 核销用户列表count -->
+	<select id="findCheckUserInfoCount" parameterType="Map" resultType="Integer">
+		select count(1) from vps_consumer_check_user_info c
+		  left join vps_terminal_info t on t.terminal_key = c.terminal_key and t.delete_flag = '0'
+		  where c.delete_flag = '0'
+          <if test="queryBean.openid != null and queryBean.openid != ''">
+               AND c.OPENID = #{queryBean.openid}
+          </if>
+          <if test="queryBean.userName != null and queryBean.userName != ''">
+               AND c.USER_NAME like '%${queryBean.userName}%' 
+          </if>
+          <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+               AND c.PHONE_NUM like '%${queryBean.phoneNum}%' 
+          </if>
+          <if test="queryBean.userStatus != null and queryBean.userStatus != ''">
+               AND c.USER_STATUS = #{queryBean.userStatus} 
+          </if>
+          <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+               AND t.terminal_name like '%${queryBean.terminalName}%' 
+          </if>
+	</select>
+	
+	<select id="findById" parameterType="String" resultMap="resultMap">
+		select * from vps_consumer_check_user_info where info_key = #{id}
+	</select>
+	
+	<select id="findByOpenid" parameterType="String" resultMap="resultMap">
+		select * from vps_consumer_check_user_info where openid = #{openid}
+	</select>
+	
+	<update id="updateCheckUserStatus" parameterType="Map">
+		update vps_consumer_check_user_info
+		set user_status = #{userStatus}, 
+			update_time =NOW(),
+			update_user = #{updateUser}
+		where info_key = #{infoKey}
+	</update>
+	
+	<update id="deleteCheckUser" parameterType="String">
+		update vps_consumer_check_user_info
+		set delete_flag = '1', user_status = '0', update_time =NOW()
+		where info_key = #{infoKey}
+	</update>
+</mapper>

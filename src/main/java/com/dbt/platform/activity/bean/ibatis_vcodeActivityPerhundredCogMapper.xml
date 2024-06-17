@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityPerhundredCogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityPerhundredCog" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+  		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+  		<result property="perhundredNo" column="PERHUNDRED_NO"/>
+  		<result property="perhundredName" column="PERHUNDRED_NAME"/>
+  		<result property="validDateRange" column="VALID_DATE_RANGE"/>
+  		<result property="minValidDate" column="MIN_VALID_DATE"/>
+  		<result property="maxValidDate" column="MAX_VALID_DATE"/>
+  		<result property="perItems" column="PER_ITEMS"/>
+  		<result property="restrictTimeType" column="RESTRICT_TIME_TYPE"/>
+  		<result property="restrictVpoints" column="RESTRICT_VPOINTS"/>
+		<result property="restrictMoney" column="RESTRICT_MONEY"/>
+		<result property="restrictBottle" column="RESTRICT_BOTTLE"/>
+  		<result property="status" column="STATUS"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityPerhundredCog">
+		INSERT INTO vps_vcode_activity_perhundred_cog(
+			INFO_KEY,
+			COMPANY_KEY,
+			VCODE_ACTIVITY_KEY,
+			PERHUNDRED_NO,
+			PERHUNDRED_NAME,
+			VALID_DATE_RANGE,
+			MIN_VALID_DATE,
+			MAX_VALID_DATE,
+			PER_ITEMS,
+			RESTRICT_TIME_TYPE,
+			RESTRICT_VPOINTS,
+			RESTRICT_MONEY,
+			RESTRICT_BOTTLE,
+			STATUS,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		)
+		VALUES (
+			#{infoKey},
+			#{companyKey},
+			#{vcodeActivityKey},
+			#{perhundredNo},
+			#{perhundredName},
+			#{validDateRange},
+			#{minValidDate},
+			#{maxValidDate},
+			#{perItems},
+			#{restrictTimeType},
+			#{restrictVpoints},
+			#{restrictMoney},
+			#{restrictBottle},
+			#{status},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VcodeActivityPerhundredCog">
+		UPDATE vps_vcode_activity_perhundred_cog SET
+			<if test="vcodeActivityKey != null and vcodeActivityKey != ''">
+				VCODE_ACTIVITY_KEY = #{vcodeActivityKey},
+			</if>
+			PERHUNDRED_NAME = #{perhundredName},
+			VALID_DATE_RANGE=#{validDateRange},
+			MIN_VALID_DATE = #{minValidDate},
+			MAX_VALID_DATE = #{maxValidDate},
+			PER_ITEMS = #{perItems},
+			RESTRICT_TIME_TYPE = #{restrictTimeType},
+			RESTRICT_VPOINTS = #{restrictVpoints},
+			RESTRICT_MONEY = #{restrictMoney},
+			RESTRICT_BOTTLE = #{restrictBottle},
+			STATUS = #{status},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="queryForList" resultMap="baseResult" parameterType="Map">
+		SELECT * FROM (
+			SELECT
+				p.*,
+				s.sku_name AS skuName,
+				c.vcode_activity_name AS vcodeActivityName,
+				CASE 
+					WHEN DATE(NOW()) >= p.MIN_VALID_DATE AND DATE(NOW()) <![CDATA[<=]]> p.MAX_VALID_DATE THEN '1'
+					WHEN DATE(NOW()) > p.MAX_VALID_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin
+			FROM
+				vps_vcode_activity_perhundred_cog p
+			LEFT JOIN vps_vcode_activity_cog c ON p.vcode_activity_key = c.vcode_activity_key
+			LEFT JOIN vps_sku_info s ON c.sku_key = s.sku_key
+			WHERE
+				p.DELETE_FLAG = '0'
+			<if test="queryBean.perhundredNo != null and queryBean.perhundredNo != ''">
+			    and p.perhundred_no like '%${queryBean.perhundredNo}%'
+			</if>
+			<if test="queryBean.perhundredName != null and queryBean.perhundredName != ''">
+			    and p.perhundred_name like '%${queryBean.perhundredName}%' 
+			</if>
+			<if test="queryBean.status != null and queryBean.status != ''">
+			    and p.status = #{queryBean.status}
+			</if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin DESC, a.CREATE_TIME DESC</otherwise>
+		</choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT COUNT(1) FROM (
+			SELECT
+				p.*,
+				s.sku_name AS skuName,
+				c.vcode_activity_name AS vcodeActivityName,
+				CASE 
+					WHEN DATE(NOW()) >= p.MIN_VALID_DATE AND DATE(NOW()) <![CDATA[<=]]> p.MAX_VALID_DATE THEN '1'
+					WHEN DATE(NOW()) > p.MAX_VALID_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin
+			FROM
+				vps_vcode_activity_perhundred_cog p
+			LEFT JOIN vps_vcode_activity_cog c ON p.vcode_activity_key = c.vcode_activity_key
+			LEFT JOIN vps_sku_info s ON c.sku_key = s.sku_key
+			WHERE
+				p.DELETE_FLAG = '0'
+			<if test="queryBean.perhundredNo != null and queryBean.perhundredNo != ''">
+			    and p.perhundred_no like '%${queryBean.perhundredNo}%'
+			</if>
+			<if test="queryBean.perhundredName != null and queryBean.perhundredName != ''">
+			    and p.perhundred_name like '%${queryBean.perhundredName}%' 
+			</if>
+			<if test="queryBean.status != null and queryBean.status != ''">
+			    and p.status = #{queryBean.status}
+			</if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getCount" resultType="int">
+		SELECT COUNT(1) FROM vps_vcode_activity_perhundred_cog
+	</select>
+	
+	<select id="findById" parameterType="String" resultMap="baseResult">
+		SELECT 
+			*,
+			CASE 
+				WHEN DATE(NOW()) >= MIN_VALID_DATE AND DATE(NOW()) <![CDATA[<=]]> MAX_VALID_DATE THEN '1'
+				WHEN DATE(NOW()) > MAX_VALID_DATE THEN '2' 
+				ELSE '0'
+			END AS isBegin 
+		FROM 
+		vps_vcode_activity_perhundred_cog 
+		WHERE INFO_KEY = #{id}
+	</select>
+    
+    <!-- 获取该活动下逢百有效规则 -->
+    <select id="findValidByActivityKey" parameterType="Map" resultMap="baseResult">
+        SELECT 
+            * 
+        FROM 
+            vps_vcode_activity_perhundred_cog
+        WHERE 
+            VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+            AND DELETE_FLAG = '0'
+            AND STATUS = '1'
+            AND CURDATE() >= MIN_VALID_DATE 
+            AND CURDATE() <![CDATA[<=]]> MAX_VALID_DATE
+        limit 1
+    </select>
+	
+	<delete id="deleteById" parameterType="Map">
+		UPDATE vps_vcode_activity_perhundred_cog SET
+			DELETE_FLAG = '1',
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		WHERE INFO_KEY = #{infoKey}
+	</delete>
+</mapper>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.turntable.dao.TurntableDao">
+    <resultMap id="resultMap" type="com.dbt.platform.turntable.bean.TurntableActivityCogInfo">
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="activityName" column="ACTIVITY_NAME"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="status" column="STATUS"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="everyDayLimit" column="EVERY_DAY_LIMIT"/>
+        <result property="totalLimit" column="TOTAL_LIMIT"/>
+        <result property="turntableNum" column="TURNTABLE_NUM"/>
+        <result property="custcarePhonenum" column="CUSTCARE_PHONENUM"/>
+        <result property="rulePic" column="RULE_PIC"/>
+        <result property="roleLimit" column="ROLE_LIMIT"/>
+        <result property="areaCode" column="AREACODE"/>
+        <result property="consumeVpoints" column="CONSUME_VPOINTS"/>
+        <result property="bigPrizeLimit" column="BIGPRIZE_LIMIT"/>
+        <result property="activityDrawNumber" column="ACTIVITY_DRAW_NUMBER"/>
+        <result property="activityWinNumber" column="ACTIVITY_WIN_NUMBER"/>
+        <result property="depRegionId" column="DEP_REGION_ID"/>
+        <result property="depProvinceId" column="DEP_PROVINCE_ID"/>
+        <result property="firstDealerKey" column="FIRST_DEALER_KEY"/>
+        <result property="drainageType" column="drainage_type"/>
+        <result property="scanSkuNumber" column="scan_sku_number"/>
+        <result property="joinCondition" column="join_condition"/>
+        <result property="everyDayDrawLimit" column="every_day_draw_limit"/>
+        <result property="skuKeys" column="sku_keys"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+
+    <resultMap id="baseResultAll" type="com.dbt.platform.turntable.bean.TurntableActivityCogInfo" extends="resultMap">
+        <association property="turntablePrizeCogList" column="ACTIVITY_KEY" fetchType="eager"
+                     select="com.dbt.platform.turntable.dao.TurntablePrizeDao.queryTurntablePrizeByActivityKey"></association>
+    </resultMap>
+
+    <insert id="createTurntableActivity" parameterType="com.dbt.platform.turntable.bean.TurntableActivityCogInfo">
+        insert into vps_turntable_activity_cog (
+                                     ACTIVITY_KEY,
+                                     ACTIVITY_NAME,
+                                     ACTIVITY_TYPE,
+                                     STATUS,
+                                     START_DATE,
+                                     END_DATE,
+                                     EVERY_DAY_LIMIT,
+                                     TOTAL_LIMIT,
+                                     TURNTABLE_NUM,
+                                     CUSTCARE_PHONENUM,
+                                     RULE_PIC,
+                                     ROLE_LIMIT,
+                                     AREACODE,
+                                     CONSUME_VPOINTS,
+                                     BIGPRIZE_LIMIT,
+                                     DEP_REGION_ID,
+                                     DEP_PROVINCE_ID,
+                                     FIRST_DEALER_KEY,
+                                     drainage_type,
+                                     scan_sku_number,
+                                     join_condition,
+                                     every_day_draw_limit,
+                                     sku_keys,
+                                     create_time,
+                                     create_user,
+                                     update_time,
+                                     update_user
+                                     )
+        values (#{activityKey},
+                #{activityName},
+                #{activityType},
+                #{status},
+                #{startDate},
+                #{endDate},
+                #{everyDayLimit},
+                #{totalLimit},
+                #{turntableNum},
+                #{custcarePhonenum},
+                #{rulePic},
+                #{roleLimit},
+                #{areaCode},
+                #{consumeVpoints},
+                #{bigPrizeLimit},
+                #{depRegionId},
+                #{depProvinceId},
+                #{firstDealerKey},
+                #{drainageType},
+                #{scanSkuNumber},
+                #{joinCondition},
+                #{everyDayDrawLimit},
+                #{skuKeys},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser}
+                )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.turntable.bean.TurntableActivityCogInfo">
+        update
+        vps_turntable_activity_cog
+        <set>
+            ACTIVITY_NAME = #{activityName},
+            `STATUS` = #{status},
+            START_DATE = #{startDate},
+            END_DATE = #{endDate},
+            EVERY_DAY_LIMIT = #{everyDayLimit},
+            TOTAL_LIMIT = #{totalLimit},
+            CUSTCARE_PHONENUM = #{custcarePhonenum},
+            RULE_PIC = #{rulePic},
+            ROLE_LIMIT = #{roleLimit},
+            AREACODE = #{areaCode},
+            CONSUME_VPOINTS = #{consumeVpoints},
+            BIGPRIZE_LIMIT = #{bigPrizeLimit},
+            DEP_REGION_ID = #{depRegionId},
+            DEP_PROVINCE_ID = #{depProvinceId},
+            FIRST_DEALER_KEY = #{firstDealerKey},
+            drainage_type=#{drainageType},
+            scan_sku_number=#{scanSkuNumber},
+            join_condition=#{joinCondition},
+            every_day_draw_limit=#{everyDayDrawLimit},
+            sku_keys=#{skuKeys},
+            update_time = now(),
+            update_user = #{updateUser}
+        </set>
+        where
+        ACTIVITY_KEY = #{activityKey}
+    </update>
+
+    <select id="queryForList" resultMap="baseResultAll" parameterType="Map">
+        select
+               * ,
+        CASE
+        WHEN curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE THEN '1'
+        WHEN curdate() &gt; END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin
+        from vps_turntable_activity_cog
+        where DELETE_FLAG = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and ACTIVITY_NAME like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityStatus != null and queryBean.activityStatus != ''">
+            <choose>
+                <when test="queryBean.activityStatus == 0">
+                    AND curdate() &lt; START_DATE
+                </when>
+                <when test="queryBean.activityStatus == 1">
+                    AND curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <otherwise>
+                    AND curdate() &gt; END_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and STATUS = #{queryBean.status}
+        </if>
+        order by isBegin , create_time desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select count(*) from vps_turntable_activity_cog
+        where DELETE_FLAG = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and ACTIVITY_NAME like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityStatus != null and queryBean.activityStatus != ''">
+            <choose>
+                <when test="queryBean.activityStatus == 0">
+                    AND curdate() &lt; START_DATE
+                </when>
+                <when test="queryBean.activityStatus == 1">
+                    AND curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <otherwise>
+                    AND curdate() &gt; END_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and STATUS = #{queryBean.status}
+        </if>
+    </select>
+
+    <select id="queryTurntableActivityByKey" parameterType="string" resultMap="baseResultAll">
+        select *
+        from vps_turntable_activity_cog
+        where ACTIVITY_KEY = #{activityKey}
+    </select>
+
+    <select id="queryOverlapActivity" parameterType="map" resultType="int">
+        select count(*)
+        from vps_turntable_activity_cog
+        where
+        ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+        (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+        (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        <if test="activityKey != null and activityKey != ''">
+            and ACTIVITY_KEY != #{activityKey}
+        </if>
+        <if test="activityType != null and activityType != ''">
+            and ACTIVITY_TYPE = #{activityType}
+        </if>
+        <if test="drainageType != null and drainageType != ''">
+            and drainage_type = #{drainageType}
+        </if>
+        <if test="areaCode!=null">
+            and
+            <foreach collection="areaCode" open="(" close=")" separator="or" item="item">
+                AREACODE like concat('%',#{item},'%')
+            </foreach>
+        </if>
+    </select>
+</mapper>

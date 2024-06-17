@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.framework.datadic.dao.ISysDataDicDao">
+
+	<resultMap type="com.dbt.framework.datadic.bean.SysDataDic" id="sysDataDicResultMap">
+		<result property="dataDicKey" column="DATADIC_KEY"/>
+  		<result property="categoryKey" column="CATEGORY_KEY"/>
+  		<result property="dataId" column="DATA_ID"/>
+  		<result property="dataValue" column="DATA_VALUE"/>
+  		<result property="dataAlias" column="DATA_ALIAS"/>
+  		<result property="dataExplain" column="DATA_EXPLAIN"/>
+  		<result property="sequenceNum" column="SEQUENCE_NUM"/>
+  		<result property="version" column="VERSION"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+  		<result property="createUser" column="CREATE_USER"/>
+  		<result property="updateTime" column="UPDATE_TIME"/>
+  		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	<!-- 查询数据字典列表 -->
+	<select id="findDataDicList" resultMap="sysDataDicResultMap" parameterType="Map">
+		SELECT
+			da.DATADIC_KEY,
+			da.CATEGORY_KEY,
+			da.DATA_ID,
+			da.DATA_VALUE,
+			da.DATA_ALIAS,
+			da.SEQUENCE_NUM,
+			da.DELETE_FLAG,
+			da.DATA_EXPLAIN,
+			dic.CATEGORY_NAME,
+			dic.CATEGORY_CODE,
+			dic.DIC_TYPE
+		FROM
+			vps_sys_datadic_m da INNER JOIN vps_sys_diccategory_info dic ON da.CATEGORY_KEY = dic.CATEGORY_KEY
+		WHERE da.DELETE_FLAG = '0' AND dic.DELETE_FLAG = '0'
+		<if test="sysDataDic.categoryKey != null and sysDataDic.categoryKey != '' ">
+            AND da.CATEGORY_KEY = #{sysDataDic.categoryKey}
+        </if>
+        <if test="sysDataDic.categoryCode != null and sysDataDic.categoryCode != '' ">
+            AND dic.CATEGORY_CODE = #{sysDataDic.categoryCode}
+        </if>
+        <if test="sysDataDic.dataAlias != null and sysDataDic.dataAlias != '' ">
+            AND da.DATA_ALIAS like '%${sysDataDic.dataAlias}%'
+        </if>
+        <choose>
+
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType != null and param.orderType != ''">
+                ORDER BY   ${param.orderCol} ${param.orderType}
+            </when>
+            <otherwise>			ORDER BY CONVERT(CATEGORY_NAME USING gbk) COLLATE gbk_chinese_ci, da.SEQUENCE_NUM, da.DATA_ID </otherwise>
+        </choose>
+	/*	ORDER BY CONVERT(CATEGORY_NAME USING gbk) COLLATE gbk_chinese_ci, da.SEQUENCE_NUM, da.DATA_ID*/
+        limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<!-- 统计数据字典个数-->
+	<select id="countDataDicList" parameterType="com.dbt.framework.datadic.bean.SysDataDic" resultType="int">
+		SELECT count(0) FROM vps_sys_datadic_m da
+		LEFT JOIN vps_sys_diccategory_info dic ON da.CATEGORY_KEY = dic.CATEGORY_KEY  WHERE da.DELETE_FLAG = '0' AND dic.DELETE_FLAG='0'
+		<if test="categoryKey != null and categoryKey != '' ">
+            AND da.CATEGORY_KEY = #{categoryKey}
+        </if>
+        <if test="categoryCode != null and categoryCode != '' ">
+            AND dic.CATEGORY_CODE = #{categoryCode}
+        </if>
+        <if test="dataAlias != null and dataAlias != '' ">
+            AND da.DATA_ALIAS like '%${dataAlias}%'
+        </if>
+	</select>
+	<!-- 保存数据字典-->
+	<insert id="create" parameterType="com.dbt.framework.datadic.bean.SysDataDic">
+		INSERT INTO vps_sys_datadic_m (
+			DATADIC_KEY,
+			CATEGORY_KEY,
+			DATA_ID,
+			DATA_VALUE,
+			DATA_ALIAS,
+			DATA_EXPLAIN,
+			SEQUENCE_NUM,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+		    #{dataDicKey},
+            #{categoryKey},
+            #{dataId},
+            #{dataValue},
+            #{dataAlias},
+            #{dataExplain},
+            #{sequenceNum},
+            0,
+            #{createTime},
+            #{createUser},
+            #{updateTime},
+            #{updateUser}
+		)
+	</insert>
+	<!-- 修改数据字典 -->
+	<update id="update" parameterType="com.dbt.framework.datadic.bean.SysDataDic">
+	 update vps_sys_datadic_m
+        <set>
+            <if test="categoryKey != null and categoryKey !=''">
+            CATEGORY_KEY = #{categoryKey},
+            </if>
+            <if test="dataId != null and dataId !=''">
+            DATA_ID = #{dataId},
+            </if>
+            <if test="dataValue != null">
+            DATA_VALUE = #{dataValue},
+            </if>
+            <if test="dataAlias != null">
+            DATA_ALIAS = #{dataAlias},
+            </if>
+            <if test="dataExplain != null">
+            DATA_EXPLAIN = #{dataExplain},
+            </if>
+            <if test="sequenceNum != null and sequenceNum !=''">
+            SEQUENCE_NUM = #{sequenceNum},
+            </if>
+            <if test="deleteFlag !=null and deleteFlag !=''">
+            DELETE_FLAG = #{deleteFlag},
+            </if>
+            <if test="createTime != null and createTime !=''">
+            CREATE_TIME = #{createTime},
+            </if>
+            <if test="createUser !=null and createUser !=''">
+            CREATE_USER = #{createUser},
+            </if>
+            <if test="updateTime !=null and updateTime !=''">
+            UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+            UPDATE_USER = #{updateUser}
+            </if>
+        </set>
+        where DATADIC_KEY = #{dataDicKey}
+	</update>
+	
+	<!-- 修改数据字典 -->
+	<update id="updateDataValueForRowNum" parameterType="com.dbt.framework.datadic.bean.SysDataDic">
+        update vps_sys_datadic_m set
+		    DATA_VALUE = #{dataValue},
+		    version = version + 1,
+		    UPDATE_TIME = now()
+        where DATADIC_KEY = #{dataDicKey}
+            and version = #{version}
+	</update>
+	<!-- 根据id查询数据字典 -->
+	<select id="findById" parameterType="String" resultMap="sysDataDicResultMap">
+		select * from vps_sys_datadic_m where delete_flag='0' and DATADIC_KEY = #{dataDicKey}
+	</select>
+	<!-- 删除数据字典 -->
+	<update id="deleteById" >
+		update vps_sys_datadic_m set delete_flag = '1' WHERE DATADIC_KEY = #{dataDicKey}
+	</update>
+	<!-- 根据字典类型查询数据字典 -->
+	<select id="findDataDicListByCategoryKey" parameterType="String" resultMap="sysDataDicResultMap">
+		select * from vps_sys_datadic_m where delete_flag='0' and CATEGORY_KEY = #{categoryKey} order by sequence_num asc
+	</select>
+	<!-- 根据字典类型删除数据信息 -->
+	<update id="delDataDicByCategoryKey" >
+		update vps_sys_datadic_m set delete_flag = '1' WHERE CATEGORY_KEY = #{categoryKey}
+	</update>
+	<!-- 根据字典类型Code查询字典数据信息 -->
+	<select id="findDataDicListByCategoryCode" parameterType="String" resultMap="sysDataDicResultMap">
+		select a.* from vps_sys_datadic_m a, vps_sys_diccategory_info b 
+		where a.category_key = b.category_key and a.delete_flag='0' 
+		and b.delete_flag='0' and b.category_code=#{_parameter} 
+		order by sequence_num asc
+	</select>
+
+	<!-- 更新sku录入规则 -->
+	<update id="updateDataDicByDataId" parameterType="com.dbt.framework.datadic.bean.SysDataDic">
+	 update vps_sys_datadic_m
+        <set>
+            DATA_VALUE = #{dataValue},
+            <if test="updateTime !=null and updateTime !=''">
+            UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+            UPDATE_USER = #{updateUser}
+            </if>
+        </set>
+         where DATADIC_KEY = #{dataDicKey}
+	</update>
+
+	<select id="updateByTypeAndKey" parameterType="com.dbt.framework.datadic.bean.SysDataDic">
+		UPDATE
+			vps_sys_datadic_m
+		SET
+			DATA_VALUE = #{dataValue},
+			UPDATE_TIME = NOW()
+		WHERE
+			CATEGORY_KEY = (SELECT CATEGORY_KEY
+							FROM vps_sys_diccategory_info
+							WHERE CATEGORY_CODE = #{categoryKey}
+							ORDER BY UPDATE_TIME DESC LIMIT 1)
+			AND DATA_ID = #{dataId}
+	</select>
+
+
+	<!-- 查询所有配置在数据字典中的数据 -->
+  	<select id="findAll" resultMap="sysDataDicResultMap">
+		SELECT
+		 	da.DATADIC_KEY,
+			da.CATEGORY_KEY,
+			da.DATA_ID,
+			da.DATA_VALUE,
+			da.DATA_ALIAS,
+			da.SEQUENCE_NUM,
+			da.DELETE_FLAG,
+			da.DATA_EXPLAIN
+		FROM
+		  vps_sys_datadic_m da
+		WHERE DELETE_FLAG = '0'
+  	</select>
+
+
+  	<!-- 通过字典类型和dataid获取数据字典中的数据 -->
+  	<select id="getDatadicByCatCodeAndDataid" parameterType="Map" resultMap="sysDataDicResultMap">
+		SELECT
+		 	da.*
+		FROM
+			vps_sys_datadic_m da
+		INNER JOIN vps_sys_diccategory_info g ON da.CATEGORY_KEY = g.CATEGORY_KEY
+		WHERE
+			g.CATEGORY_CODE = #{categoryCode}
+		AND da.DATA_ID = #{dataid}
+		AND da.DELETE_FLAG = '0'
+		limit 1
+  	</select>
+</mapper>

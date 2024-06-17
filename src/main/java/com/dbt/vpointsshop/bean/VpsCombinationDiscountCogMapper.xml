@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpsCombinationDiscountCogDao">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.dto.VpsCombinationDiscountDTO">
+        <id column="cog_key" property="cogKey" />
+        <result column="name" property="name" />
+        <result column="cog_no" property="cogNo" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="open_flag" property="openFlag" />
+        <result column="goods_a" property="goodsA" />
+        <result column="goods_b" property="goodsB" />
+        <result column="goods_c" property="goodsC" />
+        <result column="activity_price" property="activityPrice" />
+        <result column="single_person_limit" property="singlePersonLimit" />
+        <result column="total_number" property="totalNumber" />
+        <result column="single_day_limit" property="singleDayLimit" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="goodsNameA" property="goodsNameA" />
+        <result column="goodsNameB" property="goodsNameB" />
+        <result column="goodsNameC" property="goodsNameC" />
+        <result column="stateFlag" property="stateFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cog_key, name, start_time,cog_no, end_time, open_flag, goods_a, goods_b, goods_c, activity_price, single_person_limit, total_number, single_day_limit, create_time, create_user, update_time, update_user
+    </sql>
+
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        SELECT
+            ga.goods_name goodsNameA,
+            gb.goods_name goodsNameB,
+            gc.goods_name goodsNameC,
+            dc.*,
+            case
+                when  dc.start_time >= now() then '0'
+                when dc.start_time &lt;= now()
+                     and dc.end_time >= now() then '1'
+                when now() >= dc.end_time then '2'
+                else ''
+                end as stateFlag
+        FROM
+            vps_combination_discount_cog dc
+            LEFT JOIN vpoints_goods_info ga ON ga.goods_id = dc.goods_a
+            LEFT JOIN vpoints_goods_info gb ON gb.goods_id = dc.goods_b
+            LEFT JOIN vpoints_goods_info gc ON gc.goods_id = dc.goods_c
+            <where>
+                <if test="ew.name!='' and ew.name!= null">
+                    and  dc.name like concat('%',#{ew.name},'%')
+                </if>
+                <if test="ew.cogNo!='' and ew.cogNo!= null">
+                    and dc.cog_no like concat('%',#{ew.cogNo},'%')
+                </if>
+                <if test="ew.openFlag!='' and ew.openFlag!= null">
+                    and dc.open_flag =#{ew.openFlag}
+                </if>
+                <if test="ew.goodsA!='' and ew.goodsA!= null">
+                    and (ga.goods_name like concat('%',#{ew.goodsA},'%') or
+                    gb.goods_name like concat('%',#{ew.goodsA},'%') or
+                    gc.goods_name like concat('%',#{ew.goodsA},'%')
+                    )
+                </if>
+                <if test="ew.startTime != null ">
+                    and dc.start_time &lt;= #{ew.startTime}
+                </if>
+                <if test="ew.endTime != null ">
+                    and dc.end_time >= #{ew.endTime}
+                </if>
+                <choose>
+                    <when test="ew.stateFlag == 0">
+                      and dc.start_time >= now() </when>
+                    <when test="ew.stateFlag == 1">
+                       and dc.start_time &lt;= now()
+                        and dc.end_time >= now()
+                         </when>
+                    <when test="ew.stateFlag == 2">
+                        and now() >= dc.end_time
+                        </when>
+                </choose>
+            </where>
+            order by dc.update_time desc
+    </select>
+
+
+    <select id="selectSetUpGoodsByOnline" resultMap="BaseResultMap">
+        SELECT
+        dc.*,
+        case
+        when  dc.start_time >= now() then '0'
+        when dc.start_time &lt;= now()
+        and dc.end_time >= now() then '1'
+        when now() >= dc.end_time then '2'
+        else ''
+        end as stateFlag
+        FROM
+        vps_combination_discount_cog dc
+        <where>
+            and dc.open_flag = '1'
+            and dc.start_time &lt;= now()
+            and dc.end_time >= now()
+        </where>
+        order by dc.update_time desc
+    </select>
+    <select id="checkGoodsInfo" parameterType="com.dbt.vpointsshop.dto.VpsCombinationDiscountCogVO" resultMap="BaseResultMap">
+
+        SELECT
+        ga.goods_name goodsNameA,
+        gb.goods_name goodsNameB,
+        gc.goods_name goodsNameC,
+        dc.*,
+        case
+        when  dc.start_time >= now() then '0'
+        when dc.start_time &lt;= now()
+        and dc.end_time >= now() then '1'
+        when now() >= dc.end_time then '2'
+        else ''
+        end as stateFlag
+        FROM
+        vps_combination_discount_cog dc
+        LEFT JOIN vpoints_goods_info ga ON ga.goods_id = dc.goods_a
+        LEFT JOIN vpoints_goods_info gb ON gb.goods_id = dc.goods_b
+        LEFT JOIN vpoints_goods_info gc ON gc.goods_id = dc.goods_c
+        <where>
+            and now() &lt;= dc.end_time
+            and dc.cog_key != #{cogKey}
+            and (
+            (dc.start_time  &lt;= str_to_date(#{endTime},'%Y-%m-%d 23:59:59') and dc.end_time  >= str_to_date(#{endTime},'%Y-%m-%d 23:59:59') )
+            or (dc.start_time  &lt;= str_to_date(#{startTime},'%Y-%m-%d 00:00:00') and dc.end_time  >= str_to_date(#{startTime},'%Y-%m-%d 00:00:00') )
+            )
+             and (
+            dc.goods_a in (#{goodsA},#{goodsB}
+            <if test="goodsC != '' and goodsC != null">
+                ,#{goodsC}
+            </if>
+            )
+            or dc.goods_b in (#{goodsA},#{goodsB}
+            <if test="goodsC != '' and goodsC != null">
+                ,#{goodsC}
+            </if>)
+            or dc.goods_c in (#{goodsA},#{goodsB}
+            <if test="goodsC != '' and goodsC != null">
+                ,#{goodsC}
+            </if>)
+            )
+        </where>
+        order by dc.update_time desc
+
+
+
+    </select>
+
+</mapper>

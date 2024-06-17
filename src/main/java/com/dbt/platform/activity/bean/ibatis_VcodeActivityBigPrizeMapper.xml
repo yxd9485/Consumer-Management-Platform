@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityBigPrizeDao">
+
+    <resultMap type="com.dbt.platform.activity.bean.VcodePrizeBasicInfo" id="vcodePrizeBasicInfoResultMap">
+        <result property="infoKey" column="info_key"/>
+        <result property="prizeNo" column="prize_no"/>
+        <result property="prizeName" column="prize_name"/>
+        <result property="prizeType" column="prize_type"/>
+        <result property="prizeWinPic" column="prize_win_pic"/>
+        <result property="prizeEarnPic" column="prize_earn_pic"/>
+        <result property="prizeListPic" column="prize_list_pic"/>
+        <result property="verificationType" column="verification_type"/>
+        <result property="isCheckCaptcha" column="is_check_captcha"/>
+        <result property="isIdcard" column="is_idcard"/>
+        <result property="isPhone" column="is_phone"/>
+        <result property="isAddress" column="is_address"/>
+        <result property="isName" column="is_name"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="prizeShortName" column="prize_short_name"/>
+        <result property="prizeValue" column="prize_value"/>
+        <result property="prizeEndTime" column="prize_endTime"/>
+        <result property="cashPrizeEndTime" column="cash_prize_endTime"/>
+        <result property="cashPrizeEndDay" column="cash_prize_endDay"/>
+        <result property="isExchangeMoney" column="is_exchange_money"/>
+        <result property="exchangeMinMoney" column="exchange_min_money"/>
+        <result property="exchangeMaxMoney" column="exchange_max_money"/>
+        <result property="isRecycle" column="isRecycle"/>
+        <result property="cashPrize" column="cashPrize"/>
+        <result property="isMsg" column="isMsg"/>
+        <result property="winPrizeTime" column="win_PrizeTime"/>
+        <result property="prizeContent" column="prize_content"/>
+        <result property="cashPrizeTel" column="cash_prize_tel"/>
+        <result property="cashAdvisoryTime" column="cash_advisory_time"/>
+        <result property="dayLimitNum" column="day_limit_num"/>
+        <result property="everyoneLimitType" column="everyone_limit_type"/>
+        <result property="everyoneLimitNum" column="everyone_limit_num"/>
+        <result property="lxPrizeType" column="lx_prize_type" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+	         info_key,
+  			 prize_no,
+  			 prize_name,
+  			 prize_type,
+  			 prize_win_pic,
+  			 prize_earn_pic,
+  			 prize_list_pic,
+  			 verification_type,
+  			 is_check_captcha,
+			 is_idcard,
+			 is_phone,
+			 is_address,
+			 is_name,
+			 delete_flag,
+			 create_time,
+			 create_user,
+			 update_time,
+			 update_user,
+			 prize_short_name,
+			 prize_value,
+			 prize_endTime,
+			 cash_prize_endTime,
+			 cash_prize_endDay,
+			 is_exchange_money,
+			 exchange_min_money,
+			 exchange_max_money,
+			 isRecycle,
+			 cashPrize,
+			 isMsg,
+			 win_prizeTime,
+			 prize_content,
+			 cash_prize_tel,
+			 cash_advisory_time,
+			 day_limit_num,
+			 everyone_limit_type,
+			 everyone_limit_num,
+             lx_prize_type
+  	</sql>
+
+    <select id="queryForLst" parameterType="Map" resultMap="vcodePrizeBasicInfoResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        <!-- 如果兑奖天数不为空用中奖截止时间加上兑奖天数,否则则用兑奖结束时间和当前时间比对 -->
+        ,IF(cash_prize_endDay is not null AND cash_prize_endDay !='',
+			TIMESTAMPDIFF(DAY,CURRENT_DATE(),date_add(date_format(prize_endTime,'%Y-%m-%d'), interval cash_prize_endDay day))>=0,
+			TIMESTAMPDIFF(DAY,CURRENT_DATE(),date_format(cash_prize_endTime,'%Y-%m-%d'))>=0
+			) as 'cashStatus'
+        FROM
+        vps_vcode_prize_basic_info
+        WHERE
+        delete_flag = '0'
+        <if test="queryBean.prizeNo != null and queryBean.prizeNo != ''">
+            AND prize_no = #{queryBean.prizeNo}
+        </if>
+        <if test="queryBean.prizeType != null and queryBean.prizeType != ''">
+            AND prize_type = #{queryBean.prizeType}
+        </if>
+        <if test="queryBean.isExchangeMoney != null and queryBean.isExchangeMoney != ''">
+            AND is_exchange_money = #{queryBean.isExchangeMoney}
+        </if>
+        order by create_time desc LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <!-- 查询符合条件的记录条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+        count(1)
+        from
+        vps_vcode_prize_basic_info
+        WHERE
+        delete_flag = '0'
+        <if test="queryBean.prizeName != null and queryBean.prizeName != ''">
+            AND prize_name = #{queryBean.prizeName}
+        </if>
+        <if test="queryBean.prizeName != null and queryBean.prizeName != ''">
+            AND prize_type = #{queryBean.prizeType}
+        </if>
+    </select>
+
+    <insert id="writePrize" parameterType="com.dbt.platform.activity.bean.VcodePrizeBasicInfo">
+    insert  into vps_vcode_prize_basic_info
+            (info_key,
+            prize_no,
+            prize_name,
+            prize_type,
+            prize_win_pic,
+            prize_earn_pic,
+            prize_list_pic,
+            verification_type,
+            is_check_captcha,
+            is_idcard,
+            is_phone,
+			is_address,
+			is_name,
+            delete_flag,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            prize_short_name,
+			 prize_value,
+			 prize_endTime,
+			 cash_prize_endTime,
+			 cash_prize_endDay,
+			 is_exchange_money,
+			 exchange_min_money,
+             exchange_max_money,
+			 isRecycle,
+			 cashPrize,
+			 isMsg,
+			 win_prizeTime,
+			 prize_content,
+			 cash_prize_tel,
+			 cash_advisory_time,
+			 day_limit_num,
+			 everyone_limit_type,
+			 everyone_limit_num,
+             lx_prize_type
+            ) VALUES (
+            UUID(),
+            #{prizeNo},
+            #{prizeName},
+            #{prizeType},
+            #{prizeWinPic},
+            #{prizeEarnPic},
+            #{prizeListPic},
+            #{verificationType},
+            #{isCheckCaptcha},
+            #{isIdcard},
+            #{isPhone},
+			 #{isAddress},
+			 #{isName},
+            0,
+            #{createTime},
+            #{createUser},
+            #{updateTime},
+            #{updateUser},
+            #{prizeShortName},
+            #{prizeValue},
+            #{prizeEndTime},
+            #{cashPrizeEndTime},
+            #{cashPrizeEndDay},
+            #{isExchangeMoney},
+            #{exchangeMinMoney},
+            #{exchangeMaxMoney},
+            #{isRecycle},
+            #{cashPrize},
+            #{isMsg},
+            #{winPrizeTime},
+             #{prizeContent},
+             #{cashPrizeTel},
+             #{cashAdvisoryTime},
+             #{dayLimitNum},
+             #{everyoneLimitType},
+             #{everyoneLimitNum},
+             #{lxPrizeType}
+            )
+    </insert>
+    <delete id="delPrize" parameterType="Map">
+	   update  vps_vcode_prize_basic_info set delete_flag = 1
+	   where info_key = #{infoKey}
+	</delete>
+    <!-- 更新 -->
+    <update id="updatePrizeInfo" parameterType="com.dbt.platform.activity.bean.VcodePrizeBasicInfo">
+        update vps_vcode_prize_basic_info
+        <set>
+            <if test="prizeNo != null">
+                prize_no = #{prizeNo},
+            </if>
+            <if test="prizeName != null">
+                prize_name = #{prizeName},
+            </if>
+            <if test="prizeType != null">
+                prize_type = #{prizeType},
+            </if>
+            <if test="prizeWinPic != null">
+                prize_win_pic = #{prizeWinPic},
+            </if>
+            <if test="prizeEarnPic != null">
+                prize_earn_pic = #{prizeEarnPic},
+            </if>
+            <if test="prizeListPic != null">
+                prize_list_pic = #{prizeListPic},
+            </if>
+            <if test="verificationType != null">
+                verification_type = #{verificationType},
+            </if>
+            <if test="isCheckCaptcha != null">
+                is_check_captcha = #{isCheckCaptcha},
+            </if>
+            <if test="isIdcard != null">
+                is_idcard = #{isIdcard},
+            </if>
+            <if test="isPhone != null">
+                is_phone = #{isPhone},
+            </if>
+            <if test="isAddress != null">
+                is_address = #{isAddress},
+            </if>
+            <if test="isName != null">
+                is_name = #{isName},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="prizeShortName != null">
+                prize_short_name = #{prizeShortName},
+            </if>
+            <if test="prizeValue != null">
+                prize_value = #{prizeValue},
+            </if>
+            <if test="prizeEndTime != null">
+                prize_endTime = #{prizeEndTime},
+            </if>
+                cash_prize_endTime = #{cashPrizeEndTime},
+            <if test="cashPrizeEndDay != null">
+                cash_prize_endDay = #{cashPrizeEndDay},
+            </if>
+             is_exchange_money = #{isExchangeMoney},
+             exchange_min_money = #{exchangeMinMoney},
+             exchange_max_money = #{exchangeMaxMoney},
+            
+            <if test="isRecycle != null">
+                isRecycle = #{isRecycle},
+            </if>
+            <if test="cashPrize != null">
+                cashPrize = #{cashPrize},
+            </if>
+            <if test="isMsg != null">
+                isMsg = #{isMsg},
+        </if>
+            <if test="winPrizeTime != null">
+                win_prizeTime = #{winPrizeTime},
+            </if>
+            <if test="prizeContent != null">
+                prize_content = #{prizeContent},
+            </if>
+            <if test="cashPrizeTel != null">
+                cash_prize_tel = #{cashPrizeTel},
+            </if>
+            <if test="cashAdvisoryTime != null">
+                cash_advisory_time = #{cashAdvisoryTime},
+            </if>
+            <if test="dayLimitNum != null">
+                day_limit_num = #{dayLimitNum},
+            </if>
+            <if test="everyoneLimitType != null">
+                everyone_limit_type = #{everyoneLimitType},
+            </if>
+            <if test="everyoneLimitNum != null">
+                everyone_limit_num = #{everyoneLimitNum},
+            </if>
+            <if test="lxPrizeType != null">
+                lx_prize_type = #{lxPrizeType},
+            </if>
+        </set>
+        where info_key = #{infoKey}
+    </update>
+
+    <select id="findBigPrizeByKey" parameterType="Map" resultMap="vcodePrizeBasicInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        vps_vcode_prize_basic_info
+        WHERE  info_key = #{infoKey}
+    </select>
+
+    <select id="findBigPrizeByPrizeNo" parameterType="Map" resultMap="vcodePrizeBasicInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        vps_vcode_prize_basic_info
+        WHERE  prize_no = #{prizeNo}
+    </select>
+
+    <select id="queryAllBigPrize" parameterType="Map" resultMap="vcodePrizeBasicInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        vps_vcode_prize_basic_info where delete_flag = 0
+    </select>
+    
+    
+    
+    <select id="queryTerminalPrizeLst" parameterType="Map" resultType="com.dbt.platform.activity.bean.VcodePrizeBasicInfo">
+        select
+        	 info_key as 'infoKey',
+  			 prize_no as 'prizeNo',
+  			 prize_name as 'prizeName',
+  			 prize_list_pic as 'prizeListPic',
+			 create_time as 'createTime',
+			 prize_endTime as 'prizeEndTime',
+			 verification_type as 'verificationType',
+        	 a.prize_type as 'prizeType',
+             b.status as 'status'
+            <!-- 如果兑奖天数不为空用中奖截止时间加上兑奖天数,否则则用兑奖结束时间和当前时间比对 -->
+            ,IF(cash_prize_endDay is not null AND cash_prize_endDay !='',
+			TIMESTAMPDIFF(DAY,CURRENT_DATE(),date_add(date_format(prize_endTime,'%Y-%m-%d'), interval cash_prize_endDay day))>=0,
+			TIMESTAMPDIFF(DAY,CURRENT_DATE(),date_format(cash_prize_endTime,'%Y-%m-%d'))>=0
+			) as 'cashStatus'
+        from
+        	vps_vcode_prize_basic_info a
+        	inner join vps_prize_terminal_relation b on a.prize_no = b.PRIZE_TYPE and b.TERMINAL_KEY =#{queryBean.terminalKey}
+        	where a.delete_flag = 0
+        <if test="queryBean.prizeNo != null and queryBean.prizeNo != ''">
+            and a.prize_no = #{queryBean.prizeNo}
+        </if>
+        <if test="queryBean.prizeName != null and queryBean.prizeName != ''">
+            and a.prize_name like '%${queryBean.prizeName}%' 
+        </if>
+        <if test="queryBean.prizeType != null and queryBean.prizeType != ''">
+            and a.prize_type = #{queryBean.prizeType}
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and b.status = #{queryBean.status}
+        </if>
+        order by a.create_time desc
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+    <select id="queryTerminalPrizeCount" resultType="int" parameterType="Map">
+        select
+        	count(1)
+        from
+        	vps_vcode_prize_basic_info a
+        	inner join vps_prize_terminal_relation b on a.prize_no = b.PRIZE_TYPE and b.TERMINAL_KEY =#{queryBean.terminalKey}
+        	where a.delete_flag = 0
+        <if test="queryBean.prizeNo != null and queryBean.prizeNo != ''">
+            and a.prize_no = #{queryBean.prizeNo}
+        </if>
+        <if test="queryBean.prizeName != null and queryBean.prizeName != ''">
+            and a.prize_name like '%${queryBean.prizeName}%' 
+        </if>
+        <if test="queryBean.prizeType != null and queryBean.prizeType != ''">
+            and a.prize_type = #{queryBean.prizeType}
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and b.status = #{queryBean.status}
+        </if>
+    </select>
+</mapper>

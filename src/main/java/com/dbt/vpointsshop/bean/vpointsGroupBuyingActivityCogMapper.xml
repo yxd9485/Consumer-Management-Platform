@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGroupBuyingActivityCogDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsGroupBuyingActivityCog" id="resultActivityCog">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="activityNo" column="ACTIVITY_NO"/>
+		<result property="activityName" column="ACTIVITY_NAME"/>
+		<result property="ruleType" column="RULE_TYPE"/>
+		<result property="beginDate" column="BEGIN_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="goodsId" column="GOODS_ID"/>
+		<result property="groupBuyingPay" column="GROUP_BUYING_PAY"/>
+		<result property="groupBuyingVpoints" column="GROUP_BUYING_VPOINTS"/>
+		<result property="orderValidHour" column="ORDER_VALID_HOUR"/>
+        <result property="groupBuyingTotalNum" column="GROUP_BUYING_TOTAL_NUM"/>
+		<result property="limitGroupNum" column="LIMIT_GROUP_NUM"/>
+		<result property="reachNum" column="REACH_NUM"/>
+		<result property="isGroupBuyingLimit" column="IS_GROUP_BUYING_LIMIT"/>
+		<result property="groupBuyingLimitNum" column="GROUP_BUYING_LIMIT_NUM"/>
+		<result property="limitGroupNum" column="LIMIT_GROUP_NUM"/>
+		<result property="reachNum" column="REACH_NUM"/>
+		<result property="isUseDiscounts" column="IS_USE_DISCOUNTS"/>
+		<result property="crowdLimitType" column="CROWD_LIMIT_TYPE"/>
+		<result property="userGroupIds" column="USER_GROUP_IDS"/>
+		<result property="isNotice" column="IS_NOTICE"/>
+		<result property="noticeHour" column="NOTICE_HOUR"/>
+		<result property="isStop" column="IS_STOP"/>
+		<result property="shareImgUrl" column="SHARE_IMG_URL"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			a.INFO_KEY,
+			a.ACTIVITY_NO,
+			a.ACTIVITY_NAME,
+			a.RULE_TYPE,
+			a.BEGIN_DATE,
+			a.END_DATE,
+			a.GOODS_ID,
+			FORMAT(a.GROUP_BUYING_PAY / 100, 2) as GROUP_BUYING_PAY,
+            a.GROUP_BUYING_VPOINTS,
+            a.ORDER_VALID_HOUR,
+			a.GROUP_BUYING_TOTAL_NUM,
+			a.IS_GROUP_BUYING_LIMIT,
+			a.GROUP_BUYING_LIMIT_NUM,
+			a.LIMIT_GROUP_NUM,
+			a.REACH_NUM,
+			a.IS_USE_DISCOUNTS,
+			a.CROWD_LIMIT_TYPE,
+			a.USER_GROUP_IDS,
+			a.IS_NOTICE,
+			a.NOTICE_HOUR,
+			a.IS_STOP,
+			a.SHARE_IMG_URL,
+			a.DELETE_FLAG,
+			a.CREATE_TIME,
+			a.CREATE_USER,
+			a.UPDATE_TIME,
+			a.UPDATE_USER,
+            CASE 
+				WHEN a.RULE_TYPE = '1' AND (CURDATE() BETWEEN a.BEGIN_DATE AND a.END_DATE) AND IS_STOP = '0' THEN '1' 
+				WHEN a.RULE_TYPE = '2' AND (if(date_format(CURDATE(),'%w')=0,7,date_format(CURDATE(),'%w')) BETWEEN  a.BEGIN_DATE AND a.END_DATE) AND IS_STOP = '0' THEN '1'
+				WHEN (a.RULE_TYPE = '1' AND CURDATE() > a.END_DATE) OR IS_STOP = '1' THEN '2' 
+				ELSE '0'
+			END AS isBegin,
+			g.goods_name as goodsName
+	</sql>
+	
+	<insert id="create" parameterType="com.dbt.vpointsshop.bean.VpointsGroupBuyingActivityCog">
+		INSERT INTO vpoints_group_buying_activity (
+			INFO_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			RULE_TYPE,
+			BEGIN_DATE,
+			END_DATE,
+			GOODS_ID,
+			GROUP_BUYING_PAY,
+            GROUP_BUYING_VPOINTS,
+            ORDER_VALID_HOUR,
+			GROUP_BUYING_TOTAL_NUM,
+			IS_GROUP_BUYING_LIMIT,
+			GROUP_BUYING_LIMIT_NUM,
+			LIMIT_GROUP_NUM,
+			REACH_NUM,
+			IS_USE_DISCOUNTS,
+			CROWD_LIMIT_TYPE,
+			USER_GROUP_IDS,
+			IS_NOTICE,
+			NOTICE_HOUR,
+			SHARE_IMG_URL,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{infoKey},
+			#{activityNo},
+			#{activityName},
+			#{ruleType},
+			#{beginDate},
+			#{endDate},
+			#{goodsId},
+			#{groupBuyingPay},
+            #{groupBuyingVpoints},
+            #{orderValidHour},
+			#{groupBuyingTotalNum},
+			#{isGroupBuyingLimit},
+			#{groupBuyingLimitNum},
+			#{limitGroupNum},
+			#{reachNum},
+			#{isUseDiscounts},
+			#{crowdLimitType},
+			#{userGroupIds},
+			#{isNotice},
+			#{noticeHour},
+			#{shareImgUrl},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsGroupBuyingActivityCog">
+        UPDATE
+			vpoints_group_buying_activity
+		SET
+            ACTIVITY_NAME = #{activityName},
+            RULE_TYPE = #{ruleType},
+            begin_date = #{beginDate},
+            end_date = #{endDate},
+            GOODS_ID = #{goodsId},
+            GROUP_BUYING_PAY = #{groupBuyingPay},
+            GROUP_BUYING_VPOINTS = #{groupBuyingVpoints},
+            ORDER_VALID_HOUR = #{orderValidHour},
+            GROUP_BUYING_TOTAL_NUM = #{groupBuyingTotalNum},
+            IS_GROUP_BUYING_LIMIT = #{isGroupBuyingLimit},
+            GROUP_BUYING_LIMIT_NUM = #{groupBuyingLimitNum},
+            LIMIT_GROUP_NUM = #{limitGroupNum},
+			REACH_NUM = #{reachNum},
+            IS_USE_DISCOUNTS = #{isUseDiscounts},
+            CROWD_LIMIT_TYPE = #{crowdLimitType},
+            USER_GROUP_IDS = #{userGroupIds},
+            IS_NOTICE = #{isNotice},
+            NOTICE_HOUR = #{noticeHour},
+            SHARE_IMG_URL = #{shareImgUrl},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findById" resultMap="resultActivityCog" parameterType="String">
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vpoints_group_buying_activity a
+        left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.INFO_KEY = #{infoKey}
+	</select>
+	
+	<select id="queryForLst" resultMap="resultActivityCog" parameterType="Map">
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vpoints_group_buying_activity a
+	    left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.DELETE_FLAG = '0'  
+	        <if test="queryBean.keyWord != null and queryBean.keyWord != ''">
+	            and (a.activity_name like '%${queryBean.keyWord}%' or g.goods_name like '%${queryBean.keyWord}%')
+	        </if>
+	        <choose>
+				<when test="queryBean.beginDate != null and queryBean.beginDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(a.begin_date > #{queryBean.endDate} or #{queryBean.beginDate} > a.end_date)
+		        </when>
+		        <when test="queryBean.beginDate != null and queryBean.beginDate != ''">
+		            AND #{queryBean.beginDate} between a.begin_date and a.end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between a.begin_date and a.end_date 
+		        </when>
+			</choose>
+	        <choose>
+	           <when test="queryBean.tabsFlag == 1">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and a.begin_date > #{queryBean.currDate}) 
+	               or (a.rule_type = '2' 
+	               		and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) <![CDATA[<]]> a.begin_date 
+	               		or if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) > a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 2">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and #{queryBean.currDate} between a.begin_date and a.end_date)
+	               or ( a.rule_type = '2' and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) between a.begin_date and a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 3">
+	               and (a.rule_type = '1' and #{queryBean.currDate} > a.end_date) or is_stop = '1'
+	           </when>
+	        </choose>
+	        <choose>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'a.create_time'">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, a.CREATE_TIME DESC
+	          </when>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+	          </when>
+              <when test="queryBean.tabsFlag == 4">
+                   ORDER BY isBegin, a.CREATE_TIME DESC
+              </when>
+	          <otherwise>ORDER BY a.CREATE_TIME DESC</otherwise>
+	        </choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="Integer" parameterType="Map">
+		SELECT
+			count(a.info_key)
+		FROM
+			vpoints_group_buying_activity a
+	    left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.DELETE_FLAG = '0'  
+	        <if test="queryBean.keyWord != null and queryBean.keyWord != ''">
+	            and (a.activity_name like '%${queryBean.keyWord}%' or g.goods_name like '%${queryBean.keyWord}%')
+	        </if>
+	        <if test="queryBean.goodsId != null and queryBean.goodsId != ''">
+	            and a.goods_id = #{queryBean.goodsId}
+	        </if>
+	        <choose>
+				<when test="queryBean.beginDate != null and queryBean.beginDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(a.begin_date > #{queryBean.endDate} or #{queryBean.beginDate} > a.end_date)
+		        </when>
+		        <when test="queryBean.beginDate != null and queryBean.beginDate != ''">
+		            AND #{queryBean.beginDate} between a.begin_date and a.end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between a.begin_date and a.end_date 
+		        </when>
+			</choose>
+	        <choose>
+	           <when test="queryBean.tabsFlag == 1">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and a.begin_date > #{queryBean.currDate}) 
+	               or (a.rule_type = '2' 
+	               		and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) <![CDATA[<]]> a.begin_date 
+	               		or if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) > a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 2">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and #{queryBean.currDate} between a.begin_date and a.end_date)
+	               or ( a.rule_type = '2' and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) between a.begin_date and a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 3">
+	               and (a.rule_type = '1' and #{queryBean.currDate} > a.end_date) or is_stop = '1'
+	           </when>
+	        </choose>
+	</select>
+	
+	<update id="updateActivityStop" parameterType="String">
+		update vpoints_group_buying_activity set is_stop = '1' where info_key = #{infoKey}
+	</update>
+	
+	<update id="updateActivityDel" parameterType="String">
+		update vpoints_group_buying_activity set delete_flag = '1' where info_key = #{infoKey}
+	</update>
+	
+	<select id="queryByGoodsId" parameterType="String" resultMap="resultActivityCog">
+		select 
+			<include refid="Base_Column_List"></include>
+		from vpoints_group_buying_activity a
+		left join vpoints_goods_info g on a.goods_id = g.goods_id
+		where a.delete_flag = '0'
+		and a.is_stop = '0'
+		and a.goods_id = #{goodsId}
+	</select>
+</mapper>

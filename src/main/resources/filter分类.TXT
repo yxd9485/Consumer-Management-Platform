@@ -1,0 +1,251 @@
+1. 企业基础信息
+	#project
+	filter.project.interface.code=DBTHuNanQPInterface
+	filter.project.plantform.code=DBTHuNanQPPlatform
+	#管理平台中项目的汉字名称
+	filter.project.name=\u6e56\u5357\u9752\u5564[\u6d4b\u8bd5]
+	#Redis缓存中项目前缀
+	filter.project.serverName=hunan
+	#订单前缀
+	filter.project.orderPrefix=QPHUN
+	#Sys_Area_Info表中省编码的前两位，大于一个时用半角逗号分隔
+	filter.project.area=43
+	#项目标志
+	filter.project.flag=n
+	#Redis消息订阅通道
+	filter.project.redisChannel=QP.C1.hunan
+	#跟main工程关联的项目编号
+	filter.project.itemValue=G
+
+
+2.微信支付配置
+	#支付通道所属公司标志(支付公众号对应公司简拼)
+	filter.project.pay=pay_tianjin
+	#微信支付证书密码(密码默认是商户号)--废弃
+	filter.wxPay.certPassword=1316154301
+	#微信支付分配的商户号(即Vjifen返利会员卡测试环境)
+	filter.wxPay.mch.billno=1316154301
+	#商户名称--废弃
+	filter.wxPay.send.name=V\u79EF\u5206\u8FD4\u5229\u4F1A\u5458\u5361
+	#交易描述
+	filter.transfers.desc=\u9752\u5c9b\u5564\u9152\u6e56\u5357
+
+
+3.微信公账号级模板消息
+	#V积分返利会员卡公众号（测试公众号）（支付公众号）
+	filter.vjf.appid=wx459ee9aa61f38da3
+	#用户互动公众号appid（互动公众号）
+	filter.hd.appid=wx1ce2ca65ccc5aa5e
+	#激活工具公众号appid（品牌服务）
+	filter.activate.appid=wx1ce2ca65ccc5aa5e
+	#公众号-积分返利会员卡公众号（测试公众号）（企业公众号）
+	filter.company.appid=wx459ee9aa61f38da3
+
+  #微信模板消息
+	#微信H5跳转域名
+	filter.wechat.h5.domain=http://vd.vjifen.com/
+	#积分兑换成功通知
+	filter.wechat.tmpMsg.exchange=XbNybbzmw4HuIQ0y_-ip93L3rNVlTbxnw7rfEcgDjMo
+	#订单发货通知
+	filter.wechat.tmpMsg.expressSend=J5d-Dri5dlki2cVor7azk5WZb-oriDR48Q4grAPa9Js
+
+	#双十一优惠券提醒消息相关(小程序appid和secret都是线上)
+	filter.applet.doubleeleven.appid=wx19a37671f1253dd3
+	filter.applet.doubleeleven.secret=7a0fd12a4b75cc40dedcf0e99e92e0db
+	#提醒模板
+	filter.wechat.tmpMsg.doubleelevenRemind=MSkyqXHPFe1U9lr08F20nnshgTNYXOW5l3wca5vrwO4
+
+
+4.http调用URL配置
+	#通用统计服务url
+	filter.DBTMainEntStats.url=http://192.168.0.238:8080/DBTMainEntStats/
+	#前端获取测试Token地址
+	filter.wct.token.url.h5=http://xt.vjifen.com/wx3/getAccessToken?appid=
+	#腾讯KB请求URL
+	filter.kb.url=http://www.1903beer.com/fifa_2018/kbtest1.html
+	#前端识别openid有效性的URL
+	filter.biz.openid.url=http://xt.vjifen.com/wx3/uinfo2
+	#二维码url
+	filter.qrcode.url=http://xt.vjifen.com/qr?c=
+
+
+
+5.活动UI版本配置
+	#activityVersion
+	filter.activityVersion.type1=\u666e\u901a\u7248
+	filter.activityVersion.type2=\u65b0\u5e74\u7248
+	filter.activityVersion.type3=2019\u7ecf\u5178\u6807\u51c6\u7248-02\u7248
+	filter.activityVersion.type4=\u4e16\u754c\u676f\u7248
+	filter.activityVersion.type5=
+	filter.activityVersion.type6=
+	filter.activityVersion.type7=
+	filter.activityVersion.type8=
+	filter.activityVersion.type9=
+	filter.activityVersion.type10=
+
+6.奖品类型配置分为 a 基础奖类型 ：0.1.2  b实物奖类型 ty5 6 7 p到p10  c优惠券
+	#prizeName
+	#现金红包
+	filter.prize.type0=\u73b0\u91d1\u7ea2\u5305
+	#积分红包
+	filter.prize.type1=\u79ef\u5206\u7ea2\u5305
+	#积分现金红包
+	filter.prize.type2=\u79ef\u5206\u73b0\u91d1\u7ea2\u5305
+	#一等奖-歌诗达邮轮之旅
+	filter.prize.type5=\u6b4c\u8bd7\u8fbe\u90ae\u8f6e\u4e4b\u65c5
+	#二等奖-草莓音乐节门票一张
+	filter.prize.type6=\u8349\u8393\u97f3\u4e50\u8282\u95e8\u7968\u4e00\u5f20
+	#三等奖-俄罗斯之旅
+	filter.prize.type7=\u4fc4\u7f57\u65af\u4e4b\u65c5
+	#P等奖-冬奥环球之旅
+	filter.prize.typeP=\u51ac\u5965\u73af\u7403\u4e4b\u65c5
+	#Q等奖-冰雪冬令营
+	filter.prize.typeQ=\u51b0\u96ea\u51ac\u4ee4\u8425
+	#R等奖-青啤有一套
+	filter.prize.typeR=\u9752\u5564\u6709\u4e00\u5957
+	#S等奖
+	filter.prize.typeS=
+	#T等奖
+	filter.prize.typeT=
+	#U等奖-
+	filter.prize.typeU=
+	#V等奖-
+	filter.prize.typeV=
+	#W等奖-
+	filter.prize.typeW=
+	#X等奖-
+	filter.prize.typeX=
+	#Y等奖-
+	filter.prize.typeY=
+	#Z等奖-
+	filter.prize.typeZ=
+	#P01等奖-
+	filter.prize.typeP01=
+	#P02等奖-
+	filter.prize.typeP02=
+	#P03等奖-
+	filter.prize.typeP03=
+	#P04等奖-
+	filter.prize.typeP04=
+	#P05等奖-
+	filter.prize.typeP05=
+	#P06等奖-
+	filter.prize.typeP06=
+	#P07等奖-
+	filter.prize.typeP07=
+	#P08等奖-
+	filter.prize.typeP08=
+	#P09等奖-
+	filter.prize.typeP09=
+	#P10等奖-
+	filter.prize.typeP10=
+	#H优惠券（京东券）
+	filter.prize.typeH=\u4eac\u4e1c\u5238
+	#I优惠券
+	filter.prize.typeI=
+	#J优惠券
+	filter.prize.typeJ=
+	#K优惠券
+	filter.prize.typeK=
+	#L优惠券
+	filter.prize.typeL=
+	#M优惠券
+	filter.prize.typeM=
+	#N优惠券
+	filter.prize.typeN=
+
+7.缓存配置 舍弃
+	#MemberCache
+	filter.membercache.ip=192.168.0.129
+	filter.membercache.port=22222
+	
+	#Redis
+	filter.redis.host=192.168.0.129
+	filter.redis.port=6379
+	filter.redis.password=vjifen
+	filter.redis.timeout=2000
+	filter.redis.maxIdle=300
+	filter.redis.minIdle=100
+	filter.redis.maxTotal=600
+	filter.redis.testOnBorrow=true
+	filter.redis.testOnReturn=true
+	
+	#LotteryPubSub Redis
+	filter.lottery.redis.host=192.168.0.129
+	filter.lottery.redis.port=6379
+	filter.lottery.redis.password=vjifen
+	filter.lottery.redis.timeout=2000
+	filter.lottery.redis.maxIdle=300
+	filter.lottery.redis.minIdle=100
+	filter.lottery.redis.maxTotal=600
+	filter.lottery.redis.testOnBorrow=true
+	filter.lottery.redis.testOnReturn=true
+
+#需要移动到主表（不用移到数据字典）
+#JDBC
+filter.jdbc.driverClassName=com.mysql.jdbc.Driver
+filter.jdbc.url=jdbc\:mysql\://192.168.0.128/vjifen_common3_test?Unicode\=true&amp;characterEncoding\=utf-8&amp;zeroDateTimeBehavior\=convertToNull&amp;transformedBitIsBoolean\=true&amp;allowMultiQueries\=true&amp;useAffectedRows\=true
+filter.jdbc.username=root
+filter.jdbc.password=ZS3l4H86
+
+
+8.特殊金额配置
+	filter.qrcode.defaultContentUrl=
+	filter.qrcode.phoneNum=010-56134186
+	
+	filter.qrCode.money.type1=0.00
+	filter.qrcode.vpointsCogKey.type1=APVK00000000
+	filter.qrcode.codeContentUrl.type1=
+	filter.qrCode.max.count.type1=0
+	
+	filter.qrCode.money.type2=0.00
+	filter.qrcode.vpointsCogKey.type2=APVK00000000
+	filter.qrcode.codeContentUrl.type2=
+	filter.qrCode.max.count.type2=0
+	
+	filter.qrCode.money.type3=0.00
+	filter.qrcode.vpointsCogKey.type3=APVK00000000
+	filter.qrcode.codeContentUrl.type3=
+	filter.qrCode.max.count.type3=0
+
+9.文件/图片存储路径配置（迁移到common中）
+	#优惠券码入库指定文件
+	filter.ticket.filepath=/data/upload/ticket/
+	#码源生成操作路径
+	filter.create.code.common.path=/data/upload/autocode
+	#导入二维码文件存放路径
+	filter.qrcode.saveQrcodeFilePath=/home/importQrcode
+
+
+#首扫类型：（废除）
+filter.first.sweepType=ACTIVITY
+
+10.功能开关配置
+	#power 0:关、1:开
+	#周签到
+	filter.switch.weekSign=1
+	#季度酒王排名
+	filter.switch.quarterRank=0
+	#特殊金额配置
+	filter.switch.specialMoney=0
+	#欢乐送订阅开关
+	filter.switch.lottery=0
+	#捆绑促销开关
+	filter.switch.bindPromotion=0
+	#一码双奖开关
+	filter.switch.doublePrize=0
+	#扫码集卡开关
+	filter.switch.scanCard=0
+	#关注集卡开关
+	filter.switch.attentionCard=0
+	#签到集卡开关
+	filter.switch.signCard=0
+	#互动-情与利
+	filter.switch.connect=0
+	#月度酒王城市排名
+	filter.switch.monthCityRank=0
+
+
+#存储到数据字典类型中
+#管理平台验证码
+filter.platform.verifycode=1111

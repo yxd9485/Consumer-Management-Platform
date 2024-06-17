@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.IMnTerminalInfoDao">
+
+<delete id="removeAll">
+    delete from mn_terminal_info where 1=1
+</delete>
+<delete id="deleteById">
+    delete from mn_terminal_info where id=#{id}
+</delete>
+    <insert id="insert" parameterType="com.dbt.platform.mn.bean.MnTerminalInfoEntity">
+       INSERT INTO `mn_terminal_info` (
+`ID`,
+`TER_CODE`,
+`MDG_TERCODE`,
+`NZGTERID`,
+`MDGBIGAREAID`,
+`MDGBIGAREANAME`,
+`MDGPROVINCEID`,
+`MDGPROVINCENAME`,
+`SECAREAID`,
+`SECAREANAME`,
+`GRIDID`,
+`GRIDNAME`,
+`ROUTEID`,
+`ROUTENAME`,
+`TER_NAME`,
+`TER_CONTACT`,
+`TER_MOBILE`,
+`TER_PROVINCE`,
+`PROVINCENAME`,
+`TER_CITY`,
+`CITYNAME`,
+`TER_COUNTY`,
+`COUNTYNAME`,
+`TER_ADDRESS`,
+`LON`,
+`LAT`,
+`TER_POIADDRESS`,
+`MAINCHANNEL`,
+`MAINCHANNELNAME`,
+`MINCHANNEL`,
+`MINCHANNELNAME`,
+`STATUS`,
+`REGISTERSTATUS`,
+`CRETIME`,
+`ter_picpath`,
+`UPTIME`
+)
+VALUES
+	(
+	#{id},
+	#{ter_code},
+	#{mdg_tercode},
+	#{nzgterid},
+	#{mdgbigareaid},
+	#{mdgbigareaname},
+	#{mdgprovinceid},
+	#{mdgprovincename},
+	#{secareaid},
+	#{secareaname},
+	#{gridid},
+	#{gridname},
+	#{routeid},
+	#{routename},
+	#{ter_name},
+	#{ter_contact},
+	#{ter_mobile},
+	#{ter_province},
+	#{provincename},
+	#{ter_city},
+	#{cityname},
+	#{ter_county},
+	#{countyname},
+	#{ter_address},
+	#{lon},
+	#{lat},
+	#{ter_poiaddress},
+	#{mainchannel},
+	#{mainchannelname},
+	#{minchannel},
+	#{minchannelname},
+	#{status},
+	#{registerstatus},
+	#{cretime},
+	#{ter_picpath},
+#{uptime}
+	);
+    </insert>
+
+</mapper>

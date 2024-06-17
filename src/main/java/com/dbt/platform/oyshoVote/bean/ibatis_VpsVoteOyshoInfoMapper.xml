@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.oyshoVote.dao.IVpsVoteOyshoInfoDao">
+
+	<resultMap type="com.dbt.platform.oyshoVote.bean.VpsVoteOyshoInfo" id="baseResultMap">
+		<result property="oyshoKey" column="OYSHO_KEY"/>
+		<result property="oyshoName" column="OYSHO_NAME"/>
+		<result property="oyshoNo" column="OYSHO_NO"/>
+		<result property="userKey" column="USER_KEY"/>
+  		<result property="imageUrl" column="IMAGE_URL"/>
+  		<result property="sgsImageUrl" column="SGS_IMAGE_URL"/>
+  		<result property="province" column="PROVINCE"/>
+  		<result property="city" column="CITY"/>
+  		<result property="county" column="COUNTY"/>
+  		<result property="address" column="ADDRESS"/>
+  		<result property="warAreaName" column="WAR_AREA_NAME"/>
+  		<result property="introduce" column="INTRODUCE"/>
+  		<result property="vote" column="VOTE"/>
+  		<result property="virtualVote" column="VIRTUAL_VOTE"/>
+  		<result property="virtualUser" column="VIRTUAL_USER"/>
+  		<result property="uploadPic" column="UPLOAD_PIC"/>
+        <result property="firstImgH" column="FIRST_IMGH"/>
+        <result property="ticketChannel" column="TICKET_CHANNEL"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.oyshoVote.bean.VpsVoteOyshoInfo">
+	   insert into vps_vote_oysho_info(
+	       OYSHO_NAME, OYSHO_NO, USER_KEY, IMAGE_URL, SGS_IMAGE_URL, PROVINCE, CITY, 
+	       COUNTY, ADDRESS, WAR_AREA_NAME, INTRODUCE, UPLOAD_PIC, FIRST_IMGH, TICKET_CHANNEL, delete_flag, create_time)
+	   select 
+	       #{oyshoName}, LPAD(#{oyshoNo},5,'0'), #{userKey}, #{imageUrl}, 
+	       #{sgsImageUrl}, #{province}, #{city}, #{county}, #{address}, #{warAreaName}, #{introduce}, #{uploadPic},  #{firstImgH}, #{ticketChannel}, '0', #{createTime}
+	</insert>
+	
+	<select id="findAutoId" parameterType="Map" resultType="int">
+	   SELECT auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA = #{tableSchema} AND TABLE_NAME='vps_vote_oysho_info'
+	</select>
+	
+	<!-- 删除评选促销员 -->
+    <delete id="deleteByUserKey" parameterType="String">
+        delete from vps_vote_oysho_info where user_key = #{userKey}
+    </delete>
+</mapper>

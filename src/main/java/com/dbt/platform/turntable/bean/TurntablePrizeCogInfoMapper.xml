@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.turntable.dao.TurntablePrizeDao">
+    <resultMap id="resultMap" type="com.dbt.platform.turntable.bean.VpsTurntablePrizeCog">
+        <result property="infoKey" column="info_key"/>
+        <result property="turntableActivityKey" column="turntable_activity_key"/>
+        <result property="turntablePosition" column="turntable_position"/>
+        <result property="turntablePrizeName" column="turntable_prize_name"/>
+        <result property="turntablePrizeType" column="turntable_prize_type"/>
+        <result property="launchNumber" column="launch_number"/>
+        <result property="receiveNumber" column="receive_number"/>
+        <result property="turntablePic" column="turntable_pic"/>
+        <result property="money" column="money"/>
+        <result property="onceMore" column="once_more"/>
+        <result property="vpoints" column="vpoints"/>
+        <result property="rangeVpoints" column="range_vpoints"/>
+        <result property="prizeType" column="PRIZE_TYPE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+    <insert id="createTurntablePrize" parameterType="com.dbt.platform.turntable.bean.VpsTurntablePrizeCog">
+        insert into vps_turntable_prize_cog (info_key,
+                                             turntable_activity_key,
+                                             turntable_position,
+                                             turntable_prize_name,
+                                             turntable_prize_type,
+                                             launch_number,
+                                             receive_number,
+                                             turntable_pic,
+                                             money,
+                                             vpoints,
+                                             PRIZE_TYPE,
+                                             once_more,
+                                             CREATE_TIME,
+                                             CREATE_USER,
+                                             UPDATE_TIME,
+                                             UPDATE_USER)
+        values (#{infoKey},
+                #{turntableActivityKey},
+                #{turntablePosition},
+                #{turntablePrizeName},
+                #{turntablePrizeType},
+                #{launchNumber},
+                #{receiveNumber},
+                #{turntablePic},
+                #{money},
+                #{vpoints},
+                #{prizeType},
+                #{onceMore},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser})
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.turntable.bean.VpsTurntablePrizeCog">
+        update
+        vps_turntable_prize_cog
+        <set>
+            <if test="turntablePrizeName != null and turntablePrizeName != ''">
+                turntable_prize_name = #{turntablePrizeName},
+            </if>
+            <if test="turntablePrizeType != null and turntablePrizeType != ''">
+                turntable_prize_type = #{turntablePrizeType},
+            </if>
+            <if test="turntablePic != null and turntablePic != ''">
+                turntable_pic = #{turntablePic},
+            </if>
+            money = #{money},
+            once_more = #{onceMore},
+            vpoints = #{vpoints},
+            range_vpoints = #{rangeVpoints},
+            PRIZE_TYPE =#{prizeType},
+            launch_number = #{launchNumber},
+            UPDATE_TIME = #{updateTime},
+            UPDATE_USER = #{updateUser}
+        </set>
+        where
+        info_key = #{infoKey}
+    </update>
+
+    <select id="queryTurntablePrizeNum" parameterType="string" resultType="int">
+        select count(*)
+        from vps_turntable_prize_cog
+        where turntable_activity_key = #{activityKey}
+    </select>
+
+    <select id="queryTurntablePrizeByActivityKey" parameterType="string" resultMap="resultMap">
+        select *
+        from vps_turntable_prize_cog
+        where turntable_activity_key = #{activityKey}
+        order by turntable_position
+    </select>
+
+    <select id="queryTurntablePrizeByInfoKey" parameterType="string" resultMap="resultMap">
+        select *
+        from vps_turntable_prize_cog
+        where info_key = #{infoKey}
+    </select>
+</mapper>

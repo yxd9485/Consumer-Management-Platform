@@ -1,0 +1,3 @@
+ALTER TABLE `vps_vcode_prize_basic_info`
+ADD COLUMN `cash_prize_tel` varchar(50) DEFAULT NULL COMMENT '兑奖咨询电话' AFTER `win_prizeTime`,
+ADD COLUMN `cash_advisory_time` varchar(250) DEFAULT '' COMMENT '咨询时间' AFTER `cash_prize_tel`;

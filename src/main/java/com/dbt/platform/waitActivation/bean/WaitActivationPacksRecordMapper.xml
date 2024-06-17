@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.waitActivation.dao.WaitActivationPacksRecordDao">
+    <resultMap id="resultMap" type="com.dbt.platform.waitActivation.bean.VpsWaitActivationPacksRecord">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="sourceChannel" column="SOURCE_CHANNEL"/>
+        <result property="userKey" column="USER_KEY"/>
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="rebateRuleKey" column="REBATE_RULE_KEY"/>
+        <result property="vpointsCogKey" column="VPOINTS_COG_KEY"/>
+        <result property="prizeDesc" column="PRIZE_DESC"/>
+        <result property="isWaitActivation" column="IS_WAIT_ACTIVATION"/>
+        <result property="expireTime" column="EXPIRE_TIME"/>
+        <result property="activationChannel" column="ACTIVATION_CHANNEL"/>
+        <result property="activationStatus" column="ACTIVATION_STATUS"/>
+        <result property="activationTime" column="ACTIVATION_TIME"/>
+        <result property="prizeType" column="PRIZE_TYPE"/>
+        <result property="earnTime" column="EARN_TIME"/>
+        <result property="earnMoney" column="EARN_MONEY"/>
+        <result property="earnVpoints" column="EARN_VPOINTS"/>
+        <result property="prizeInfoKey" column="PRIZE_INFO_KEY"/>
+        <result property="prizeRecordKey" column="PRIZE_RECORD_KEY"/>
+        <result property="prizeName" column="PRIZE_NAME"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="longitude" column="LONGITUDE"/>
+        <result property="latitude" column="LATITUDE"/>
+        <result property="province" column="PROVINCE"/>
+        <result property="city" column="CITY"/>
+        <result property="county" column="COUNTY"/>
+        <result property="testStatus" column="test_status"/>
+    </resultMap>
+
+    <select id="queryAllTables" parameterType="map" resultType="java.lang.Integer">
+        SELECT SUM(total_num) AS total_count FROM(
+            <foreach collection="tableList" item="tableName" separator=" UNION ALL ">
+                SELECT
+                    count(*) AS total_num
+                FROM 
+                    ${tableName}
+                WHERE
+                    SOURCE_CHANNEL = COALESCE(#{sourceChannel}, '0')
+                    AND VPOINTS_COG_KEY = #{vpointsCogKey}
+                    AND DATE(EARN_TIME) = CURDATE()
+            </foreach>
+        ) AS all_tables;
+    </select>
+</mapper>

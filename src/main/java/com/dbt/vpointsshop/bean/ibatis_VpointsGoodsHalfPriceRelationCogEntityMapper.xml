@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsHalfPriceRelationCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsHalfPriceRelationCogEntity">
+        <result column="goods_id" property="goodsId" />
+        <result column="half_price_info_key" property="halfPriceInfoKey" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        goods_id, half_price_info_key
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsHalfPriceRelationCogEntity">
+        insert into vpoints_goods_half_price_relation_cog (
+                  goods_id,
+                  half_price_info_key
+        ) values (
+                #{goodsId},
+                #{halfPriceInfoKey}
+        )
+    </insert>
+    <delete id="deleteByInfoKey" parameterType="string">
+        delete from vpoints_goods_half_price_relation_cog where half_price_info_key = #{infoKey}
+    </delete>
+    <select id="selectByHalfPriceInfoKey" resultType="string">
+        select goods_id from  vpoints_goods_half_price_relation_cog where half_price_info_key = #{infoKey}
+
+    </select>
+</mapper>

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<!-- begin 河北:可疑用户一个月后自动进入黑名单 -->
+	<bean id="dubiousUserConvertBlackUserJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<bean
+				class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<!-- class属性调用哪个类 -->
+				<property name="targetObject">
+					<bean id="vcodeActivityBlacklistJob"
+						class="com.dbt.platform.job.VcodeActivityBlacklistJob" />
+				</property>
+				<!-- value属性调用这个类的哪个方法 -->
+				<property name="targetMethod">
+					<value>dubiousUserConvertBlackUser</value>
+				</property>
+			</bean>
+		</property>
+		<property name="cronExpression">
+			<!-- 秒，分，时 ，天，月，年 -->
+			<value>0 0 0 * * ?</value>
+		</property>
+	</bean>
+	<!-- end可疑用户一个月后自动进入黑名单 -->
+   
+     <!-- add by jiquanwei 2016-02-17 更新活动配置中各积分区间剩余数量 start -->
+    <bean id="updateActivityVpointsCogJob" class="com.dbt.platform.job.UpdateActivityVpointsCogJob"></bean>
+    <bean id="updateActivityVpointsCogJobDetail"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="updateActivityVpointsCogJob" />
+        </property>
+        <property name="targetMethod">
+            <value>updateBathWaitActivityVpointsCog</value>
+        </property>
+    </bean>
+    <bean id="updateAcitivityVpointsCogTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="updateActivityVpointsCogJobDetail" />
+        </property>
+        <property name="cronExpression">
+            <value>0 1/5 * ? * *</value>
+        </property>
+    </bean>
+    <!-- add by jiquanwei 2016-02-17 更新活动配置中各积分区间剩余数量 start  end -->
+
+    <!-- 一码双奖清除用户活动标签 start -->
+    <bean id="vpsVcodeDoublePrizeCogJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="vpsVcodeDoublePrizeCogJob" class="com.dbt.platform.job.VpsVcodeDoublePrizeCogJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>clearDoublePrizeForUser</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 13 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- 一码双奖清除用户活动标签 end -->
+
+    <!-- 一码双奖清除过期的已中出奖项 start -->
+    <bean id="doublePrizeCogClearLotteryJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="vpsVcodeDoublePrizeCogJob" class="com.dbt.platform.job.VpsVcodeDoublePrizeCogJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>clearDoublePrizeLottery</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 1/5 * ? * *</value>
+        </property>
+    </bean>
+    <!-- 一码双奖清除过期的已中出奖项 end -->
+   
+    <!-- 更新订单签收状态，发货后15天 start -->
+    <bean id="updateExpressSingJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="vpointsExchangeJob" class="com.dbt.platform.job.VpointsExchangeJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>updateExpressSignJob</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 0/5 * ? * *</value>
+        </property>
+    </bean>
+    <!-- 更新订单签收状态，发货后15天 end -->
+    
+    <!-- 模板消息推送 start -->
+    <bean id="sendTemplateMsgJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="sendTemplateMsgJob" class="com.dbt.platform.job.SendTemplateMsgJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>sendTemplateMsg</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 0 0/1 ? * *</value>
+        </property>
+    </bean>
+    <!-- 模板消息推送 end -->
+
+    <!-- add by zzy 2018-11-17 统计规则到期 start -->
+    <bean id="countMsgExpireRemindInfoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="msgExpireRemindInfoJob" class="com.dbt.platform.job.MsgExpireRemindInfoJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>totalMsgExpireRemind</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+                <value>0 0 1 * * ?</value>
+           <!-- <value>0 0/3 * * * ?</value>-->
+        </property>
+    </bean>
+    <!-- add by zzy 2018-11-17 统计规则到期 start -->
+
+    <!-- add by zzy 2018-11-17 清除到期提醒 start -->
+    <bean id="cleanMsgExpireRemindInfoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="msgExpireRemindInfoJob" class="com.dbt.platform.job.MsgExpireRemindInfoJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>cleanMsgExpireRemindInfo</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+                <value>0 0 2 * * ?</value>
+           <!-- <value>0 0/3 * * * ?</value>-->
+        </property>
+    </bean>
+    <!-- add by zzy 2018-11-17 统计规则到期 start -->
+
+    <!-- add by zzy 2018-11-20 统计红包个数 start -->
+    <bean id="countRedPacketMsgExpireRemindInfoJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="redPacketMsgExpireRemindInfoJob" class="com.dbt.platform.job.RedPacketMsgExpireRemindInfoJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>totalRedPacketMsgExpireRemind</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <!--<value>0 15 0 * * ?</value>-->
+            <value>0 */50 * * * ?</value>
+           <!-- <value>0 0/5 * * * ?</value>-->
+
+        </property>
+    </bean>
+    <!-- add by zzy 2018-11-20 统计红包个数 start-->
+    <!-- add 释放可疑  开始-->
+    <bean id="releaseOfSuspectsJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="releaseOfSuspectsJob" class="com.dbt.platform.job.ReleaseOfSuspectsJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>updateReleaseOfSuspects</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <!--<value>0 15 0 * * ?</value>-->
+            <value>0 0 0/1 * * ?</value>
+            <!-- <value>0 0/5 * * * ?</value>-->
+        </property>
+    </bean>
+    <!-- add 释放可疑  结束-->
+
+    <!-- 月度城市酒王名排名持久化 start -->
+    <bean id="vpsVcodeMonthCityRankJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="vpsVcodeDoublePrizeCogJob" class="com.dbt.platform.job.VpsVcodeMonthCityRankJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>executeRankHistory</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 0 0 1 * ?</value>
+        </property>
+    </bean>
+    <!-- 月度城市酒王名排名持久化 end -->
+
+    <!-- 大奖回收 start -->
+    <bean id="recyclePrizeJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <bean
+                class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <!-- class属性调用哪个类 -->
+                <property name="targetObject">
+                    <bean id="recyclePrizeJob" class="com.dbt.platform.job.RecyclePrizeJob" />
+                </property>
+                <!-- value属性调用这个类的哪个方法 -->
+                <property name="targetMethod">
+                    <value>recyclePrize</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <!-- 秒，分，时 ，天，月，年 -->
+            <value>0 5 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- 大奖回收 end -->
+
+	<bean id="schedulerFactory"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 可疑用户一个月后自动进入黑名单 -->
+				<ref local="dubiousUserConvertBlackUserJobTrigger" />
+                <!-- 更新活动配置中各积分区间剩余数量 -->
+                <ref local="updateAcitivityVpointsCogTrigger"/>
+                <!-- 一码双奖清除用户活动标签 -->
+                <ref local="vpsVcodeDoublePrizeCogJobTrigger"/>
+                <!-- 一码双奖清除过期的已中出奖项 -->
+                <ref local="doublePrizeCogClearLotteryJobTrigger"/>
+                <!-- 更新订单签收状态，发货后15天 -->
+                <ref local="updateExpressSingJobTrigger"/>
+              	<!--   统计批次/规则到期提醒-->
+                <ref local="countMsgExpireRemindInfoJobTrigger"/>
+                <!--   统计批次/规则到期提醒-->
+                <ref local="cleanMsgExpireRemindInfoJobTrigger"/>
+              	<!--   红包个数/红包金额低于阈值提醒-->
+                <ref local="countRedPacketMsgExpireRemindInfoJobTrigger"/>
+                <!-- 模板消息推送 -->
+                <ref local="sendTemplateMsgJobTrigger"/>
+                <!-- 释放可疑人员定时任务 -->
+                <ref local="releaseOfSuspectsJobTrigger"/>
+                <!-- 月度城市酒王名排名持久化 -->
+                <ref local="vpsVcodeMonthCityRankJobTrigger"/>
+                <!-- 大奖回收 -->
+                <ref local="recyclePrizeJobTrigger"/>
+			</list>
+		</property>
+	</bean>
+
+</beans>

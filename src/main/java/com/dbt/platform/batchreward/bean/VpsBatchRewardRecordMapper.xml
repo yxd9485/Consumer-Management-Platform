@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.batchreward.dao.BatchRewardDao">
+    <resultMap id="resultMap" type="com.dbt.platform.batchreward.bean.VpsBatchRewardRecord">
+        <result property="infoKey" column="info_key"/>
+        <result property="grantNo" column="grant_no"/>
+        <result property="userCount" column="user_count"/>
+        <result property="grantVpoints" column="grant_vpoints"/>
+        <result property="grantMoney" column="grant_money"/>
+        <result property="grantBigprize" column="grant_bigprize"/>
+        <result property="grantTime" column="grant_time"/>
+        <result property="grantUser" column="grant_user"/>
+        <result property="filePath" column="file_path"/>
+    </resultMap>
+
+    <insert id="createBatchReward" parameterType="com.dbt.platform.batchreward.bean.VpsBatchRewardRecord">
+        insert into vps_batch_reward_record(info_key,
+                                            grant_no,
+                                            user_count,
+                                            grant_vpoints,
+                                            grant_money,
+                                            grant_bigprize,
+                                            grant_time,
+                                            grant_user,
+                                            file_path)
+        values (#{infoKey},
+                #{grantNo},
+                #{userCount},
+                #{grantVpoints},
+                #{grantMoney},
+                #{grantBigprize},
+                #{grantTime},
+                #{grantUser},
+                #{filePath})
+    </insert>
+
+    <select id="queryForLst" parameterType="map" resultMap="resultMap">
+        select * from vps_batch_reward_record
+        where 1=1
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            and grant_no like '%${queryBean.keyword}%'
+        </if>
+        <if test="queryBean.startTime != null and queryBean.startTime != ''">
+            and grant_time &gt;= #{queryBean.startTime}
+        </if>
+        <if test="queryBean.endTIme != null and queryBean.endTIme != ''">
+            and grant_time &lt;= #{queryBean.endTIme}
+        </if>
+        order by grant_time desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        select count(*)
+        from vps_batch_reward_record
+        where 1=1
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            and grant_no like '%${queryBean.keyword}%'
+        </if>
+        <if test="queryBean.startTime != null and queryBean.startTime != ''">
+            and grant_time &gt;= #{queryBean.startTime}
+        </if>
+        <if test="queryBean.endTIme != null and queryBean.endTIme != ''">
+            and grant_time &lt;= #{queryBean.endTIme}
+        </if>
+    </select>
+
+    <select id="queryCount" parameterType="string" resultType="int">
+        select count(*)
+        from vps_batch_reward_record
+        where date_format(grant_time, '%Y-%m') = #{dateQuery}
+    </select>
+</mapper>

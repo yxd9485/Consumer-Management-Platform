@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.invitationActivity.dao.InvitationActivityDao">
+    <resultMap id="resultMap" type="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationActivityCog">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="activityNo" column="ACTIVITY_NO"/>
+        <result property="activityFlag" column="ACTIVITY_FLAG"/>
+        <result property="companyKey" column="COMPANY_KEY"/>
+        <result property="activityName" column="ACTIVITY_NAME"/>
+        <result property="shortName" column="SHORT_NAME"/>
+        <result property="area" column="AREA"/>
+        <result property="sku" column="SKU"/>
+        <result property="backgroundUrl" column="BACKGROUND_URL"/>
+        <result property="introductionUrl" column="INTRODUCTION_URL"/>
+        <result property="posterBackgroundUrl" column="POSTER_BACKGROUND_URL"/>
+        <result property="rule" column="RULE"/>
+        <result property="remarks" column="REMARKS"/>
+        <result property="newUserType" column="NEW_USER_TYPE"/>
+        <result property="newUserRule" column="NEW_USER_RULE"/>
+        <result property="oldUserIsInvolved" column="OLD_USER_IS_INVOLVED"/>
+        <result property="oldUserRule" column="OLD_USER_RULE"/>
+        <result property="relationDays" column="RELATION_DAYS"/>
+        <result property="incentiveNum" column="INCENTIVE_NUM"/>
+        <result property="money" column="MONEY"/>
+        <result property="vpoints" column="VPOINTS"/>
+        <result property="maxIncentiveNum" column="MAX_INCENTIVE_NUM"/>
+        <result property="maxIncentiveNumDay" column="MAX_INCENTIVE_NUM_DAY"/>
+        <result property="maxIncentiveForInviter" column="MAX_INCENTIVE_FOR_INVITER"/>
+        <result property="status" column="STATUS"/>
+        <result property="startTime" column="START_TIME"/>
+        <result property="endTime" column="END_TIME"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+
+    <select id="queryForList" parameterType="map" resultMap="resultMap">
+        SELECT * FROM (
+            SELECT
+                i.*,
+                CASE
+                WHEN DATE(NOW()) >= i.START_TIME AND DATE(NOW()) <![CDATA[<=]]> i.END_TIME THEN '1'
+                WHEN DATE(NOW()) > i.END_TIME THEN '2'
+                ELSE '0'
+                END AS isBegin
+            FROM
+                VPS_VCODE_INVITATION_ACTIVITY_COG i
+            WHERE
+                i.DELETE_FLAG = '0'
+                <if test="queryBean.activityName != null and queryBean.activityName != ''">
+                    and i.ACTIVITY_NAME like '%${queryBean.activityName}%'
+                </if>
+                <if test="queryBean.minCreateTime != null and queryBean.minCreateTime != ''">
+                    and DATE(i.CREATE_TIME) >= #{queryBean.minCreateTime}
+                </if>
+                <if test="queryBean.maxCreateTime != null and queryBean.maxCreateTime != ''">
+                    and DATE(i.CREATE_TIME) <![CDATA[<=]]> #{queryBean.maxCreateTime}
+                </if>
+        ) a
+        WHERE 1=1
+            <if test="queryBean.isBegin != null and queryBean.isBegin != '' and queryBean.isBegin != '3'.toString()">
+                and a.isBegin = #{queryBean.isBegin}
+            </if>
+            ORDER BY
+            <choose>
+                <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                    <![CDATA[a.${pageInfo.orderCol} ${pageInfo.orderType}]]>
+                </when>
+                <otherwise>
+                    a.CREATE_TIME DESC
+                </otherwise>
+            </choose>
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        SELECT count(*) FROM (
+            SELECT
+                i.*,
+                CASE
+                WHEN DATE(NOW()) >= i.START_TIME AND DATE(NOW()) <![CDATA[<=]]> i.END_TIME THEN '1'
+                WHEN DATE(NOW()) > i.END_TIME THEN '2'
+                ELSE '0'
+                END AS isBegin
+            FROM
+                VPS_VCODE_INVITATION_ACTIVITY_COG i
+            WHERE
+                i.DELETE_FLAG = '0'
+                <if test="queryBean.activityName != null and queryBean.activityName != ''">
+                    and i.ACTIVITY_NAME like '%${queryBean.activityName}%'
+                </if>
+                <if test="queryBean.minCreateTime != null and queryBean.minCreateTime != ''">
+                    and DATE(i.CREATE_TIME) >= #{queryBean.minCreateTime}
+                </if>
+                <if test="queryBean.maxCreateTime != null and queryBean.maxCreateTime != ''">
+                    and DATE(i.CREATE_TIME) <![CDATA[<=]]> #{queryBean.maxCreateTime}
+                </if>
+        ) a
+        WHERE 1=1
+        <if test="queryBean.isBegin != null and queryBean.isBegin != '' and queryBean.isBegin != '3'.toString()">
+            and a.isBegin = #{queryBean.isBegin}
+        </if>
+    </select>
+
+    <select id="checkName" parameterType="map" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ACTIVITY_COG
+        WHERE
+            DELETE_FLAG = '0'
+            <if test="checkName != null and checkName != ''">
+                AND ACTIVITY_NAME = #{checkName}
+            </if>
+            <if test="infoKey != null and infoKey != ''">
+                AND INFO_KEY != #{infoKey}
+            </if>
+        LIMIT 1
+    </select>
+
+    <select id="checkDateAndArea" parameterType="map" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ACTIVITY_COG
+        WHERE
+            DELETE_FLAG = '0'
+            AND END_TIME >= #{currentTime}
+            AND START_TIME <![CDATA[<=]]> #{endTime}
+            AND #{startTime} <![CDATA[<=]]> END_TIME
+            <if test="infoKey != null and infoKey != ''">
+                AND INFO_KEY != #{infoKey}
+            </if>
+    </select>
+
+    <insert id="create" parameterType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationActivityCog">
+        INSERT INTO VPS_VCODE_INVITATION_ACTIVITY_COG
+            (INFO_KEY, ACTIVITY_NO, ACTIVITY_FLAG, COMPANY_KEY, ACTIVITY_NAME, SHORT_NAME, AREA, SKU,
+            BACKGROUND_URL, INTRODUCTION_URL, POSTER_BACKGROUND_URL, RULE, REMARKS,
+            NEW_USER_TYPE, NEW_USER_RULE, OLD_USER_IS_INVOLVED, OLD_USER_RULE,
+            RELATION_DAYS, INCENTIVE_NUM, MONEY, VPOINTS,
+            MAX_INCENTIVE_NUM, MAX_INCENTIVE_NUM_DAY, MAX_INCENTIVE_FOR_INVITER,
+            STATUS, START_TIME, END_TIME,
+            DELETE_FLAG, CREATE_USER, CREATE_TIME, UPDATE_USER, UPDATE_TIME)
+        VALUES
+            (#{infoKey}, #{activityNo}, #{activityFlag}, #{companyKey}, #{activityName}, #{shortName}, #{area}, #{sku},
+            #{backgroundUrl}, #{introductionUrl}, #{posterBackgroundUrl}, #{rule}, #{remarks},
+            #{newUserType}, #{newUserRule}, #{oldUserIsInvolved}, #{oldUserRule},
+            #{relationDays}, #{incentiveNum}, #{money}, #{vpoints},
+            #{maxIncentiveNum}, #{maxIncentiveNumDay}, #{maxIncentiveForInviter},
+            #{status}, #{startTime}, #{endTime},
+            #{deleteFlag}, #{createUser}, #{createTime}, #{updateUser}, #{updateTime})
+    </insert>
+
+    <select id="findById" parameterType="String" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ACTIVITY_COG
+        WHERE
+            INFO_KEY = #{infoKey}
+    </select>
+
+    <update id="update" parameterType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationActivityCog">
+        UPDATE
+            VPS_VCODE_INVITATION_ACTIVITY_COG
+            <set>
+                <if test="activityName != null and activityName != ''">
+                    ACTIVITY_NAME = #{activityName},
+                </if>
+                <if test="shortName != null and shortName != ''">
+                    SHORT_NAME = #{shortName},
+                </if>
+                <if test="area != null and area != ''">
+                    AREA = #{area},
+                </if>
+                <if test="sku != null and sku != ''">
+                    SKU = #{sku},
+                </if>
+                <if test="backgroundUrl != null and backgroundUrl != ''">
+                    BACKGROUND_URL = #{backgroundUrl},
+                </if>
+                <if test="introductionUrl != null">
+                    INTRODUCTION_URL = #{introductionUrl},
+                </if>
+                <if test="posterBackgroundUrl != null and posterBackgroundUrl != ''">
+                    POSTER_BACKGROUND_URL = #{posterBackgroundUrl},
+                </if>
+                <if test="rule != null">
+                    RULE = #{rule},
+                </if>
+                <if test="remarks != null">
+                    REMARKS = #{remarks},
+                </if>
+                <if test="newUserType != null and newUserType != ''">
+                    NEW_USER_TYPE = #{newUserType},
+                </if>
+                <if test="newUserRule != null and newUserRule != ''">
+                    NEW_USER_RULE = #{newUserRule},
+                </if>
+                <if test="oldUserIsInvolved != null and oldUserIsInvolved != ''">
+                    OLD_USER_IS_INVOLVED = #{oldUserIsInvolved},
+                </if>
+                <if test="oldUserRule != null">
+                    OLD_USER_RULE = #{oldUserRule},
+                </if>
+                <if test="relationDays != null">
+                    RELATION_DAYS = #{relationDays},
+                </if>
+                <if test="incentiveNum != null">
+                    INCENTIVE_NUM = #{incentiveNum},
+                </if>
+                <if test="money != null">
+                    MONEY = #{money},
+                </if>
+                <if test="vpoints != null">
+                    VPOINTS = #{vpoints},
+                </if>
+                <if test="maxIncentiveNum != null ">
+                    MAX_INCENTIVE_NUM = #{maxIncentiveNum},
+                </if>
+                <if test="maxIncentiveNumDay != null">
+                    MAX_INCENTIVE_NUM_DAY = #{maxIncentiveNumDay},
+                </if>
+                <if test="maxIncentiveForInviter != null">
+                    MAX_INCENTIVE_FOR_INVITER = #{maxIncentiveForInviter},
+                </if>
+                <if test="status != null and status != ''">
+                    STATUS = #{status},
+                </if>
+                <if test="startTime != null and startTime != ''">
+                    START_TIME = #{startTime},
+                </if>
+                <if test="endTime != null and endTime != ''">
+                    END_TIME = #{endTime},
+                </if>
+                <if test="deleteFlag != null and deleteFlag != ''">
+                    DELETE_FLAG = #{deleteFlag},
+                </if>
+                <if test="updateTime != null and updateTime != ''">
+                    UPDATE_TIME = #{updateTime},
+                </if>
+                <if test="updateUser != null and updateUser != ''">
+                    UPDATE_USER = #{updateUser}
+                </if>
+            </set>
+        WHERE
+            INFO_KEY = #{infoKey}
+    </update>
+
+    <select id="checkFlag" resultType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationActivityCog">
+        SELECT
+            ACTIVITY_FLAG as activityFlag
+        FROM
+            VPS_VCODE_INVITATION_ACTIVITY_COG
+        WHERE
+            DELETE_FLAG = '0'
+    </select>
+</mapper>

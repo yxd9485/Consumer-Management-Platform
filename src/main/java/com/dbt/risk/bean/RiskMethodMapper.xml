@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.risk.dao.RiskMethodDao">
+
+	<resultMap type="com.dbt.risk.bean.MethodBean" id="methodMap">
+		<result property="infoKey" column="infoKey" />
+		<result property="methodName" column="methodName" />
+		<result property="methodDesc" column="methodDesc" />
+		<result property="methodStatus" column="methodStatus" />
+		<result property="logStatus" column="logStatus" />
+		<result property="limitNum" column="limitNum" />
+		<result property="userLimitNum" column="userLimitNum" />
+		<result property="isBusinessFlag" column="isBusinessFlag"/>
+		<result property="userCheckStatus" column="userCheckStatus" />
+		<result property="userBlackCheck" column="userBlackCheck" />
+		<result property="userSuspiciousCheck" column="userSuspiciousCheck" />
+		<result property="requestRmk" column="requestRmk" />
+		<result property="requestRmkMsg" column="requestRmkMsg" />
+		<result property="responseRmk" column="responseRmk" />
+		<result property="responseRmkMsg" column="responseRmkMsg" />
+		<result property="handleType" column="handleType" />
+		<result property="handleServiceName" column="handleServiceName" />
+		<result property="handleGlueId" column="handleGlueId" />
+	</resultMap>
+	
+	<select id="getMethodList" parameterType="Map" resultMap="methodMap">
+		select * from risk_method_limit_info t 
+			where t.deleteFlag=0  
+			<if test="bean.infoKey != null and bean.infoKey != '' ">
+			  and t.infoKey = #{bean.infoKey} 
+			</if>
+			<if test="bean.methodName != null and bean.methodName != '' ">
+			  and t.methodName like '%${bean.methodName}%' 
+			</if>
+			<if test="bean.methodDesc != null and bean.methodDesc != '' ">
+			  and t.methodDesc like '%${bean.methodDesc}%' 
+			</if>
+			<choose>
+              <when test="param.orderCol != null and param.orderCol != '' and param.orderCol != 'infoKey'">
+                  ORDER BY ${param.orderCol} ${param.orderType}, t.infoKey DESC
+              </when>
+              <when test="param.orderCol != null and param.orderCol != ''">
+                  ORDER BY ${param.orderCol} ${param.orderType}
+              </when>
+              <otherwise>ORDER BY t.infoKey DESC</otherwise>
+            </choose>
+			limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getMethodCount" parameterType="Map" resultType="int">
+		select count(*)
+			from risk_method_limit_info t 
+			where t.deleteFlag=0  
+			<if test="bean.infoKey != null and bean.infoKey != '' ">
+			  and t.infoKey = #{bean.infoKey} 
+			</if>
+			<if test="bean.methodName != null and bean.methodName != '' ">
+			  and t.methodName like '%${bean.methodName}%' 
+			</if>
+			<if test="bean.methodDesc != null and bean.methodDesc != '' ">
+			  and t.methodDesc like '%${bean.methodDesc}%' 
+			</if>
+	</select>
+	
+	<insert id="addMethod" parameterType="com.dbt.risk.bean.MethodBean">
+		insert into risk_method_limit_info (methodName,methodDesc,methodStatus,logStatus,limitNum,userLimitNum,
+		isBusinessFlag, userCheckStatus, userBlackCheck,userSuspiciousCheck,requestRmk,requestRmkMsg,responseRmk,
+		responseRmkMsg,handleType,handleServiceName,handleGlueId,createTime
+		)values(#{methodName},#{methodDesc},#{methodStatus},#{logStatus},#{limitNum},#{userLimitNum},
+			#{isBusinessFlag},#{userCheckStatus},#{userBlackCheck},#{userSuspiciousCheck},#{requestRmk},#{requestRmkMsg},
+			#{responseRmk},#{responseRmkMsg},#{handleType},#{handleServiceName},#{handleGlueId},now())
+	</insert>
+	<delete id="delMethod" parameterType="String">
+		delete from risk_method_limit_info where infoKey=#{infoKey}
+	</delete>
+	<update id="updateMethod"  parameterType="com.dbt.risk.bean.MethodBean">
+		update risk_method_limit_info 
+		<set>
+		methodName=#{methodName},
+		methodDesc=#{methodDesc},
+		methodStatus=#{methodStatus},
+		logStatus=#{logStatus},
+		limitNum=#{limitNum},
+		userLimitNum=#{userLimitNum},
+		isBusinessFlag=#{isBusinessFlag},
+		userCheckStatus=#{userCheckStatus},
+		userBlackCheck=#{userBlackCheck},
+		userSuspiciousCheck=#{userSuspiciousCheck},
+		requestRmk=#{requestRmk},
+		requestRmkMsg=#{requestRmkMsg},
+		responseRmk=#{responseRmk},
+		responseRmkMsg=#{responseRmkMsg},
+		handleType=#{handleType},
+		<!-- handleGlueId=#{handleGlueId}, -->
+		updateTime=now()
+		</set>
+		where infoKey=#{infoKey}
+	</update>
+	<select id="checkName" parameterType="Map" resultType="int">
+		select count(*) from risk_method_limit_info t 
+		where t.deleteFlag=0 and t.methodName=#{methodName} 
+		<if test="infoKey != null and infoKey != '' "> 
+			  and t.infoKey != #{infoKey} 
+		</if>
+	</select>
+	<select id="getLocalHostList" resultType="String">
+		select localHostIp from risk_localhost_info where deleteFlag='0'
+	</select>
+	<update id="delLocalhost" parameterType="String">
+		update risk_localhost_info set updateTime=now(),deleteFlag='1' where localHostIp=#{ip}
+	</update>
+	<resultMap type="com.dbt.risk.bean.MethodGlueBean" id="MethodGlueMap">
+		<result property="glueId" column="glueId" />
+		<result property="methodInfoKey" column="methodInfoKey" />
+		<result property="glueSource" column="glueSource" />
+		<result property="glueRmk" column="glueRmk" />
+		<result property="glueStatus" column="glueStatus" />
+		<result property="updateTime" column="updateTime" />
+	</resultMap>
+	<select id="getMethodGlue" parameterType="String" resultMap="MethodGlueMap">
+		select * from risk_glue_info t 
+		where t.methodInfoKey =#{infoKey}  and t.glueStatus ='0' limit 1
+	</select>
+	<insert id="addMethodGlue" parameterType="com.dbt.risk.bean.MethodGlueBean">
+		insert into risk_glue_info(glueId,methodInfoKey,glueSource,glueRmk,glueStatus,updateTime) values
+		(#{glueId},#{methodInfoKey},#{glueSource},#{glueRmk},'0',now())
+	</insert>
+	<update id="updateMethodGlue" parameterType="String">
+		update risk_glue_info set glueStatus='1' where methodInfoKey=#{infoKey} and glueId!={glueId}
+	</update>
+	<update id="changeMethodGlueId" parameterType="String">
+		update risk_method_limit_info set t.handleGlueId=#{glueId} where infoKey=#{infoKey}
+	</update>
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatMovementSigninRecordDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatMovementSigninRecord" id="VpsWechatMovementSigninRecordResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="useKey" column="USER_KEY"/>
+		<result property="signWeek" column="SIGN_WEEK"/>
+		<result property="signDates" column="SIGN_DATES"/>
+		<result property="signWeekDays" column="SIGN_WEEK_DAYS"/>
+		<result property="signDays" column="SIGN_DAYS"/>
+		<result property="earnMoney" column="EARN_MONEY"/>
+		<result property="earnTime" column="EARN_TIME"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			USER_KEY,
+			SIGN_WEEK,
+			SIGN_DATES,
+			SIGN_WEEK_DAYS,
+			SIGN_DAYS,
+			EARN_MONEY,
+			EARN_TIME,
+			CREATE_TIME,
+			UPDATE_TIME
+	</sql>
+    
+    <insert id="create" parameterType="com.dbt.platform.wechatmovement.bean.VpsWechatMovementSigninRecord">
+    	INSERT INTO vps_wechat_movement_signin_record(
+    		INFO_KEY,
+			USER_KEY,
+			SIGN_WEEK,
+			SIGN_DATES,
+			SIGN_WEEK_DAYS,
+			SIGN_DAYS,
+			EARN_MONEY,
+			EARN_TIME,
+			CREATE_TIME,
+			UPDATE_TIME
+    	) VALUES(
+    		#{infoKey},
+    		#{userKey},
+    		#{signWeek},
+    		#{signDates},
+    		#{signWeekDays},
+    		#{signDays},
+    		#{earnMoney},
+    		#{earnTime},
+    		#{createTime},
+    		#{updateTime}
+    	)
+    </insert>
+    
+    <update id="update" parameterType="com.dbt.platform.wechatmovement.bean.VpsWechatMovementSigninRecord">
+    	UPDATE vps_wechat_movement_signin_record
+    	<set>
+    		<if test="signDates != null and signDates != ''">
+    			SIGN_DATES = #{signDates},
+    		</if>
+    		<if test="signWeekDays != null and signWeekDays != ''">
+    			SIGN_WEEK_DAYS = #{signWeekDays},
+    		</if>
+    		<if test="signDays != null and signDays != ''">
+    			SIGN_DAYS = #{signDays},
+    		</if>
+    		<if test="earnMoney > 0">
+    			EARN_MONEY = #{earnMoney},
+    		</if>
+    		<if test="earnTime != null and earnTime != ''">
+    			EARN_TIME = #{earnTime},
+    		</if>
+    		<if test="updateTime != null and updateTime != ''">
+    			UPDATE_TIME = #{updateTime},
+    		</if>
+    	</set>
+    	WHERE INFO_KEY = #{infoKey}
+    </update>
+    
+    <insert id= "batchWrite" parameterType="List">
+	    INSERT INTO vps_wechat_movement_signin_record(
+	    		INFO_KEY,
+				USER_KEY,
+				SIGN_WEEK,
+				SIGN_DATES,
+				SIGN_WEEK_DAYS,
+				SIGN_DAYS,
+				EARN_MONEY,
+				EARN_TIME,
+				CREATE_TIME,
+				UPDATE_TIME
+	    	) VALUES
+	    	<foreach collection="list" item="item" separator=",">
+	    	(
+	    		UUID(),
+	    		#{item.userKey},
+	    		#{item.signWeek},
+	    		#{item.signDates},
+	    		#{item.signWeekDays},
+	    		#{item.signDays},
+	    		#{item.earnMoney},
+	    		#{item.earnTime},
+	    		#{item.createTime},
+	    		#{item.updateTime}
+	    	)
+    	</foreach>
+    </insert>
+    
+    <!-- 批量更新 -->
+    <update id="batchUpdate" parameterType="List">
+    	<foreach collection="list" item="item" separator=";">
+    		UPDATE 
+    			vps_wechat_movement_signin_record
+    		SET
+    			<if test="item.earnTime != null and item.earnTime != ''">
+    				EARN_TIME = #{item.earnTime},
+    			</if>
+	    		<if test="item.earnMoney > 0">
+	   				EARN_MONEY = #{item.earnMoney},
+	   			</if>
+	   			SIGN_DAYS = SIGN_DAYS + 1,
+	    		UPDATE_TIME = #{item.updateTime},
+	    		SIGN_DATES = (CASE WHEN ISNULL(SIGN_DATES) THEN #{item.signDates}
+	    						ELSE CONCAT(SIGN_DATES,',',#{item.signDates}) END),
+	    		SIGN_WEEK_DAYS = (CASE WHEN ISNULL(SIGN_WEEK_DAYS) THEN #{item.signWeekDays}
+	    						ELSE CONCAT(SIGN_WEEK_DAYS,',',#{item.signWeekDays}) END)
+	    	WHERE 
+	    		SIGN_WEEK = #{item.signWeek}
+	    	AND
+	    		USER_KEY = #{item.userKey}
+    	</foreach>
+    </update>
+    
+     <select id="queryFinishSigninRecord" parameterType="Map" resultMap="VpsWechatMovementSigninRecordResultMap">
+    	SELECT 
+			t.openid,
+			u.nick_name as nickName,
+			s.sign_week,
+			s.earn_money,
+			s.earn_time
+		 FROM vps_wechat_movement_signin_record s
+		 LEFT JOIN vps_consumer_user_info u on s.user_key = u.user_key
+		 LEFT JOIN vps_consumer_thirdaccount_info t on s.user_key = t.user_key
+		 WHERE 
+		 	s.sign_week = #{signWeek}
+		 AND 
+		 	s.EARN_MONEY > 0
+    </select>
+    
+    <select id="findSigninRecord" parameterType="Map" resultMap="VpsWechatMovementSigninRecordResultMap">
+    	SELECT 
+    		<include refid="Base_Column_List" />
+    	FROM 
+    		vps_wechat_movement_signin_record
+    	WHERE
+    		USER_KEY = #{userKey}
+    	AND
+    		SIGN_WEEK = #{sign_week}
+    	LIMIT 1
+    </select>
+</mapper>

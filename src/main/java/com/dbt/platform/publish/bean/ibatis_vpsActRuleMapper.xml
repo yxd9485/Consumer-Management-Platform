@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.publish.dao.ActRuleDao">
+
+	<resultMap type="com.dbt.platform.publish.bean.VpsActRule" id="vpsActRuleResultMap">
+		<result property="actRuleKey" column="ACTRULE_KEY"/>
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+  		<result property="resolution" column="RESOLUTION"/>
+  		<result property="limitStGmt" column="LIMIT_STGMT"/>
+  		<result property="limitEndGmt" column="LIMIT_ENDGMT"/>
+  		<result property="modUser" column="MOD_USER"/>
+  		<result property="modGmt" column="MOD_GMT"/>
+  		<result property="limitUrl" column="LIMIT_URL"/>
+  		<result property="defaultUrl" column="DEFAULT_URL"/>
+  		<result property="creGmt" column="CRE_GMT"/>
+  		<result property="isDel" column="IS_DEL"/>
+		<result property="defaultPicWidth" column="default_pic_width"/>
+		<result property="defaultPicHeight" column="default_pic_height"/>
+		<result property="defaultPicX" column="default_pic_x"/>
+		<result property="defaultPicY" column="default_pic_y"/>
+		<result property="limitPicWidth" column="limit_pic_width"/>
+		<result property="limitPicHeight" column="limit_pic_height"/>
+		<result property="limitPicX" column="limit_pic_x"/>
+		<result property="limitPicY" column="limit_pic_y"/>
+	</resultMap>
+  	
+  	<!-- 根据二维码查询 -->
+	<select id="queryForLst" parameterType="Map" resultMap="vpsActRuleResultMap">
+		SELECT 
+			r.*,
+			a.VCODE_ACTIVITY_NAME as vcodeActivityName
+		FROM 
+			VPS_ACT_RULE r
+		left join vps_vcode_activity_cog a on r.vcode_activity_key = a.vcode_activity_key
+	 WHERE
+         	IS_DEL = '0'
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (a.vcode_activity_name LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.limitStGmt != null and queryBean.limitStGmt != ''">
+			AND LIMIT_STGMT >= CONCAT(#{queryBean.limitStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.limitEndGmt != null and queryBean.limitEndGmt != ''">
+			AND LIMIT_ENDGMT <![CDATA[<=]]> CONCAT(#{queryBean.limitEndGmt}, ' 23:59:59')
+		</if>
+		<if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+			AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+			AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+		</if>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}  
+	</select>
+	
+	 <!-- 查询符合条件的记录条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+            count(1)
+        from
+            VPS_ACT_RULE
+            WHERE
+         	IS_DEL = '0'
+         <if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (a.vcode_activity_name LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.limitStGmt != null and queryBean.limitStGmt != ''">
+			AND LIMIT_STGMT >= CONCAT(#{queryBean.limitStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.limitEndGmt != null and queryBean.limitEndGmt != ''">
+			AND LIMIT_ENDGMT <![CDATA[<=]]> CONCAT(#{queryBean.limitEndGmt}, ' 23:59:59')
+		</if>
+		<if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+			AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+			AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+		</if>
+    </select>
+	<!-- 更新 -->
+	<update id="updateVpsActRule" parameterType="com.dbt.platform.publish.bean.VpsActRule">
+		UPDATE VPS_ACT_RULE SET
+			RESOLUTION = #{resolution},
+			LIMIT_STGMT = #{limitStGmt},
+			LIMIT_ENDGMT = #{limitEndGmt},
+			MOD_USER = #{modUser},
+			MOD_GMT = #{modGmt},
+			LIMIT_URL = #{limitUrl},
+			DEFAULT_URL = #{defaultUrl}
+		WHERE ACTRULE_KEY = #{actRuleKey}
+	</update>
+	 <select id="findById" parameterType="Map" resultMap="vpsActRuleResultMap">
+        select
+            r.*,
+            a.VCODE_ACTIVITY_NAME as vcodeActivityName
+        FROM 
+            VPS_ACT_RULE r
+        left join vps_vcode_activity_cog a on r.vcode_activity_key = a.vcode_activity_key
+        WHERE  ACTRULE_KEY = #{actRuleKey}
+	</select>
+	<insert id="addActRule" parameterType="com.dbt.platform.publish.bean.VpsActRule">
+		INSERT INTO VPS_ACT_RULE (
+		     ACTRULE_KEY,
+		     vcode_activity_key,
+  			 RESOLUTION,
+  			 LIMIT_STGMT,
+  			 LIMIT_ENDGMT,
+  			 MOD_USER,
+  			 MOD_GMT,
+  			 LIMIT_URL,
+  			 DEFAULT_URL,
+  			 IS_DEL
+		) VALUES (
+		     UUID(),
+		     #{vcodeActivityKey},
+  			 #{resolution},
+  			 #{limitStGmt},
+  			 #{limitEndGmt},
+  			 #{modUser},
+  			 #{modGmt},
+  			 #{limitUrl},
+  			 #{defaultUrl},
+  			 0
+		)
+	</insert>
+	<select id="findVcodeActivityKeys" parameterType="Map" resultType="java.lang.String">
+		select
+		vcode_activity_key
+		from
+		VPS_ACT_RULE
+		WHERE  IS_DEL = 0
+	</select>
+	
+</mapper>

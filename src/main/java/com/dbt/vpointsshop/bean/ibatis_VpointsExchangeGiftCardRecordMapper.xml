@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsExchangeGiftCardRecordDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsExchangeGiftCardRecord">
+        <id column="gift_card_id" property="giftCardId" />
+        <result column="gift_card_info_key" property="giftCardInfoKey" />
+        <result column="gift_card_name" property="giftCardName" />
+        <result column="account_money" property="accountMoney" />
+        <result column="exchange_pay" property="exchangePay" />
+        <result column="use_money" property="useMoney" />
+        <result column="surplus_money" property="surplusMoney" />
+        <result column="freeze_money" property="freezeMoney" />
+        <result column="order_time" property="orderTime" />
+        <result column="user_phone" property="userPhone" />
+        <result column="user_key" property="userKey" />
+        <result column="transaction_id" property="transactionId" />
+        <result column="trade_no" property="tradeNo" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        gift_card_id, gift_card_info_key, gift_card_name, account_money, exchange_pay, use_money, surplus_money, freeze_money, order_time, user_phone, user_key, transaction_id, trade_no, create_time, create_user, update_time, update_user
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsExchangeGiftCardRecord">
+        insert into vpoints_exchange_gift_card_record (
+                   gift_card_id,
+                  gift_card_info_key,
+                  gift_card_name,
+                  account_money,
+                  exchange_pay,
+                  use_money,
+                  surplus_money,
+                  freeze_money,
+                  order_time,
+                  user_phone,
+                  user_key,
+                  transaction_id,
+                  trade_no,
+                  create_time,
+                  create_user,
+                  update_time,
+                  update_user,
+        ) values (
+                #{giftCardId},
+                #{giftCardInfoKey},
+                #{giftCardName},
+                #{accountMoney},
+                #{exchangePay},
+                #{useMoney},
+                #{surplusMoney},
+                #{freezeMoney},
+                #{orderTime},
+                #{userPhone},
+                #{userKey},
+                #{transactionId},
+                #{tradeNo},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser},
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsExchangeGiftCardRecord">
+        update  vpoints_exchange_gift_card_record set
+                    <if test=" giftCardId!=null">
+                         gift_card_id =  #{giftCardId},
+                    </if>
+                    <if test=" giftCardInfoKey!=null">
+                         gift_card_info_key =   #{giftCardInfoKey},
+                    </if>
+                    <if test=" giftCardName!=null">
+                         gift_card_name =   #{giftCardName},
+                    </if>
+                    <if test=" accountMoney!=null">
+                         account_money =   #{accountMoney},
+                    </if>
+                    <if test=" exchangePay!=null">
+                         exchange_pay =   #{exchangePay},
+                    </if>
+                    <if test=" useMoney!=null">
+                         use_money =   #{useMoney},
+                    </if>
+                    <if test=" surplusMoney!=null">
+                         surplus_money =   #{surplusMoney},
+                    </if>
+                    <if test=" freezeMoney!=null">
+                         freeze_money =   #{freezeMoney},
+                    </if>
+                    <if test=" orderTime!=null">
+                         order_time =   #{orderTime},
+                    </if>
+                    <if test=" userPhone!=null">
+                         user_phone =   #{userPhone},
+                    </if>
+                    <if test=" userKey!=null">
+                         user_key =   #{userKey},
+                    </if>
+                    <if test=" transactionId!=null">
+                         transaction_id =   #{transactionId},
+                    </if>
+                    <if test=" tradeNo!=null">
+                         trade_no =   #{tradeNo},
+                    </if>
+                    <if test=" createTime!=null">
+                         create_time =   #{createTime},
+                    </if>
+                    <if test=" createUser!=null">
+                         create_user =   #{createUser},
+                    </if>
+                    <if test=" updateTime!=null">
+                         update_time =   #{updateTime},
+                    </if>
+                    <if test=" updateUser!=null">
+                         update_user =   #{updateUser},
+                    </if>
+
+    </update>
+</mapper>

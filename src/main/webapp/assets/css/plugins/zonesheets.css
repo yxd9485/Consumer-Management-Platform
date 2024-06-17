@@ -1,0 +1,40 @@
+.changeZone {
+	width: 100%;
+}
+
+.changeZone table {
+	width: 69%;
+}
+
+.changeZone table .zb_left {
+	width: 75%;
+}
+.changeZone table .zb_right {
+	width: 25%;
+	vertical-align: top;
+	padding-top: 8px;
+}
+
+.zFirst, .zSub {
+	border: 1px solid #ddd;
+	margin: 5px 1em 5px 0;
+}
+
+.superPlus, .remover {
+	float: left;
+	cursor: pointer;
+	font-weight: bold;
+	margin: 5px 0;
+}
+
+.activeZone {
+	float: left;
+}
+
+.remover {
+	margin-top: 1em;
+}
+
+.superPlus:hover, .remover:hover {
+	color: red;
+}

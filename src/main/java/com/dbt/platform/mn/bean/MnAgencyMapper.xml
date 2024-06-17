@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.IMnAgencyDao">
+    <resultMap type="com.dbt.platform.mn.bean.MnAgencyEntity" id="MnAgencyResultMap">
+        <result property="id" column="ID"/>
+        <result property="pid" column="PID"/>
+        <result property="agency_name" column="agency_name"/>
+    </resultMap>
+    
+    <delete id="removeAll">
+        delete from com_agency_info where 1=1
+    </delete>
+    <delete id="deleteById">
+        delete from com_agency_info where id = #{id}
+    </delete>
+    <insert id="insert" parameterType="com.dbt.platform.mn.bean.MnAgencyEntity">
+        INSERT INTO com_agency_info(
+            id,
+            pid,
+            sapcode,
+            agency_name,
+            agency_nickname,
+            agency_province,
+            agency_city,
+            agency_country,
+            agency_address,
+            agency_contact,
+            agency_mobile,
+            street,
+            zzcus901,
+            status,
+            telf1,
+            zzcus002,
+            agency_type,
+            zzcus014,
+            zzcus012,
+            vkbur,
+            vkburdesc,
+            vkgrp,
+            vkgrpdesc,
+            com_remark,
+            aufsd,
+            CREUSER,
+            UPUSER,
+            CRETIME,
+            UPTIME
+        )
+        VALUES (
+            #{id},
+            #{pid},
+            #{sapcode},
+            #{agency_name},
+            #{agency_nickname},
+            #{agency_province},
+            #{agency_city},
+            #{agency_country},
+            #{agency_address},
+            #{agency_contact},
+            #{agency_mobile},
+            #{street},
+            #{zzcus901},
+            #{status},
+            #{telf1},
+            #{zzcus002},
+            #{agency_type},
+            #{zzcus014},
+            #{zzcus012},
+            #{vkbur},
+            #{vkburdesc},
+            #{vkgrp},
+            #{vkgrpdesc},
+            #{com_remark},
+            #{aufsd},
+            #{creuser},
+            #{upuser},
+            #{cretime},
+            #{uptime}
+            )
+    </insert>
+
+    <select id="findById" parameterType="String" resultMap="MnAgencyResultMap">
+        select * from com_agency_info where id = #{id}
+    </select>
+    
+    <select id="queryListByMap" parameterType="Map" resultMap="MnAgencyResultMap">
+        select * from com_agency_info
+        where IFNULL(aufsd, '') = ''
+        <if test="agency_type != null and agency_type != ''">
+        and agency_type = #{agency_type}
+        </if>
+        <if test="departmentId != null and departmentId != ''">
+        and vkgrp in (select mdgprovinceid from mn_department where id = #{departmentId})
+        </if>
+    </select>
+</mapper>

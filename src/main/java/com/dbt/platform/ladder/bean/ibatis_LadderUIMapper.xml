@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ladder.dao.ILadderUIDao">
+
+	<resultMap type="com.dbt.platform.ladder.bean.LadderUI" id="resultLadderUI">
+		<result property="infoKey" column="info_key"/>
+		<result property="ruleKey" column="rule_key"/>
+		<result property="ladderMultiple" column="ladder_multiple"/>
+		<result property="ladderPic" column="ladder_pic"/>
+		<result property="ladderDesc" column="ladder_desc"/>
+		<result property="deleteFlag" column="delete_flag"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+		<result property="ladderType" column="ladder_type"/>
+		<result property="ladderStNum" column="ladder_st_num"/>
+		<result property="ladderEndNum" column="ladder_end_num"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+			info_key,
+			rule_key,
+			ladder_pic,
+			ladder_desc,
+			delete_flag,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			ladder_multiple,
+			ladder_type,
+			ladder_st_num,
+			ladder_end_num
+	</sql>
+	
+	<insert id="addLadderUI" parameterType="com.dbt.platform.ladder.bean.LadderUI">
+		INSERT INTO vps_ladder_ui (
+			info_key,
+			rule_key,
+			ladder_pic,
+			ladder_desc,
+			delete_flag,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			ladder_multiple,
+			ladder_type,
+			ladder_st_num,
+			ladder_end_num
+		) VALUES (
+			UUID(),
+			#{ruleKey},
+			#{ladderPic},
+			#{ladderDesc},
+			0,
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{createTime},
+			#{ladderMultiple},
+			#{ladderType},
+			#{ladderStNum},
+			#{ladderEndNum}
+		) 
+	</insert>
+	
+	<update id="updateUI" parameterType="com.dbt.platform.ladder.bean.LadderUI">
+        UPDATE
+		vps_ladder_ui
+		SET
+            <if test="ladderMultiple != null and ladderMultiple != ''">
+				ladder_multiple = #{ladderMultiple},
+            </if>
+            <if test="ladderType != null and ladderType != ''">
+				ladder_Type = #{ladderType},
+            </if>
+		<if test="ladderStNum != null and ladderStNum != ''">
+			ladder_st_num = #{ladderStNum},
+		</if>
+		<if test="ladderEndNum != null and ladderEndNum != ''">
+			ladder_end_num = #{ladderEndNum},
+		</if>
+			ladder_pic = #{ladderPic},
+		    ladder_desc = #{ladderDesc},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findLadderUIByKey" resultMap="resultLadderUI" parameterType="Map">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM
+		vps_ladder_ui
+		WHERE
+			DELETE_FLAG = '0'
+		and rule_key = #{ruleKey}
+	</select>
+	<delete id="deleteById" parameterType="Map">
+	   delete from vps_ladder_ui
+	   where info_key = #{infoKey}
+	</delete>
+	<select id="findByInfoKey" resultMap="resultLadderUI" parameterType="Map">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM
+		vps_ladder_ui
+		WHERE info_key = #{infoKey}
+	</select>
+	<select id="findLadderUICount" resultType="Integer" parameterType="Map">
+		SELECT COUNT(1) FROM vps_ladder_ui
+		WHERE DELETE_FLAG = '0'
+            and rule_key = #{ruleKey}
+	</select>
+
+</mapper>

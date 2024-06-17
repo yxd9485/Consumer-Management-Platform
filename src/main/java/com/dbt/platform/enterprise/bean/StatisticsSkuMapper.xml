@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.enterprise.dao.ISkuDao">
+
+	<resultMap type="com.dbt.platform.enterprise.bean.StatisticsSku" id="resultSkuInfo">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="skuKey" column="SKU_KEY" />
+		<result property="statInfoKey" column="STAT_INFO_KEY" />
+		<result property="skuName" column="SKU_NAME" />
+		<result property="serverName" column="SERVER_NAME" />
+		<result property="projectServerName" column="PROJECT_SERVER_NAME" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.enterprise.bean.StatisticsSku">
+		INSERT INTO vps_statistics_sku_info (
+		    INFO_KEY,
+			SKU_KEY,
+			SKU_NAME,
+			STAT_INFO_KEY,
+			SERVER_NAME,
+			PROJECT_SERVER_NAME,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{infoKey},
+			#{skuKey},
+			#{skuName},
+			#{statInfoKey},
+            #{serverName},
+			#{projectServerName},
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+
+	<select id="queryForCountBySpuKey" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_statistics_sku_info
+		WHERE
+			DELETE_FLAG = 0
+		AND
+			STAT_INFO_KEY = #{statInfoKey}
+	</select>
+	
+	<select id="queryForListByStatKey" parameterType="String" resultMap="resultSkuInfo">
+		SELECT
+			*
+		FROM
+			vps_statistics_sku_info
+		WHERE
+			STAT_INFO_KEY = #{statInfoKey}  ORDER BY PROJECT_SERVER_NAME
+	</select>
+	<delete id="deleteStatSkuInfo" parameterType="String">
+		delete
+		FROM
+			vps_statistics_sku_info
+		WHERE
+			STAT_INFO_KEY = #{statInfoKey}
+	</delete>
+<!-- 	获取SKU参与的统计分组 -->
+    <select id="queryStatName" resultMap="resultSkuInfo">
+        select 
+            s.PROJECT_SERVER_NAME, 
+            s.SKU_KEY, 
+            GROUP_CONCAT(t.STAT_NAME)  statName
+        from 
+            vps_statistics_sku_info s, vps_statistics_info t 
+        where 
+            s.STAT_INFO_KEY = t.STAT_INFO_KEY 
+            and t.DELETE_FLAG = '0'
+        GROUP BY s.PROJECT_SERVER_NAME , s.SKU_KEY 
+    </select>
+</mapper>

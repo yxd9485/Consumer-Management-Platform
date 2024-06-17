@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.publish.dao.IVpsActVideoDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.publish.bean.VpsActVideo">
+        <id column="VIDEO_KEY" property="videoKey" />
+        <result column="title" property="title" />
+        <result column="goods_id" property="goodsId" />
+        <result column="area_code" property="areaCode" />
+        <result column="START_TIME" property="startTime" />
+        <result column="END_TIME" property="endTime" />
+        <result column="AREA_LIMIT" property="areaLimit" />
+        <result column="VIDEO_PATH" property="videoPath" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="area_name" property="areaName" />
+        <result column="CROWD_LIMIT_TYPE" property="crowdLimitType" />
+        <result column="USER_GROUP_IDS" property="userGroupIds" />
+        <result column="SEQUENCENO" property="sequenceno" />
+        <result column="video_Cover_Image" property="videoCoverImage" />
+        <result column="show_flag" property="showFlag" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        VIDEO_KEY,`title`,show_flag, goods_id, area_code,video_Cover_Image, START_TIME, END_TIME, AREA_LIMIT, VIDEO_PATH, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER, area_name, CROWD_LIMIT_TYPE, USER_GROUP_IDS, SEQUENCENO
+    </sql>
+
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+         ,
+         case
+         when start_time > now() then '待上线'
+         when start_time &lt; now() and end_time > now() then '已上线'
+         when  end_time &lt; now() then '已下线'
+         else ''
+         end `status`
+
+         from vps_act_video
+        <where>
+            <if test=" ew.title != null and ew.title != '' ">
+                and `title` like concat('%',#{ew.title},'%')
+            </if>
+            <if test="ew.status != null and ew.status!=''">
+                <if test="ew.status==0">
+                    and END_TIME  &lt; now()
+                </if>
+                <if test="ew.status==1">
+                    and START_TIME  &lt; now()
+                    and END_TIME > now()
+                </if>
+                <if test="ew.status==2">
+                    and now()  &lt; START_TIME
+                </if>
+            </if>
+            <if test="ew.startTime != null">
+               and START_TIME > #{ew.startTime}
+            </if>
+            <if test="ew.endTime != null">
+               and END_TIME  &lt; #{ew.endTime}
+            </if>
+
+            <if test="ew.modStGmt != null">
+                and update_time  > #{ew.modStGmt}
+            </if>
+            <if test="ew.modEndGmt != null">
+                and update_time  &lt; #{ew.modEndGmt}
+            </if>
+        </where>
+        order by SEQUENCENO asc,update_time desc
+    </select>
+    <update id="updateVpsActVideoShow" parameterType="com.dbt.platform.publish.vo.VpsActVideoVO">
+        update vps_act_video set
+        <if test="showFlag == '1'">
+            SEQUENCENO='0',
+        </if>
+        update_time = now(),
+        show_flag =#{showFlag}
+
+         where video_key =#{videoKey}
+    </update>
+    <update id="updateVpsActVideoShowOther" parameterType="com.dbt.platform.publish.vo.VpsActVideoVO">
+        update vps_act_video set show_flag = '0',SEQUENCENO='2' where video_key !=#{videoKey}
+    </update>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.smallticket.dao.IVpsTicketLotteryRecordDao">
+
+	<resultMap type="com.dbt.smallticket.bean.VpsTicketLotteryRecord" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="lotteryDate" column="LOTTERY_DATE"/>
+		<result property="channelNum0" column="CHANNEL_NUM_0"/>
+		<result property="channelNum1" column="CHANNEL_NUM_1"/>
+		<result property="channelNum2" column="CHANNEL_NUM_2"/>
+		<result property="channelNum3" column="CHANNEL_NUM_3"/>
+		<result property="shareNum" column="SHARE_NUM"/>
+		<result property="subscriptionNum" column="SUBSCRIPTION_NUM"/>
+	</resultMap>
+	
+    <insert id="create" parameterType="com.dbt.smallticket.bean.VpsTicketLotteryRecord">
+       insert into vps_ticket_lottery_record (
+           info_key,
+           user_key,
+           lottery_date,
+           channel_num_0,
+           channel_num_1,
+           channel_num_2,
+           channel_num_3,
+           share_num,
+           subscription_num,
+           PROVINCE,
+		   CITY,
+		   COUNTY
+       ) values (
+           #{infoKey},
+           #{userKey},
+           #{lotteryDate},
+           #{channelNum0},
+           #{channelNum1},
+           #{channelNum2},
+           #{channelNum3},
+           #{shareNum},
+           #{subscriptionNum},
+           #{province},
+           #{city},
+           #{county}
+       )
+    </insert>
+    
+<!--    更新用户定时抽奖的参与情况 -->
+    <update id="updateChannelNum" parameterType="Map">
+        update 
+            vps_ticket_lottery_record
+        <set>
+           <if test="channelType == 'channelNum0'">
+               CHANNEL_NUM_0 = IFNULL(CHANNEL_NUM_0, '0') + 1,
+           </if>
+           <if test="channelType == 'channelNum1'">
+               CHANNEL_NUM_1 = IFNULL(CHANNEL_NUM_1, '0') + 1,
+           </if>
+           <if test="channelType == 'channelNum2'">
+               CHANNEL_NUM_2 = IFNULL(CHANNEL_NUM_2, '0') + 1,
+           </if>
+           <if test="channelType == 'channelNum3'">
+               CHANNEL_NUM_3 = IFNULL(CHANNEL_NUM_3, '0') + 1,
+           </if>
+           <if test="channelType == 'shareNum'">
+               SHARE_NUM = IFNULL(SHARE_NUM, '0') + 1,
+           </if>
+           <if test="channelType == 'subscriptionNum'">
+               SUBSCRIPTION_NUM = IFNULL(SUBSCRIPTION_NUM, '0') + 1,
+           </if>
+        </set>
+        where 
+            user_key = #{userKey}
+            and lottery_date = #{lotteryDate}
+    </update>
+    
+
+</mapper>

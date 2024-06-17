@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.drinkcapacity.dao.IVpsVcodeDrinkCapacityPkRecordDao">
+
+	<resultMap type="com.dbt.platform.drinkcapacity.bean.VpsVcodeDrinkCapacityPkRecord" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="userKeyA" column="USER_KEYA"/>
+		<result property="userKeyB" column="USER_KEYB"/>
+		<result property="beginTime" column="BEGIN_TIME"/>
+		<result property="endTime" column="END_TIME"/>
+		<result property="scanNumA" column="SCAN_NUMA"/>
+		<result property="scanNumB" column="SCAN_NUMB"/>
+		<result property="thumbUpNumA" column="THUMB_UP_NUMA"/>
+		<result property="newThumbUpNumA" column="NEW_THUMB_UP_NUMA"/>
+		<result property="thumbUpNumB" column="THUMB_UP_NUMB"/>
+		<result property="newThumbUpNumB" column="NEW_THUMB_UP_NUMB"/>
+		<result property="viewNum" column="VIEW_NUM"/>
+		<result property="viewPersonNum" column="VIEW_PERSON_NUM"/>
+		<result property="viewHeadImgUrl" column="VIEW_HEADIMG_URL"/>
+		<result property="pkStatus" column="PK_STATUS"/>
+		<result property="winMoney" column="WIN_MONEY"/>
+        <result property="unpkReason" column="UNPK_REASON"/>
+	</resultMap>
+	
+<!--    更新比赛结果 -->
+    <update id="updatePkStatus" parameterType="com.dbt.platform.drinkcapacity.bean.VpsVcodeDrinkCapacityPkRecord">
+       update
+           vps_vcode_drinkcapacity_pk_record_${splitTableSuffix}
+       <set>
+           pk_status =#{pkStatus},
+           win_money = #{winMoney},
+           view_person_num = #{viewPersonNum},
+           unpk_reason = #{unpkReason}
+       </set>
+       where
+           info_key = #{infoKey}
+    </update>
+    
+<!--    查询指定比赛记录 -->
+    <select id="findByIdWithAppletOpenid" parameterType="Map" resultMap="baseResultMap">
+       select 
+           r.*,
+           ua.nick_name nickNameA,
+           ub.nick_name nickNameB,
+           ua.headImg_url headImgUrlA,
+           ub.headImg_url headImgUrlB,
+           ta.applet_pk_openid appletPkOpenidA,
+           tb.applet_pk_openid appletPkOpenidB
+       from 
+           vps_vcode_drinkcapacity_pk_record_${splitTableSuffix} r
+           left join vps_consumer_user_info ua on ua.user_key = r.user_keya
+           left join vps_consumer_user_info ub on ub.user_key = r.user_keyb
+	       left join vps_consumer_thirdaccount_info ta on ta.user_key = r.user_keya
+	       left join vps_consumer_thirdaccount_info tb on tb.user_key = r.user_keyb
+       where 
+           r.info_key = #{infoKey}
+    </select>
+    
+<!--    获取指定区间比赛记录 -->
+    <select id="queryByPkTime" parameterType="Map" resultMap="baseResultMap">
+	    select * from (
+		    <foreach collection="tableIndexs" item="tableIndex" separator=" union all " >
+		       select 
+		           r.*,
+		           ua.nick_name nickNameA,
+		           ub.nick_name nickNameB,
+		           ua.headImg_url headImgUrlA,
+		           ub.headImg_url headImgUrlB,
+		           ta.applet_pk_openid appletPkOpenidA,
+		           tb.applet_pk_openid appletPkOpenidB
+		       from 
+		           vps_vcode_drinkcapacity_pk_record_${tableIndex} r
+		       left join vps_consumer_user_info ua on ua.user_key = r.user_keya
+		       left join vps_consumer_user_info ub on ub.user_key = r.user_keyb
+		       left join vps_consumer_thirdaccount_info ta on ta.user_key = r.user_keya
+		       left join vps_consumer_thirdaccount_info tb on tb.user_key = r.user_keyb
+		       where 
+		           r.pk_status = #{pkStatus}
+		           and r.begin_time between #{beginStartTime} and #{beginEndTime}
+		    </foreach>
+	    ) t
+	    order by t.begin_time
+    </select>
+    
+</mapper>

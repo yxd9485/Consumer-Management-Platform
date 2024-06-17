@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityRebateRuleTempletDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityRebateRuleTemplet" id="baseResult">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="companyKey" column="COMPANY_KEY" />
+		<result property="templetName" column="TEMPLET_NAME" />
+		<result property="unitMoney" column="UNIT_MONEY" />
+		<result property="unitVpoints" column="UNIT_VPOINTS" />
+		<result property="firstScanPercent" column="FIRST_SCAN_PERCENT" />
+		<result property="commonScanPercent" column="COMMON_SCAN_PERCENT" />
+		<result property="allowanceaRebateType" column="ALLOWANCEA_REBATE_TYPE"/>
+		<result property="allowanceaMinMoney" column="ALLOWANCEA_MIN_MONEY"/>
+		<result property="allowanceaMaxMoney" column="ALLOWANCEA_MAX_MONEY"/>
+		<result property="allowanceaMinVpoints" column="ALLOWANCEA_MIN_VPOINTS"/>
+		<result property="allowanceaMaxVpoints" column="ALLOWANCEA_MAX_VPOINTS"/>
+        <result property="status" column="STATUS" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityRebateRuleTemplet">
+		INSERT INTO vps_vcode_activity_rebate_rule_templet (
+	        INFO_KEY,
+	        COMPANY_KEY,
+	        TEMPLET_NAME,
+	        UNIT_MONEY,
+	        UNIT_VPOINTS,
+	        FIRST_SCAN_PERCENT,
+	        COMMON_SCAN_PERCENT,
+	        ALLOWANCEA_REBATE_TYPE,
+	        ALLOWANCEA_MIN_MONEY,
+	        ALLOWANCEA_MAX_MONEY,
+	        ALLOWANCEA_MIN_VPOINTS,
+			ALLOWANCEA_MAX_VPOINTS,
+	        STATUS,
+	        DELETE_FLAG,
+	        CREATE_TIME,
+	        CREATE_USER,
+	        UPDATE_TIME,
+	        UPDATE_USER
+		) VALUES (
+			#{infoKey},
+			#{companyKey},
+			#{templetName},
+            #{unitMoney},
+			#{unitVpoints},
+			#{firstScanPercent},
+			#{commonScanPercent},
+			#{allowanceaRebateType},
+			#{allowanceaMinMoney},
+			#{allowanceaMaxMoney},
+			#{allowanceaMinVpoints},
+			#{allowanceaMaxVpoints},
+			#{status},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VcodeActivityRebateRuleTemplet">
+		UPDATE vps_vcode_activity_rebate_rule_templet 
+		<set>
+			<if test="templetName != null and templetName != '' ">
+				TEMPLET_NAME = #{templetName},
+			</if>
+			<if test="unitMoney != null and unitMoney != '' ">
+				UNIT_MONEY = #{unitMoney},
+			</if>
+			<if test="unitVpoints != null and unitVpoints != '' ">
+				UNIT_VPOINTS = #{unitVpoints},
+			</if>
+			<if test="status != null and status != '' ">
+				STATUS = #{status},
+			</if>
+			<if test="firstScanPercent != null and firstScanPercent != '' ">
+				FIRST_SCAN_PERCENT = #{firstScanPercent},
+			</if>
+			<if test="commonScanPercent != null and commonScanPercent != '' ">
+				COMMON_SCAN_PERCENT = #{commonScanPercent},
+			</if>
+			ALLOWANCEA_REBATE_TYPE = #{allowanceaRebateType},
+			ALLOWANCEA_MIN_MONEY = #{allowanceaMinMoney},
+			ALLOWANCEA_MAX_MONEY = #{allowanceaMaxMoney},
+			ALLOWANCEA_MIN_VPOINTS = #{allowanceaMinVpoints},
+			ALLOWANCEA_MAX_VPOINTS = #{allowanceaMaxVpoints},
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE INFO_KEY = #{infoKey}
+	</update>
+	
+	<delete id="deleteById" parameterType="Map">
+	   UPDATE vps_vcode_activity_rebate_rule_templet
+	   <set>
+	       DELETE_FLAG = '1',
+           UPDATE_TIME = NOW(),
+           UPDATE_USER = #{optUserKey}
+	   </set>
+        WHERE INFO_KEY = #{infoKey}
+	</delete>
+	
+	<select id="queryForLst" resultMap="baseResult" parameterType="Map">
+		SELECT
+			*
+		FROM
+			vps_vcode_activity_rebate_rule_templet
+		WHERE
+			DELETE_FLAG = 0
+		<if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+		    and company_key = #{queryBean.companyKey}
+		</if>
+		<if test="queryBean.templetName != null and queryBean.templetName != ''">
+		    and templet_name like '%${queryBean.templetName}%'
+		</if>
+		<if test="queryBean.status != null and queryBean.status != ''">
+		    and status = #{queryBean.status}
+		</if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND create_time between #{queryBean.startDate} and #{queryBean.endDate}
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND create_time >= #{queryBean.startDate}
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} >= create_time 
+            </when>
+        </choose>
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, CREATE_TIME DESC
+		  </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY CREATE_TIME DESC</otherwise>
+		</choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_vcode_activity_rebate_rule_templet
+		WHERE
+			DELETE_FLAG = 0
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.templetName != null and queryBean.templetName != ''">
+            and templet_name like '%${queryBean.templetName}%'
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and status = #{queryBean.status}
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND create_time between #{queryBean.startDate} and #{queryBean.endDate}
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND create_time >= #{queryBean.startDate}
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} >= create_time 
+            </when>
+        </choose>
+	</select>
+	
+	<select id="findById" resultMap="baseResult" parameterType="String">
+		SELECT
+			*
+		FROM
+			vps_vcode_activity_rebate_rule_templet
+		WHERE
+            INFO_KEY = #{id}
+	</select>
+	
+<!-- 	获取所有有效规则模板 -->
+	<select id="queryAllValid" resultMap="baseResult">
+		SELECT
+			*
+		FROM
+			vps_vcode_activity_rebate_rule_templet
+		WHERE
+            delete_flag = '0' and status = '1'
+        ORDER BY create_time desc
+	</select>
+</mapper>

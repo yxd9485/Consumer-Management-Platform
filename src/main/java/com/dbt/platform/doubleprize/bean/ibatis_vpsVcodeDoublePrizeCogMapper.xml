@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.doubleprize.dao.IVpsVcodeDoublePrizeCogDao">
+
+	<resultMap type="com.dbt.platform.doubleprize.bean.VpsVcodeDoublePrizeCog" id="baseResultMap">
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="activityNo" column="ACTIVITY_NO"/>
+		<result property="activityName" column="ACTIVITY_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="hotAreaKey" column="HOTAREA_KEY"/>
+		<result property="subscribeStatus" column="SUBSCRIBE_STATUS"/>
+		<result property="activitySummaryTitle" column="ACTIVITY_SUMMARY_TITLE"/>
+		<result property="activitySummary" column="ACTIVITY_SUMMARY"/>
+		<result property="activityDesc" column="ACTIVITY_DESC"/>
+		<result property="promotionSkuKey" column="PROMOTION_SKU_KEY"/>
+		<result property="everyoneLimit" column="EVERYONE_LIMIT"/>
+		<result property="everyDayLimit" column="EVERYDAY_LIMIT"/>
+		<result property="prizeLimit" column="PRIZE_LIMIT"/>
+        <result property="prizeExpireType" column="PRIZE_EXPIRE_TYPE"/>
+        <result property="prizeExpireDate" column="PRIZE_EXPIRE_DATE"/>
+        <result property="prizeValidDay" column="PRIZE_VALID_DAY"/>
+		<result property="filterAreaCode" column="FILTER_AREA_CODE"/>
+		<result property="filterStartDate" column="FILTER_START_DATE"/>
+		<result property="filterEndDate" column="FILTER_END_DATE"/>
+		<result property="filterDoubtStatus" column="FILTER_DOUBT_STATUS"/>
+		<result property="filterSkuTotal" column="FILTER_SKU_TOTAL"/>
+		<result property="filterSkuKey" column="FILTER_SKU_KEY"/>
+		<result property="filterPersonNum" column="FILTER_PERSON_NUM"/>
+        <result property="moneyConfigFlag" column="MONEY_CONFIG_FLAG"/>
+        <result property="periodType" column="PERIOD_TYPE"/>
+        <result property="minMoney" column="MIN_MONEY"/>
+        <result property="maxMoney" column="MAX_MONEY"/>
+        <result property="filterType" column="FILTER_TYPE"/>
+        <result property="lotteryType" column="LOTTERY_TYPE"/>
+        <result property="lotteryMoney" column="LOTTERY_MONEY"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.doubleprize.bean.VpsVcodeDoublePrizeCog">
+		INSERT INTO vps_vcode_doubleprize_cog (
+			ACTIVITY_KEY,
+			COMPANY_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+			HOTAREA_KEY,
+			SUBSCRIBE_STATUS,
+			ACTIVITY_SUMMARY_TITLE,
+			ACTIVITY_SUMMARY,
+			ACTIVITY_DESC,
+            PROMOTION_SKU_KEY,
+            EVERYONE_LIMIT,
+            EVERYDAY_LIMIT,
+            PRIZE_LIMIT,
+            PRIZE_EXPIRE_TYPE,
+            PRIZE_EXPIRE_DATE,
+            PRIZE_VALID_DAY,
+            FILTER_AREA_CODE,
+            FILTER_START_DATE,
+            FILTER_END_DATE,
+            FILTER_DOUBT_STATUS,
+            FILTER_SKU_TOTAL,
+            FILTER_SKU_KEY,
+            FILTER_PERSON_NUM,
+            PERIOD_TYPE,
+            MIN_MONEY,
+            MAX_MONEY,
+            FILTER_TYPE,
+            LOTTERY_TYPE,
+            LOTTERY_MONEY,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{activityKey},
+			#{companyKey},
+			#{activityNo},
+			#{activityName},
+			#{startDate},
+			#{endDate},
+			#{hotAreaKey},
+			#{subscribeStatus},
+			#{activitySummaryTitle},
+			#{activitySummary},
+			#{activityDesc},
+            #{promotionSkuKey},
+            #{everyoneLimit},
+            #{everyDayLimit},
+            #{prizeLimit},
+            #{prizeExpireType},
+            #{prizeExpireDate},
+            #{prizeValidDay},
+            #{filterAreaCode},
+            #{filterStartDate},
+            #{filterEndDate},
+            #{filterDoubtStatus},
+            #{filterSkuTotal},
+            #{filterSkuKey},
+            #{filterPersonNum},
+            #{periodType},
+            #{minMoney},
+            #{maxMoney},
+            #{filterType},
+            #{lotteryType},
+            #{lotteryMoney},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.doubleprize.bean.VpsVcodeDoublePrizeCog">
+		UPDATE
+			vps_vcode_doubleprize_cog
+		<set>
+            <if test="companyKey != null and companyKey != ''">
+                COMPANY_KEY = #{companyKey},
+            </if>
+            <if test="activityName != null and activityName != ''">
+				ACTIVITY_NAME = #{activityName},
+            </if>
+            <if test="startDate != null and startDate != ''">
+				START_DATE = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+				END_DATE = #{endDate},
+            </if>
+            <if test="hotAreaKey != null">
+            	HOTAREA_KEY = #{hotAreaKey},
+            </if>
+            <if test="subscribeStatus != null">
+				SUBSCRIBE_STATUS = #{subscribeStatus},
+            </if>
+            <if test="activitySummaryTitle != null and activitySummaryTitle != ''">
+				ACTIVITY_SUMMARY_TITLE = #{activitySummaryTitle},
+            </if>
+            <if test="activitySummary != null and activitySummary != ''">
+				ACTIVITY_SUMMARY = #{activitySummary},
+            </if>
+            <if test="activityDesc != null and activityDesc != ''">
+				ACTIVITY_DESC = #{activityDesc},
+            </if>
+            <if test="promotionSkuKey != null and promotionSkuKey != ''">
+				PROMOTION_SKU_KEY = #{promotionSkuKey},
+            </if>
+            <if test="everyoneLimit != null and everyoneLimit != ''">
+				EVERYONE_LIMIT = #{everyoneLimit},
+            </if>
+            <if test="everyDayLimit != null and everyDayLimit != ''">
+				EVERYDAY_LIMIT = #{everyDayLimit},
+            </if>
+            <if test="prizeLimit != null and prizeLimit != ''">
+				PRIZE_LIMIT = #{prizeLimit},
+            </if>
+            <if test="prizeExpireType != null and prizeExpireType != ''">
+                PRIZE_EXPIRE_TYPE = #{prizeExpireType},
+            </if>
+            <if test="prizeExpireDate != null and prizeExpireDate != ''">
+                PRIZE_EXPIRE_DATE = #{prizeExpireDate},
+            </if>
+            <if test="prizeValidDay != null and prizeValidDay != ''">
+                PRIZE_VALID_DAY = #{prizeValidDay},
+            </if>
+            <if test="filterAreaCode != null">
+				FILTER_AREA_CODE = #{filterAreaCode},
+            </if>
+            <if test="filterStartDate != null and filterStartDate != ''">
+				FILTER_START_DATE = #{filterStartDate},
+            </if>
+            <if test="filterEndDate != null and filterEndDate != ''">
+				FILTER_END_DATE = #{filterEndDate},
+            </if>
+            <if test="filterDoubtStatus != null and filterDoubtStatus != ''">
+				FILTER_DOUBT_STATUS = #{filterDoubtStatus},
+            </if>
+            <if test="filterSkuTotal > 0">
+				FILTER_SKU_TOTAL = #{filterSkuTotal},
+            </if>
+            <if test="filterSkuKey != null and filterSkuKey != ''">
+				FILTER_SKU_KEY = #{filterSkuKey},
+            </if>
+            <if test="filterPersonNum != null ">
+				FILTER_PERSON_NUM = #{filterPersonNum},
+            </if>
+            <if test="moneyConfigFlag != null and moneyConfigFlag != ''">
+				MONEY_CONFIG_FLAG = #{moneyConfigFlag},
+            </if>
+            <if test="periodType != null and periodType != ''">
+                PERIOD_TYPE = #{periodType},
+            </if>
+            <if test="minMoney != null">
+                MIN_MONEY = #{minMoney},
+            </if>
+            <if test="maxMoney != null">
+                MAX_MONEY = #{maxMoney},
+            </if>
+            <if test="filterType != null and filterType != ''">
+                FILTER_TYPE = #{filterType},
+            </if>
+            <if test="lotteryType != null and lotteryType != ''">
+                LOTTERY_TYPE = #{lotteryType},
+            </if>
+            <if test="lotteryMoney != null">
+                LOTTERY_MONEY = #{lotteryMoney},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+				UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+				UPDATE_USER = #{updateUser}
+            </if>
+        </set>
+		WHERE
+			ACTIVITY_KEY = #{activityKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="baseResultMap" >
+		SELECT
+			*
+		FROM
+			vps_vcode_doubleprize_cog 
+		WHERE
+			ACTIVITY_KEY = #{id}
+	</select>
+	
+	<select id="loadActivityList" parameterType="Map" resultMap="baseResultMap" >
+		SELECT a.* FROM(
+			SELECT
+				cog.activity_Key,
+				cog.activity_no,
+				CASE 
+					WHEN DATE(NOW()) >= cog.START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE AND cog.MONEY_CONFIG_FLAG = '1' THEN '1' 
+					WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				cog.ACTIVITY_NAME,
+				cog.FILTER_PERSON_NUM,
+	            cog.MONEY_CONFIG_FLAG,
+				cog.START_DATE,
+				cog.END_DATE,
+				cog.CREATE_TIME,
+	            cog.PERIOD_TYPE,
+	            cog.FILTER_TYPE,
+	            cog.LOTTERY_TYPE
+			FROM
+				vps_vcode_doubleprize_cog cog
+			WHERE
+				cog.DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND cog.activity_no like '%${queryBean.keyword}%' or cog.activity_name like '%${queryBean.keyword}%'
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+	        	</when>
+	         	<when test="queryBean.startDate != null and queryBean.startDate != ''">
+	            	AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+	        	</when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="countActivityList" parameterType="Map" resultType="Integer" >
+		SELECT COUNT(1) FROM(
+			SELECT
+				CASE 
+					WHEN DATE(NOW()) >= cog.START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE AND cog.MONEY_CONFIG_FLAG = '1' THEN '1' 
+					WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin
+			FROM
+				vps_vcode_doubleprize_cog cog
+			WHERE
+				cog.DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND cog.activity_no like '%${queryBean.keyword}%' or cog.activity_name like '%${queryBean.keyword}%'
+			</if>
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND cog.activity_no like '%${queryBean.keyword}%' or cog.activity_name like '%${queryBean.keyword}%'
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+	        	</when>
+	         	<when test="queryBean.startDate != null and queryBean.startDate != ''">
+	            	AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+	        	</when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+	</select>
+	
+<!-- 	filter:第一步，生成中间表数据 -->
+	<insert id="filterPacks" parameterType="Map">
+	   insert into vps_vcode_doubleprize_filter
+	   select 
+	       #{activityKey} activity_key, USER_KEY, count(*) sku_scan_num
+	   from 
+	       vps_vcode_packs_record_${tableSuffix}
+	   where 
+	       EARN_TIME BETWEEN #{startDate} and #{endDate}
+	       and SKU_KEY in 
+	       <foreach collection="filterSkuKeyAry" item="filterSkuKey" open=" (" close=")" separator=",">
+	           #{filterSkuKey}
+	       </foreach>
+	       <if test="areaNameLst != null and areaNameLst.size() > 0">
+	           <foreach collection="areaNameLst" item="address" open=" and (" close=")" separator=" or ">
+	              (province = #{address.province}
+	               <if test="address.city != null and address.city != ''">
+	                   and city = #{address.city}
+	               </if>
+	               <if test="address.county != null and address.county != ''">
+	                   and county = #{address.county}
+	               </if>
+	               )
+	           </foreach>
+	       </if>
+	   group by USER_KEY
+	   <if test="filterSkuTotal >= 10">
+		   having sku_scan_num > 3
+	   </if>
+	</insert>
+	
+<!-- 	filter:第二步，给符合条件的用户打上一码双奖活动标签 -->
+	<update id="filterUser" parameterType="Map">
+	   update vps_consumer_user_info u,
+	       (select t.ACTIVITY_KEY, t.USER_KEY, sum(t.SKU_SCAN_NUM) totalNum
+	           from vps_vcode_doubleprize_filter t 
+	           where t.activity_key = #{activityKey}
+	           group by t.USER_KEY HAVING totalNum >= #{filterSkuTotal}) df
+	   set u.DOUBLEPRIZE_ACTIVITY_KEY = df.ACTIVITY_KEY
+	   where u.USER_KEY = df.USER_KEY 
+	       and u.USER_STATUS in ('0'<if test="doubtStatusFlag == 1">, '1'</if>)
+	       and u.DOUBLEPRIZE_ACTIVITY_KEY is null
+	</update>
+	
+<!-- 	filter:第三步，返回一码双奖活动能参与的人数 -->
+	<select id="filterUserNum" parameterType="Map" resultType="int">
+	   select 
+	       count(*) 
+	   from 
+	       vps_consumer_user_info 
+	   where 
+	       DOUBLEPRIZE_ACTIVITY_KEY = #{activityKey}
+	</select>
+	
+<!--    filter:第四步，删除临时数据 -->
+	<delete id="filterDelete" parameterType="Map">
+	   delete from vps_vcode_doubleprize_filter
+	   where activity_key = #{activityKey}
+	</delete>
+	
+<!--    filter:清除用户的活动标签 -->
+	<update id="filterClearUser" parameterType="Map">
+	   update
+	       vps_consumer_user_info
+	   set 
+	       DOUBLEPRIZE_ACTIVITY_KEY = null
+	   where 
+	       DOUBLEPRIZE_ACTIVITY_KEY = #{activityKey}
+	</update>
+	
+<!-- 	获取所有已结束且未清除标签的活动 -->
+	<select id="queryAllJobActivity" resultMap="baseResultMap">
+	   select 
+	       *
+	   from 
+	       vps_vcode_doubleprize_cog
+	   where 
+	       delete_flag != '1' and JOB_CLEAR_FLAG != '1' 
+	       and END_DATE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d') 
+	</select>
+	
+<!-- 	获取所有有效的活动 -->
+	<select id="queryAllValidActivity" resultMap="baseResultMap">
+	   select 
+	       *
+	   from 
+	       vps_vcode_doubleprize_cog
+	   where 
+	       delete_flag != '1'
+	       and curdate() between start_date and end_date
+	</select>
+</mapper>

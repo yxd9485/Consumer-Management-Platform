@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityLibRelationDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityLibRelation" id="vcodeActivityLibRelationResultMap">
+		<result property="infoKey" column="info_key"/>
+  		<result property="vcodeActivityKey" column="vcode_activity_key"/>
+  		<result property="batchKey" column="batch_key"/>
+  		<result property="vcodeUniqueCode" column="vcode_unique_code"/>
+  		<result property="libName" column="lib_name"/>
+  		<result property="vcodeCounts" column="vcode_counts"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         info_key, 
+  			 vcode_activity_key,
+  			 batch_key,
+  			 vcode_unique_code,
+  			 lib_name,
+			 vcode_counts 
+  	</sql>
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityLibRelation">
+		INSERT INTO vps_vcode_activity_lib_relation(
+		 info_key, 
+  			vcode_activity_key,
+  			batch_key,
+  			vcode_unique_code,
+  			lib_name,
+  			 vcode_counts 
+		)
+		VALUES(
+		    #{infoKey},
+			
+  			#{vcodeActivityKey},
+			
+  			#{batchKey},
+			
+  			#{vcodeUniqueCode},
+			
+  			#{libName},
+			
+  			#{vcodeCounts}
+		)
+	</insert>
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VcodeActivityLibRelation">
+		update vps_vcode_activity_lib_relation 
+	<set>
+			<if test="vcodeActivityKey != null and vcodeActivityKey!=''">
+			vcode_activity_key = #{vcodeActivityKey},
+			</if>
+			<if test="batchKey != null and batchKey!=''">
+			batch_key = #{batchKey},
+			</if>
+			<if test="vcodeUniqueCode != null and vcodeUniqueCode!=''">
+			vcode_unique_code = #{vcodeUniqueCode},
+			</if>
+			<if test="libName != null and libName!=''">
+			lib_name = #{libName},
+			</if>
+			<if test="vcodeCounts != null and vcodeCounts!=''">
+			vcode_counts = #{vcodeCounts},
+			</if>
+	</set>
+	 where info_key=#{infoKey}
+	</update>
+	
+	<!-- 得到活动唯一标示最大值 -->
+	<select id="checkUniqueCode" resultType="java.lang.Integer" parameterType="String">
+		select 
+			count(1)
+		 from vps_vcode_activity_lib_relation 
+		 where vcode_unique_code=#{vcodeUniqueCode} 
+		  limit 1
+	</select>
+	<!-- 批量入库V码活动活动与码库关联关系 -->
+	<insert id="batchAddActivityLibRelation" parameterType="java.util.List">
+		INSERT INTO vps_vcode_activity_lib_relation(
+		 	info_key, 
+  			vcode_activity_key,
+  			batch_key,
+  			vcode_unique_code,
+  			lib_name,
+  			 vcode_counts 
+		)
+		VALUES
+		<foreach collection="list" item="itm" separator=",">
+		(
+		    #{itm.infoKey},
+			
+  			#{itm.vcodeActivityKey},
+			
+  			#{itm.batchKey},
+			
+  			#{itm.vcodeUniqueCode},
+			
+  			#{itm.libName},
+			
+  			#{itm.vcodeCounts}
+		)
+		</foreach>
+	</insert>
+	
+	<!-- 查询所有活动批次编码 -->
+	<select id="queryAllCodeList" resultType="String">
+		select
+			vcode_unique_code
+		from 
+		 	vps_vcode_activity_lib_relation
+	</select>
+	
+	<!-- 查询所有码库名称 -->
+	<select id="queryAllLibNameList" resultType="String">
+		select
+			lib_name
+		from 
+		 	vps_vcode_activity_lib_relation
+	</select>
+	
+	<!-- 根据批次查询对象 -->
+	<select id="findLibRelationBybatchKey" parameterType="String" resultMap="vcodeActivityLibRelationResultMap">
+		select 
+			<include refid="Base_Column_List" />
+		 from vps_vcode_activity_lib_relation 
+		 where batch_key = #{batchKey} 
+		 limit 1
+	</select>
+	
+	<!-- 根据码库标识查询对象 -->
+	<select id="findLibRelationByUniqueCode" parameterType="String" resultMap="vcodeActivityLibRelationResultMap">
+		select 
+			<include refid="Base_Column_List" />
+		 from vps_vcode_activity_lib_relation 
+		 where vcode_unique_code = #{vcodeUniqueCode} 
+		 limit 1
+	</select>
+	
+	<!-- 查询一码多扫相关的码库表 -->
+	<select id="queryListForMoreSweep" parameterType="Map" resultMap="vcodeActivityLibRelationResultMap">
+		SELECT 
+			lib.lib_name, a.BATCH_KEY 
+		FROM vps_vcode_activity_lib_relation lib
+		INNER JOIN (
+			SELECT 
+				LEFT(r.QRCODE_CONTENT, 3) AS VCODE_UNIQUE_CODE,
+				GROUP_CONCAT(DISTINCT(r.BATCH_KEY)) AS BATCH_KEY
+			FROM 
+			(
+				<foreach collection="tableIdxList" item="tableIdx" separator="UNION ALL">
+					SELECT QRCODE_CONTENT, BATCH_KEY FROM vps_vcode_packs_record_${tableIdx}
+					WHERE VCODE_ACTIVITY_KEY = #{vcodeActivityKey} 
+					AND EARN_TIME between #{startTime} and #{endTime}
+				</foreach>
+			) r
+			GROUP BY VCODE_UNIQUE_CODE
+		) a ON lib.VCODE_UNIQUE_CODE = a.VCODE_UNIQUE_CODE
+	</select>
+	
+<!--    物理删除批次相关的包 -->
+    <delete id="removeByBatchKey" parameterType="String">
+       delete from 
+           vps_vcode_activity_lib_relation
+       where
+           batch_key = #{batchKey}
+    </delete>
+</mapper>

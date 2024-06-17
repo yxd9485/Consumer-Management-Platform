@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodePacksRecordDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodePacksRecord" id="vcodePacksRecordResultMap">
+		<result property="infoKey" column="info_key"/>
+  		<result property="vpointsCogKey" column="vpoints_cog_key"/>
+  		<result property="companyKey" column="company_key"/>
+  		<result property="vcodeActivityKey" column="vcode_activity_key"/>
+  		<result property="rebateRuleKey" column="rebate_rule_key"/>
+  		<result property="packKey" column="pack_key"/>
+  		<result property="batchKey" column="batch_key"/>
+  		<result property="userKey" column="user_key"/>
+  		<result property="earnTime" column="earn_time"/>
+  		<result property="skuKey" column="sku_key"/>
+  		<result property="earnMoney" column="earn_money"/>
+  		<result property="earnVpoints" column="earn_vpoints"/>
+  		<result property="prizeType" column="prize_type"/>
+	</resultMap>
+	<resultMap type="com.dbt.platform.activity.bean.VcodePacksRecord" id="queryPacksRecordCountByBatchKeyResultMap" extends="vcodePacksRecordResultMap">
+		<result property="num" column="num"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         info_key, 
+  			 vpoints_cog_key,
+  			 company_key,
+  			 vcode_activity_key,
+  			 rebate_rule_key,
+  			 pack_key,
+  			 batch_key,
+  			 user_key,
+  			 earn_time,
+  			 sku_key,
+			 earn_money 
+  	</sql>
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodePacksRecord">
+		INSERT INTO vps_vcode_packs_record_1(
+		 info_key, 
+  			vpoints_cog_key,
+  			company_key,
+  			vcode_activity_key,
+  			pack_key,
+  			batch_key,
+  			user_key,
+  			earn_time,
+  			sku_key,
+  			 earn_money 
+		)
+		VALUES(
+		    #{infoKey},
+			
+  			#{vpointsCogKey},
+			
+  			#{companyKey},
+			
+  			#{vcodeActivityKey},
+			
+  			#{packKey},
+			
+  			#{batchKey},
+			
+  			#{userKey},
+			
+  			#{earnTime},
+			
+  			#{skuKey},
+			
+  			#{earnMoney}
+		)
+	</insert>
+	
+	<!-- 获取爆点红包List -->
+	<select id="queryEruptRedpacketList" parameterType="Map" resultMap="vcodePacksRecordResultMap">
+		SELECT 
+			p.info_key,
+			p.user_key,
+			u.nick_name as nickName,
+			p.province,
+			p.city,
+			p.county, 
+	  		p.earn_time,
+			p.earn_money,
+			p.earn_vpoints,
+			p.prize_type
+		FROM (
+			<foreach collection="suffixList" item="tableIndex" separator="UNION ALL">
+			SELECT
+				 info_key, 
+				 user_key,
+	  			 earn_time,
+				 earn_money,
+				 earn_vpoints,
+				 prize_type,
+				 province,
+				 city,
+				 county
+			FROM vps_vcode_packs_record_${tableIndex}
+			WHERE rebate_rule_key = #{rebateRuleKey}
+			AND left(vpoints_cog_key, 4) = 'STVK'
+			</foreach>
+		) p
+		LEFT JOIN vps_consumer_user_info u on p.user_key = u.user_key
+		ORDER BY p.earn_time
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<!-- 获取爆点红包count -->
+	<select id="queryEruptRedpacketCount" parameterType="Map" resultType="Integer">
+		SELECT 
+			count(1)
+		FROM (
+			<foreach collection="suffixList" item="tableIndex" separator="UNION ALL">
+			SELECT info_key
+			FROM vps_vcode_packs_record_${tableIndex}
+			WHERE rebate_rule_key = #{rebateRuleKey}
+            AND left(vpoints_cog_key, 4) = 'STVK'
+			</foreach>
+		) p
+	</select>
+	
+    <!-- 根据批码下扫码总记录数 -->
+	<select id="queryPacksRecordCountByBatchKey" parameterType="String" resultMap="queryPacksRecordCountByBatchKeyResultMap">
+		SELECT SUM(num) num FROM (
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_1 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_2  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_3  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_4 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_5  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_6  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_7 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_8  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_9  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_10 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_11 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_12  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_13  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_14 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_15  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_16  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_17 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_18  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_19  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_20 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_21  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_22 WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_23  WHERE BATCH_KEY=#{batchKey}
+			UNION ALL 
+			SELECT COUNT(1) num FROM vps_vcode_packs_record_24  WHERE BATCH_KEY=#{batchKey}
+		) t			
+	</select>
+</mapper>

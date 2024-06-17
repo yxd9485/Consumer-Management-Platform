@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.permantissa.dao.IVpsVcodePerMantissaPrizeRecordDao">
+
+	<resultMap type="com.dbt.platform.permantissa.bean.VpsVcodePerMantissaPrizeRecord" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+  		<result property="perMantissaKey" column="PERMANTISSA_KEY"/>
+  		<result property="openid" column="OPENID"/>
+  		<result property="userKey" column="USER_KEY"/>
+  		<result property="nickName" column="NICK_NAME"/>
+  		<result property="qrcodeContent" column="QRCODE_CONTENT"/>
+  		<result property="skuKey" column="SKU_KEY"/>
+  		<result property="prizeScanNum" column="PRIZE_SAN_NUM"/>
+  		<result property="prizeType" column="PRIZE_TYPE"/>
+  		<result property="earnVpoints" column="EARN_VPOINTS"/>
+  		<result property="earnMoney" column="EARN_MONEY"/>
+  		<result property="prizeName" column="PRIZE_NAME"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+        <result property="skuName" column="SKU_NAME"/>
+	</resultMap>
+
+	<select id="queryForList" resultMap="baseResult" parameterType="Map">
+		SELECT 
+            r.*,
+            s.sku_name,
+            concat(IFNULL(r.province, ''), '-', IFNULL(r.city, ''), '-', IFNULL(r.county, '')) address
+        FROM 
+            vps_vcode_permantissa_prize_record r
+        left join vps_sku_info s on r.sku_key = s.sku_key
+		WHERE 1=1
+			    AND r.PERMANTISSA_KEY = #{queryBean.perMantissaKey}
+			<if test="queryBean.openid != null and queryBean.openid != ''">
+			    AND (r.openid = #{queryBean.openid} or r.user_key = #{queryBean.openid})
+			</if>
+			<if test="queryBean.nickName != null and queryBean.nickName != ''">
+			    AND r.NICK_NAME LIKE '%${queryBean.nickName}%'
+			</if>
+			<if test="queryBean.qrcodeContent != null and queryBean.qrcodeContent != ''">
+			    AND r.QRCODE_CONTENT = #{queryBean.qrcodeContent}
+			</if>
+			<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			    AND r.create_time >= CONCAT(#{queryBean.startDate},' ','00:00:00')
+			</if>
+			<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			    AND r.create_time <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' ','23:59:59')
+			</if>
+	 	ORDER BY 
+			<choose>
+			  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+			      ${pageInfo.orderCol} ${pageInfo.orderType}
+			  </when>
+			  <otherwise>r.CREATE_TIME DESC</otherwise>
+			</choose>
+        <if test="isLimit">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT 
+		    COUNT(1) 
+		FROM 
+		    vps_vcode_permantissa_prize_record 
+		WHERE 1=1
+            <if test="queryBean.perMantissaKey != null and queryBean.perMantissaKey != ''">
+                AND PERMANTISSA_KEY = #{queryBean.perMantissaKey}
+            </if>
+            <if test="queryBean.openid != null and queryBean.openid != ''">
+                AND (openid = #{queryBean.openid} or user_key = #{queryBean.openid})
+            </if>
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                AND NICK_NAME LIKE '%${queryBean.nickName}%'
+            </if>
+            <if test="queryBean.qrcodeContent != null and queryBean.qrcodeContent != ''">
+                AND QRCODE_CONTENT = #{queryBean.qrcodeContent}
+            </if>
+            <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND create_time >= CONCAT(#{queryBean.startDate},' ','00:00:00')
+            </if>
+            <if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND create_time <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' ','23:59:59')
+            </if>
+	</select>
+</mapper>

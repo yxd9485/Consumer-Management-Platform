@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.ITerminalRankActivityCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.mn.dto.TerminalRankActivityCogVO">
+        <id column="info_key" property="infoKey" />
+        <result column="activity_name" property="activityName" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="cascade_flag" property="cascadeFlag" />
+        <result column="activity_type" property="activityType" />
+        <result column="activity_role" property="activityRole" />
+        <result column="sku_keys" property="skuKeys" />
+        <result column="rule_content" property="ruleContent" />
+        <result column="init_banner_url" property="initBannerUrl" />
+        <result column="activity_banner_url" property="activityBannerUrl" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="isBegin" property="isBegin" />
+    </resultMap>
+
+
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        info_key,
+        activity_name,
+        date_format(start_time,'%Y-%m-%d %H:%i:%S') start_time,
+        date_format(end_time,'%Y-%m-%d %H:%i:%S') end_time,
+        cascade_flag,
+        activity_type,
+        activity_role,
+        sku_keys,
+        rule_content,
+        init_banner_url,
+        activity_banner_url,
+        update_time,
+        create_time,
+        create_user,
+        CASE
+
+        WHEN NOW() >= cog.start_time
+        AND NOW() &lt;= cog.END_time THEN '1' WHEN NOW() > cog.END_time THEN
+        '2' ELSE '0'
+        END AS isBegin
+        FROM
+        terminal_rank_activity_cog cog
+        WHERE
+        delete_flag = '1'
+        ) acc
+        <where>
+            <if test="param.startTime != null and param.startTime!= ''">
+                and acc.create_time >= concat(#{param.startTime},' 00:00:00')
+            </if>
+            <if test="param.endTime != null and param.endTime !=''">
+                and acc.create_time <![CDATA[ <= ]]> concat(#{param.endTime},' 23:59:59')
+            </if>
+            <if test="param.isBegin != null and param.isBegin != ''">
+                and acc.isBegin = #{param.isBegin}
+            </if>
+            <if test="param.activityName != null and param.activityName != ''">
+                and acc.activity_name like concat("%",#{param.activityName},"%")
+            </if>
+            <if test="param.activityType != null and param.activityType != ''">
+                and acc.activity_type = #{param.activityType}
+            </if>
+        </where>
+
+        order by acc.update_time desc
+    </select>
+
+</mapper>

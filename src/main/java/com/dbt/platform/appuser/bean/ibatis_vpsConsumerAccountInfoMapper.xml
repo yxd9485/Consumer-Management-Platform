@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.appuser.dao.IVpsConsumerAccountInfoDao">
+
+	<resultMap type="com.dbt.platform.appuser.bean.VpsConsumerAccountInfo" id="vpsConsumerAccountInfoResultMap">
+		<result property="openid" column="openid"/>
+		<result property="accountKey" column="account_key"/>
+  		<result property="userKey" column="user_key"/>
+  		<result property="accountVpoints" column="account_vpoints"/>
+  		<result property="surplusVpoints" column="surplus_vpoints"/>
+  		<result property="accountMoney" column="account_money"/>
+  		<result property="surplusMoney" column="surplus_money"/>
+  		<result property="freezeMoney" column="freeze_money"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateTime" column="update_time"/>
+
+		<result property="nikeName" column="nick_name"/>
+		<result property="phoneNum" column="phone_number"/>
+		<result property="exchangePoints" column="Exchange_points"/>
+		<result property="totalScan" column="total_scan"/>
+		<result property="totalExchangeNum" column="total_exchange_num"/>
+
+		<result property="earnVpoints" column="earn_vpoints"/>
+		<result property="qrcodeContent" column="qrcode_content"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="county" column="county"/>
+		<result property="earnTime" column="earn_time"/>
+		<result property="skuName" column="sku_name"/>
+		<result property="address" column="address"/>
+		<result property="longitude" column="longitude"/>
+		<result property="latitude" column="latitude"/>
+
+
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		account_key,
+		user_key,
+		account_vpoints,
+		surplus_vpoints,
+		account_money,
+		surplus_money,
+		create_time,
+		update_time
+  	</sql>
+  	
+    <select id="findByUserKey" resultMap="vpsConsumerAccountInfoResultMap" parameterType="Map">
+  	    select 
+  	         *
+ 	    from 
+            vps_consumer_account_info
+        where
+            user_key = #{userKey}
+        limit 1
+        <if test="forUpdate">
+            for update
+        </if>
+  	</select>
+
+
+	<select id="findUserVpoints" resultMap="vpsConsumerAccountInfoResultMap" parameterType="Map" >
+		SELECT
+		DISTINCT(vca.USER_KEY),
+		vcu.NICK_NAME,
+		vcu.PHONE_NUMBER,
+		vca.ACCOUNT_VPOINTS,
+		(
+		vca.ACCOUNT_VPOINTS - vca.SURPLUS_VPOINTS
+		) as Exchange_points,
+		vca.SURPLUS_VPOINTS,
+		vca.TOTAL_SCAN,
+		vca.TOTAL_EXCHANGE_NUM,
+		vvfs.CREATE_TIME
+		FROM
+		vps_consumer_account_info  vca
+		left join vps_consumer_user_info vcu on vca.USER_KEY = vcu.USER_KEY
+		left join vps_vcode_first_scan_record_info vvfs on vca.USER_KEY = vvfs.USER_KEY
+
+		WHERE
+		1=1
+
+		<if test="remindInfo.userKey != null and remindInfo.userKey != ''" >
+			and vca.USER_KEY = #{remindInfo.userKey}
+		</if>
+		<if test="inActivities != null and inActivities != '' and inActivities == 1" >
+			and vca.ACCOUNT_VPOINTS > 0
+		</if>
+		<if test="inActivities != null and inActivities != '' and inActivities ==2" >
+			and vca.ACCOUNT_VPOINTS = 0
+		</if>
+		<if test="inActivities  == null or inActivities  == ''" >
+			and vca.ACCOUNT_VPOINTS > 0
+		</if>
+
+		<if test="remindInfo.phoneNum != null and remindInfo.phoneNum != ''" >
+			and vcu.PHONE_NUMBER like   '%${remindInfo.phoneNum}%'
+		</if>
+		<if test="remindInfo.nikeName != null and remindInfo.nikeName != ''" >
+			and vcu.NICK_NAME like '%${remindInfo.nikeName}%'
+		</if>
+		<if test="remindInfo.createTime != null and remindInfo.createTime != '' and remindInfo.updateTime !=null and remindInfo.updateTime !=''" >
+			and  vvfs.CREATE_TIME > #{remindInfo.createTime}AND vvfs.CREATE_TIME <![CDATA[ < ]]>  #{remindInfo.updateTime}
+		</if>
+		<if test="pageInfo != null">
+		<choose>
+			<when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol == 'account_vpoints' ">
+				ORDER BY vca.${pageInfo.orderCol} ${pageInfo.orderType}
+			</when>
+			<when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol == 'create_time' ">
+				ORDER BY  vvfs.${pageInfo.orderCol} ${pageInfo.orderType}
+			</when>
+			<when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol == 'SURPLUS_VPOINTS' ">
+				ORDER BY  vca.${pageInfo.orderCol} ${pageInfo.orderType}
+			</when>
+		</choose>
+		<if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+		limit #{pageInfo.startCount} , #{pageInfo.pagePerCount}
+		</if>
+		</if>
+	</select>
+	<select id="findUserVpointsCount" resultType="java.lang.Integer" parameterType="Map" >
+		SELECT
+		COUNT(1)
+		FROM
+		vps_consumer_account_info  vca
+		left join vps_consumer_user_info vcu on vca.USER_KEY = vcu.USER_KEY
+		left join vps_vcode_first_scan_record_info vvfs on vca.USER_KEY = vvfs.USER_KEY
+
+		WHERE
+		1=1
+
+		<if test="remindInfo.userKey != null and remindInfo.userKey != ''" >
+			and vca.USER_KEY = #{remindInfo.userKey}
+		</if>
+		<if test="inActivities != null and inActivities != '' and inActivities == 1" >
+			and vca.ACCOUNT_VPOINTS > 0
+		</if>
+		<if test="inActivities != null and inActivities != '' and inActivities==2" >
+			and vca.ACCOUNT_VPOINTS = 0
+		</if>
+		<if test="inActivities  == null or inActivities  == ''" >
+			and vca.ACCOUNT_VPOINTS > 0
+		</if>
+
+		<if test="remindInfo.phoneNum != null and remindInfo.phoneNum != ''" >
+			and vcu.PHONE_NUMBER like   '%${remindInfo.phoneNum}%'
+		</if>
+		<if test="remindInfo.nikeName != null and remindInfo.nikeName != ''" >
+			and vcu.NICK_NAME like '%${remindInfo.nikeName}%'
+		</if>
+		<if test="remindInfo.createTime != null and remindInfo.createTime != '' and remindInfo.updateTime !=null and remindInfo.updateTime !=''" >
+			and  vvfs.CREATE_TIME > #{remindInfo.createTime}AND vvfs.CREATE_TIME <![CDATA[ < ]]>  #{remindInfo.updateTime}
+		</if>
+	  
+	</select>
+	 <select id="findUserScanList" parameterType="Map" resultMap="vpsConsumerAccountInfoResultMap" >
+
+        select
+		 b.earn_vpoints,b.qrcode_content,b.province,b.city,b.county,b.earn_time,vki.sku_name,concat_ws('-',b.province,b.city,b.county) as address ,b.longitude,b.latitude from(
+			select
+		 a.earn_vpoints,a.vcode_activity_key,a.qrcode_content,a.province,a.city,a.county,a.earn_time,a.longitude,a.latitude
+		 from (
+					select * from  vps_vcode_packs_record_1 where USER_KEY= #{remindInfo.userKey}
+					union ALL
+					select * from  vps_vcode_packs_record_2 where USER_KEY= #{remindInfo.userKey}
+					union ALL
+					select * from  vps_vcode_packs_record_3 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_4 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_5 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_6 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_7 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_8 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_9 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_10 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_11 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_12 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_13 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_14 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_15 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_16 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_17 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_18 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_19 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_20 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_21 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_22 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_23 where USER_KEY= #{remindInfo.userKey}
+					union all
+					select * from  vps_vcode_packs_record_24 where USER_KEY= #{remindInfo.userKey}
+			) a   where  1=1
+			     <if test="pageInfo != null ">
+                     <choose>
+						 <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''and pageInfo.orderCol=='create_time'">
+							 ORDER BY a.EARN_TIME asc
+						 </when>
+						 <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''and pageInfo.orderCol=='account_vpoints'">
+							 ORDER BY a.EARN_TIME asc
+						 </when>
+						 <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''and pageInfo.orderCol=='SURPLUS_VPOINTS'">
+							 ORDER BY a.EARN_TIME asc
+						 </when>
+                         <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                             ORDER BY a.${pageInfo.orderCol} ${pageInfo.orderType}
+                         </when>
+
+                         <otherwise>ORDER BY a.EARN_TIME asc</otherwise>
+                     </choose>
+	            	    <if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+			  	        limit #{pageInfo.startCount} , #{pageInfo.pagePerCount}
+		               </if>
+
+				 </if>
+		        )b
+               left join vps_vcode_activity_cog vvac on vvac.vcode_activity_key=b.vcode_activity_key
+               left join vps_sku_info vki on  vki.SKU_KEY=vvac.sku_key
+
+	 </select>
+
+	<select id="countUserScanList" parameterType="String"  resultType="java.lang.Integer" >
+		select count(1) from (
+		select * from  vps_vcode_packs_record_1 where USER_KEY= #{userKey}
+		union ALL
+		select * from  vps_vcode_packs_record_2 where USER_KEY= #{userKey}
+		union ALL
+		select * from  vps_vcode_packs_record_3 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_4 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_5 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_6 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_7 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_8 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_9 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_10 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_11 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_12 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_13 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_14 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_15 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_16 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_17 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_18 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_19 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_20 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_21 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_22 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_23 where USER_KEY= #{userKey}
+		union all
+		select * from  vps_vcode_packs_record_24 where USER_KEY= #{userKey}
+		) a
+	</select>
+
+	<select id="findQrcodeContent" resultMap="vpsConsumerAccountInfoResultMap" parameterType="map">
+		select	t.EARN_TIME,t.EARN_MONEY,t.PROVINCE,t.CITY,t.COUNTY,s.SKU_NAME,t.LONGITUDE,t.LATITUDE,t.GEO_HASH,n.BATCH_NAME
+		 from ${recordTable} t
+		    left join vps_sku_info s on s.SKU_KEY=t.SKU_KEY
+		    left join vps_vcode_qrcode_batch_info n on n.BATCH_KEY=t.batch_key
+	    	 where t.USER_KEY= #{userKey}	 and t.QRCODE_CONTENT=#{vcode}
+	</select>
+
+	<!-- 获取剩余积分大于的0的用户 -->
+	<select id="queryUserByVpoints" resultMap="vpsConsumerAccountInfoResultMap">
+		SELECT t.openid, a.SURPLUS_VPOINTS FROM vps_consumer_thirdaccount_info t 
+		inner join vps_consumer_account_info a on t.user_key = a.user_key
+		WHERE a.SURPLUS_VPOINTS > 0
+	</select>
+	
+	<!-- 撤单返还账户积分 -->
+	<update id="updateForRevokeOrder" parameterType="Map">
+		UPDATE 
+			VPS_CONSUMER_ACCOUNT_INFO 
+		<set> 
+		    update_time = NOW(),
+            surplus_vpoints = IFNULL(surplus_vpoints, 0) + ${vpoint},
+            TOTAL_EXCHANGE_NUM = TOTAL_EXCHANGE_NUM -1
+        </set>
+		WHERE 
+			USER_KEY = #{userKey} 
+	</update>
+	
+	<!-- 增加指定帐户金额并清零冻结金额 -->
+	<update id="updateFreezeMoney" parameterType="Map">
+		UPDATE 
+			VPS_CONSUMER_ACCOUNT_INFO 
+		<set> 
+		    update_time = NOW(),
+            account_money = IFNULL(account_money, 0) + ${winMoney},
+            surplus_money = IFNULL(surplus_money, 0) + IFNULL(freeze_money, 0) + ${winMoney},
+            freeze_money = 0
+        </set>
+		WHERE 
+			account_key = #{accountKey} 
+	</update>
+	
+	<!-- 批量更新个人账户金额 -->
+	<update id="batchUpdateUserVpoints" parameterType="Map">
+		UPDATE 
+			VPS_CONSUMER_ACCOUNT_INFO 
+		SET 
+            update_time = #{earnTime},
+            surplus_vpoints = IFNULL(surplus_vpoints, 0) + ${earnVpoints},
+            account_vpoints = IFNULL(account_vpoints, 0) + ${earnVpoints},
+			surplus_money = IFNULL(surplus_money, 0.00) + ${earnMoney},
+			account_money = IFNULL(account_money, 0.00) + ${earnMoney}
+		WHERE 
+			USER_KEY IN 
+			<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">   
+				#{item}   
+			</foreach>
+	</update>
+	
+	<!-- 更新个人账户金额和积分 -->
+	<update id="executeAddUserAccountPoints" parameterType="Map">
+		UPDATE 
+			vps_consumer_account_info 
+		<set>
+		     SURPLUS_MONEY = IFNULL(SURPLUS_MONEY, 0.00) + ${earnMoney},
+		     ACCOUNT_MONEY = IFNULL(ACCOUNT_MONEY, 0.00) + ${earnMoney},
+		     SURPLUS_VPOINTS = IFNULL(SURPLUS_VPOINTS, 0) + ${earnVpoints},
+		     ACCOUNT_VPOINTS = IFNULL(ACCOUNT_VPOINTS, 0) + ${earnVpoints},
+		     UPDATE_TIME = NOW()
+		</set>
+		WHERE 
+			USER_KEY = #{userKey} 
+	</update>
+	
+	<!-- 批量更新个人账户金额 -->
+	<update id="updateBatchVpoints" parameterType="Map">
+		<foreach collection="accountList" item="item" index="index" separator=";">
+			UPDATE 
+				vps_consumer_account_info 
+			SET 
+	            update_time = #{earnTime},
+	            SURPLUS_VPOINTS = IFNULL(SURPLUS_VPOINTS, 0) + cast(${item.surplusVpoints} as SIGNED INTEGER),
+	            ACCOUNT_VPOINTS = IFNULL(ACCOUNT_VPOINTS, 0) + cast(${item.surplusVpoints} as SIGNED INTEGER)
+			WHERE 
+				USER_KEY = #{item.userKey}
+		</foreach>
+	</update>
+</mapper>

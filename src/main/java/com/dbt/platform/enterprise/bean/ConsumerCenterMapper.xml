@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.enterprise.dao.IConsumerCenterDao">
+    <resultMap type="com.dbt.platform.enterprise.bean.ConsumerCenterCogInfo" id="resultMap">
+        <result property="infoKey" column="info_key"/>
+        <result property="consumerCenterType" column="consumer_center_type"/>
+        <result property="servicePhonenumDescribe" column="service_phonenum_describe"/>
+        <result property="servicePhonenum" column="service_phonenum"/>
+        <result property="companyWechatDescribe" column="company_wechat_describe"/>
+        <result property="companyWechatLink" column="company_wechat_link"/>
+        <result property="status" column="status"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+    <insert id="create">
+        insert into vps_consumer_center_cog(
+            info_key,
+            consumer_center_type,
+            service_phonenum_describe,
+            service_phonenum,
+            company_wechat_describe,
+            company_wechat_link,
+            `status`,
+            order_flag,
+            DELETE_FLAG,
+            UPDATE_TIME,
+            UPDATE_USER
+        )
+        values
+        <foreach collection="list" item="itm" separator=",">
+        (
+            #{itm.infoKey},
+            #{itm.consumerCenterType},
+            #{itm.servicePhonenumDescribe},
+            #{itm.servicePhonenum},
+            #{itm.companyWechatDescribe},
+            #{itm.companyWechatLink},
+            #{itm.status},
+            #{itm.orderFlag},
+            #{itm.deleteFlag},
+            #{itm.updateTime},
+            #{itm.updateUser}
+        )
+        </foreach>
+    </insert>
+
+    <select id="queryForLst" resultMap="resultMap">
+        select * from vps_consumer_center_cog where DELETE_FLAG = '0' order by order_flag
+    </select>
+
+    <update id="deleteConsumerCenter">
+        update vps_consumer_center_cog set DELETE_FLAG = '1'
+    </update>
+</mapper>

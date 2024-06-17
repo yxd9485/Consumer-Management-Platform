@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.redenveloperain.dao.IVpsRedEnvelopeRainActivityRecordDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.redenveloperain.bean.RedEnvelopeRainActivityRecord">
+        <id column="info_key" property="infoKey" />
+        <result column="vcode_activity_key" property="vcodeActivityKey" />
+        <result column="user_key" property="userKey" />
+        <result column="activity_key" property="activityKey" />
+        <result column="earn_money" property="earnMoney" />
+        <result column="real_money" property="realMoney" />
+        <result column="back_flag" property="backFlag" />
+        <result column="activity_type" property="activityType" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select  `info_key`,
+        `user_key`,
+        `activity_key`,
+        `vcode_activity_key`,
+        `earn_money`,
+        `real_money`,
+        `back_flag`,
+        `activity_type`,
+        `create_time` from vps_red_envelope_rain_activity_record where info_key = #{id}
+    </select>
+</mapper>

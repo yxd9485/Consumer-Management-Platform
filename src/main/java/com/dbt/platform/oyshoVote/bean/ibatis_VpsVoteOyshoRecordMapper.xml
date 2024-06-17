@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.oyshoVote.dao.IVpsVoteOyshoRecordDao">
+
+	<resultMap type="com.dbt.platform.oyshoVote.bean.VpsVoteOyshoRecord" id="baseResultMap">
+		<result property="infoKey" column="info_Key"/>
+		<result property="userKey" column="user_key"/>
+  		<result property="shareUserKey" column="share_user_key"/>
+		<result property="oyshoKey" column="OYSHO_KEY"/>
+  		<result property="vote" column="VOTE"/>
+  		<result property="createDate" column="create_date"/>
+  		<result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	<!-- 删除评选促销员投票记录 -->
+    <delete id="deleteByUserKey" parameterType="String">
+        delete from vps_vote_oysho_record where user_key = #{userKey}
+    </delete>
+</mapper>

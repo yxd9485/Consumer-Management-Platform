@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpsGiftCardQrcodeInfoDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpsGiftCardQrcodeInfo">
+        <id column="gift_card_qrcode" property="giftCardQrcode" />
+        <result column="order_no" property="orderNo" />
+        <result column="qrcode_order_key" property="qrcodeOrderKey" />
+        <result column="activate_time" property="activateTime" />
+        <result column="activate_user" property="activateUser" />
+        <result column="qrcode_status" property="qrcodeStatus" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        gift_card_qrcode, qrcode_order_key, activate_time, activate_user, qrcode_status, create_time
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpsGiftCardQrcodeInfo">
+        insert into vps_gift_card_qrcode_info (
+                   order_no,
+                   gift_card_qrcode,
+                  qrcode_order_key,
+                  activate_time,
+                  activate_user,
+                  qrcode_status,
+                  create_time
+        ) values (
+                #{orderNo},
+                #{giftCardQrcode},
+                #{qrcodeOrderKey},
+                #{activateTime},
+                #{activateUser},
+                #{qrcodeStatus},
+                #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpsGiftCardQrcodeInfo">
+        update  vps_gift_card_qrcode_info set
+                    <if test=" giftCardQrcode!=null">
+                         gift_card_qrcode =  #{giftCardQrcode},
+                    </if>
+                    <if test=" qrcodeOrderKey!=null">
+                         qrcode_order_key =   #{qrcodeOrderKey},
+                    </if>
+                    <if test=" activateTime!=null">
+                         activate_time =   #{activateTime},
+                    </if>
+                    <if test=" activateUser!=null">
+                         activate_user =   #{activateUser},
+                    </if>
+                    <if test=" qrcodeStatus!=null">
+                         qrcode_status =   #{qrcodeStatus},
+                    </if>
+                    <if test=" createTime!=null">
+                         create_time =   #{createTime},
+                    </if>
+
+    </update>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.seckill.dao.SeckillDao">
+
+	<resultMap type="com.dbt.seckill.bean.SeckillActivityBean" id="seckillMap">
+		<result property="seckillId" column="seckill_id" />
+		<result property="seckillType" column="seckill_type" />
+		<result property="seckillName" column="seckill_name" />
+		<result property="seckillVcode" column="seckill_vcode" />
+		<result property="seckillUrl" column="seckill_url" />
+		<result property="seckillStatus" column="seckill_status" />
+		<result property="skuKey" column="sku_key" />
+		<result property="seckillDateType" column="seckill_date_type" />
+		<result property="startDate" column="start_date" />
+		<result property="endDate" column="end_date" />
+		<result property="seckillTimeSet" column="seckill_time_set" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+		<result property="filterAreaCode" column="FILTER_AREA_CODE" />
+		<result property="filterAreaName" column="FILTER_AREA_NAME" />
+		<result property="followScanType" column="follow_scan_type" />
+		<result property="seckillRuleKey" column="seckill_rule_key" />
+		<result property="seckillCountLimit" column="seckill_count_limit" />
+		<result property="seckillMoneyLimit" column="seckill_money_limit" />
+		<result property="userLimitType" column="user_limit_type" />
+		<result property="seckillUserlimit" column="seckill_user_limit" />
+		<result property="hotAreaKey" column="hot_area_key" />
+	</resultMap>
+	<resultMap type="com.dbt.seckill.bean.SeckillCogMoney" id="cogMoneyMap">
+		<result property="seckillRuleKey" column="seckill_rule_key" />
+		<result property="prizeType" column="prize_type" />
+		<result property="vcodeMoney" column="vcode_money" />
+		<result property="cogamounts" column="cogamounts" />
+		<result property="rangeVal" column="rang_val" />
+	</resultMap>
+	<select id="getSeckillList" parameterType="Map" resultMap="seckillMap">
+		select t.seckill_id,t.seckill_type,t.seckill_name,t.seckill_vcode,t.seckill_url,
+			t.seckill_status,t.sku_key,t.seckill_date_type,t.start_date,t.end_date,t.seckill_time_set,
+			t.province,t.city,t.county,t.filter_area_code,t.filter_area_name,t.follow_scan_type,t.seckill_rule_key,t.seckill_count_limit,
+			t.seckill_money_limit,t.user_limit_type,t.seckill_user_limit ,hot_area_key
+			from seckill_activity t 
+			where t.delete_flag=0  
+			<if test="bean.seckillType != null and bean.seckillType != '' ">
+			  and t.seckill_type = #{bean.seckillType} 
+			</if>
+			<if test="bean.seckillVcode != null and bean.seckillVcode != '' ">
+			  and t.seckill_vcode = #{bean.seckillVcode} 
+			</if>
+			<if test="bean.seckillId != null and bean.seckillId != '' ">
+			  and t.seckill_id = #{bean.seckillId} 
+			</if>
+			<if test="bean.seckillName != null and bean.seckillName != '' ">
+			  and t.seckill_name like '%${bean.seckillName}%' 
+			</if>
+			<choose>
+              <when test="param.orderCol != null and param.orderCol != '' and param.orderCol != 't.seckill_id'">
+                  ORDER BY ${param.orderCol} ${param.orderType}, t.seckill_id DESC
+              </when>
+              <when test="param.orderCol != null and param.orderCol != ''">
+                  ORDER BY ${param.orderCol} ${param.orderType}
+              </when>
+              <otherwise>ORDER BY t.seckill_id DESC</otherwise>
+            </choose>
+			limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getSeckillCount" parameterType="Map" resultType="int">
+		select count(*)
+			from seckill_activity t 
+			where t.delete_flag=0  
+			<if test="bean.seckillType != null and bean.seckillType != '' ">
+			  and t.seckill_type = #{bean.seckillType} 
+			</if>
+			<if test="bean.seckillVcode != null and bean.seckillVcode != '' ">
+			  and t.seckill_vcode = #{bean.seckillVcode} 
+			</if>
+			<if test="bean.seckillId != null and bean.seckillId != '' ">
+			  and t.seckill_id = #{bean.seckillId} 
+			</if>
+			<if test="bean.seckillName != null and bean.seckillName != '' ">
+			  and t.seckill_name like '%${bean.seckillName}%' 
+			</if>
+			order by t.create_time desc
+	</select>
+	<select id="checkName" parameterType="Map" resultType="int">
+		select count(*) from seckill_activity t 
+		where t.delete_flag=0 and t.seckill_name=#{seckillName} 
+		<if test="seckillId != null and seckillId != '' "> 
+			  and t.seckill_id != #{seckillId} 
+		</if>
+	</select>
+	<insert id="addSeckill" parameterType="com.dbt.seckill.bean.SeckillActivityBean">
+		insert into seckill_activity (seckill_id,seckill_type,seckill_name,seckill_vcode,seckill_url,
+			seckill_status,sku_key,seckill_date_type,start_date,end_date,seckill_time_set,
+			province,city,county,filter_area_code,filter_area_name,follow_scan_type,seckill_rule_key,seckill_count_limit,
+			seckill_money_limit,user_limit_type,seckill_user_limit,create_user,create_time,update_time,hot_area_key
+		)values(#{seckillId},#{seckillType},#{seckillName},#{seckillVcode},#{seckillUrl},#{seckillStatus},
+		#{skuKey},#{seckillDateType},#{startDate},#{endDate},#{seckillTimeSet},#{province},#{city},
+		#{county},#{filterAreaCode},#{filterAreaName},#{followScanType},#{seckillRuleKey},#{seckillCountLimit},#{seckillMoneyLimit},#{userLimitType},#{seckillUserlimit},
+		#{createUser},#{createTime},#{updateTime},#{hotAreaKey})
+	</insert>
+	<delete id="delCogMoney" parameterType="String">
+		delete from seckill_cog_money where seckill_rule_key=#{ruleKey}
+	</delete>
+	<insert id="saveCogMoney" parameterType="Map">
+		insert into seckill_cog_money (info_key,seckill_rule_key,prize_type,vcode_money,cogamounts,rang_val) values 
+		<foreach collection="cogMoneyList" item="itm" separator=",">
+		(UUID(),#{ruleKey},#{itm.prizeType},#{itm.money},#{itm.amounts},#{itm.rangeVal})
+		</foreach>
+	</insert>
+	<update id="updateSeckill"  parameterType="com.dbt.seckill.bean.SeckillActivityBean">
+		update seckill_activity 
+		<set>
+		seckill_type=#{seckillType},
+		seckill_name=#{seckillName},
+		seckill_vcode=#{seckillVcode},
+		seckill_url=#{seckillUrl},
+		seckill_status=#{seckillStatus},
+		sku_key=#{skuKey},
+		seckill_date_type=#{seckillDateType},
+		start_date=#{startDate},
+		end_date=#{endDate},
+		seckill_time_set=#{seckillTimeSet},
+		province=#{province},
+		city=#{city},
+		county=#{county},
+		filter_area_code=#{filterAreaCode},
+		filter_area_name=#{filterAreaName},
+		follow_scan_type=#{followScanType},
+		seckill_rule_key=#{seckillRuleKey},
+		seckill_count_limit=#{seckillCountLimit},
+		seckill_money_limit=#{seckillMoneyLimit},
+		user_limit_type=#{userLimitType},
+		seckill_user_limit=#{seckillUserlimit},
+		hot_area_key=#{hotAreaKey},
+		update_time=#{updateTime}
+		</set>
+		where seckill_id=#{seckillId}
+	</update>
+	<select id="getRuleList" parameterType="String" resultMap="cogMoneyMap">
+		select t.prize_type,t.vcode_money,t.cogamounts,t.rang_val from seckill_cog_money t 
+		LEFT JOIN seckill_activity c on c.seckill_rule_key=t.seckill_rule_key 
+		where c.seckill_id=#{seckillId} 
+		order by t.prize_type,t.vcode_money  
+	</select>
+	<select id="getSumNumById" parameterType="String" resultType="int">
+		select sum(t.rang_val) from seckill_cog_money t 
+		LEFT JOIN seckill_activity c on c.seckill_rule_key=t.seckill_rule_key 
+		where c.seckill_id=#{seckillId} 
+	</select>
+</mapper>

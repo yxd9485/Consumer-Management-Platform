@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeQrcodeBatchInfoDao">
+
+    <resultMap type="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo" id="baseResult">
+        <result property="batchKey" column="batch_key"/>
+        <result property="companyKey" column="company_key"/>
+        <result property="vcodeActivityKey" column="vcode_activity_key"/>
+        <result property="clientOrderNo" column="CLIENT_ORDER_NO"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="batchDesc" column="batch_desc"/>
+        <result property="batchName" column="batch_name"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="packAmounts" column="pack_amounts"/>
+        <result property="qrcodeAmounts" column="qrcode_amounts"/>
+        <result property="vcodeFlag" column="vcode_flag"/>
+        <result property="importFlag" column="import_flag"/>
+        <result property="importTime" column="import_time"/>
+        <result property="fileName" column="file_name"/>
+        <result property="activateOpenid" column="ACTIVATE_OPENID"/>
+        <result property="activateUserName" column="ACTIVATE_USER_NAME"/>
+        <result property="activatePhone" column="ACTIVATE_PHONE"/>
+        <result property="activateFactoryName" column="ACTIVATE_FACTORY_NAME"/>
+        <result property="activateTime" column="ACTIVATE_TIME"/>
+        <result property="province" column="PROVINCE"/>
+        <result property="city" column="CITY"/>
+        <result property="county" column="COUNTY"/>
+        <result property="longitude" column="LONGITUDE"/>
+        <result property="latitude" column="LATITUDE"/>
+        <result property="orderKey" column="ORDER_KEY"/>
+        <result property="skuKey" column="sku_key"/>
+        <result property="adjustUser" column="ADJUST_USER"/>
+        <result property="adjustTime" column="adjust_time"/>
+        <result property="status" column="STATUS"/>
+        <result property="contractYear" column="contract_year"/>
+        <result property="contractChangeDate" column="contract_change_date"/>
+        <result property="nextContractYear" column="next_contract_year"/>
+        <result property="smallBatchParentKey" column="small_batch_parent_key"/>
+        <result property="batchStartAutoNo" column="batch_start_auto_no"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="brewery" column="BREWERY"/>
+        <result property="vcodeUniqueCode" column="vcodeUniqueCode"/>
+    </resultMap>
+
+    <resultMap type="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo" id="queryQrcodeBatchInfoByListResultMap" extends="baseResult">
+        <result property="vcodeCounts" column="vcode_counts"/>
+<!-- 		<association property="packsRecord" column="batch_key" select="com.dbt.platform.activity.dao.IVcodePacksRecordDao.queryPacksRecordCountByBatchKey"></association> -->
+    </resultMap>
+    <resultMap type="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo" id="queryBatchByExpireRemindTotal" extends="queryQrcodeBatchInfoByListResultMap">
+        <result property="total" column="total"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="activateStartDate" column="START_DATE"/>
+        <result property="activateEndDate" column="END_DATE"/>
+        <result property="activityNo" column="VCODE_ACTIVITY_NO"/>
+        <result property="activityName" column="VCODE_ACTIVITY_NAME"/>
+    </resultMap>
+    
+    <insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo">
+        INSERT INTO vps_vcode_qrcode_batch_info(
+            batch_key, 
+            order_key,
+            sku_key,
+            company_key,
+            client_order_no,
+            batch_desc,
+            batch_name,
+            pack_amounts,
+            qrcode_amounts,
+            vcode_flag,
+            status,
+            small_batch_parent_key,
+            batch_start_auto_no,
+            delete_flag,
+            create_time,
+            create_user,
+            update_time,
+            update_user 
+        )
+        VALUES(
+            #{batchKey},
+            #{orderKey},
+            #{skuKey},
+            #{companyKey},
+            #{clientOrderNo},
+            #{batchDesc},
+            #{batchName},
+            #{packAmounts},
+            #{qrcodeAmounts},
+            #{vcodeFlag},
+            #{status},
+            #{smallBatchParentKey},
+            #{batchStartAutoNo},
+            #{deleteFlag},
+            #{createTime},
+            #{createUser},
+            #{updateTime},
+            #{updateUser}
+        )
+    </insert>
+    
+    <insert id="batchAddBatchInfo" parameterType="java.util.List">
+        INSERT INTO vps_vcode_qrcode_batch_info(
+            batch_key, 
+            company_key,
+            vcode_activity_key,
+            order_key,
+            sku_key,
+            client_order_no,
+            batch_no,
+            batch_desc,
+            batch_name,
+            pack_amounts,
+            vcode_flag,
+            file_name,
+            status,
+            delete_flag,
+            create_time,
+            create_user,
+            update_time,
+            update_user 
+        )
+        VALUES
+        <foreach collection="list" item="itm" separator=",">
+        (
+            #{itm.batchKey},
+            #{itm.companyKey},
+            #{itm.vcodeActivityKey},
+            #{itm.orderKey},
+            #{itm.skuKey},
+            #{itm.clientOrderNo},
+            #{itm.batchNo},
+            #{itm.batchDesc},
+            #{itm.batchName},
+            #{itm.packAmounts},
+            #{itm.vcodeFlag},
+            #{itm.fileName},
+            #{itm.status},
+            #{itm.deleteFlag},
+            #{itm.createTime},
+            #{itm.createUser},
+            #{itm.updateTime},
+            #{itm.updateUser}
+        )
+    </foreach>
+    </insert>
+    
+    <update id="update" parameterType="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo">
+        update vps_vcode_qrcode_batch_info 
+       <set>
+            <if test="clientOrderNo !=null and clientOrderNo !=''">
+                 client_order_no=#{clientOrderNo},
+            </if>
+            <if test="batchDesc !=null and batchDesc !=''">
+                 batch_desc=#{batchDesc},
+            </if>
+            <if test="batchName!=null and batchName!=''">
+                 batch_name=#{batchName},
+            </if>
+            <if test="batchName!=null and batchName!=''">
+                 batch_name=#{batchName},
+            </if>
+            <if test="vcodeActivityKey!=null and vcodeActivityKey!=''">
+                 vcode_activity_key = #{vcodeActivityKey},
+            </if>
+            <if test="qrcodeAmounts > 0 ">
+                 qrcode_amounts = #{qrcodeAmounts},
+            </if>
+            <if test="packAmounts > 0 ">
+                 pack_amounts = #{packAmounts},
+            </if>
+            <if test="importFlag != null and importFlag != ''">
+                 import_flag = #{importFlag},
+            </if>
+            <if test="importTime != null and importTime != ''">
+                 import_time = #{importTime},
+            </if>
+            <if test="status != null and status != ''">
+                 status = #{status},
+            </if>
+            <if test="startDate!=null and startDate!=''">
+                 start_date=#{startDate},
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                end_date=#{endDate},
+            </if>
+            <if test="activateUserName !=null and activateUserName !=''">
+                ACTIVATE_USER_NAME=#{activateUserName},
+            </if>
+            <if test="activatePhone !=null and activatePhone !=''">
+                ACTIVATE_PHONE=#{activatePhone},
+            </if>
+            <if test="activateFactoryName !=null and activateFactoryName !=''">
+                ACTIVATE_FACTORY_NAME=#{activateFactoryName},
+            </if>
+            <if test="activateTime !=null and activateTime !=''">
+                ACTIVATE_TIME=#{activateTime},
+            </if>
+            <if test="contractYear !=null and contractYear !=''">
+                CONTRACT_YEAR=#{contractYear},
+            </if>
+            <if test="updateUser != null and updateUser!=''">
+                update_user = #{updateUser},
+            </if>
+            update_time = NOW()
+        </set>
+         where batch_key=#{batchKey}
+    </update>
+    
+<!-- 	逻辑删除 -->
+    <update id="deleteById" parameterType="Map">
+       UPDATE vps_vcode_qrcode_batch_info
+       <set>
+           DELETE_FLAG = '1',
+           UPDATE_TIME = NOW(),
+           UPDATE_USER = #{optUserKey}
+       </set>
+        WHERE batch_key = #{batchKey}
+    </update>
+    
+<!-- 	物理删除 -->
+    <delete id="removeById" parameterType="String">
+        delete from 
+            vps_vcode_qrcode_batch_info
+        WHERE 
+            batch_key = #{batchKey}
+    </delete>
+    
+    <update id="batchUpdateBatchTimeInfo" parameterType="java.util.List">
+        <foreach collection="list" item="itm" separator=";" >
+            update vps_vcode_qrcode_batch_info set
+                start_date=#{itm.startDate},
+                end_date=#{itm.endDate},
+                update_user = #{itm.updateUser},
+                update_time = #{itm.updateTime}
+            where batch_key=#{itm.batchKey}
+         </foreach>
+    </update>
+    
+    <!-- 调整批次更新批次活动key及开始结束日期 -->
+    <update id="updateBatchForAdjust" parameterType="Map">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            vcode_activity_key = #{batchInfo.vcodeActivityKey},
+            <if test="batchInfo.batchName != null and batchInfo.batchName != ''">
+                batch_name=#{batchInfo.batchName},
+            </if>
+            <if test="batchInfo.endDate != null and batchInfo.endDate != ''">
+                end_date=#{batchInfo.endDate},
+            </if>
+            adjust_user = #{batchInfo.adjustUser},
+            adjust_time = NOW(),
+            status = '4',
+            update_user = #{optUserKey},
+            update_time = NOW()
+        </set>
+        where batch_key in 
+        <foreach collection="batchKeyList" item="batchKey" open="(" close=")" separator=",">
+           #{batchKey}
+        </foreach>
+    </update>
+    
+    <!-- 修改批次所属合同年份 -->
+    <update id="updateContractYear" parameterType="Map">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            contract_year = #{contractYear},
+            contract_change_date = #{contractChangeDate},
+            next_contract_year = #{nextContractYear},
+            update_user = #{optUserKey},
+            update_time = NOW()
+        </set>
+        where batch_key in 
+        <foreach collection="batchKeyLst" item="batchKey" open="(" close=")" separator=",">
+           #{batchKey}
+        </foreach>
+    </update>
+    
+    <!-- 移除活动下的批次到码源回传入库 -->
+    <update id="updateBatchBackForImport" parameterType="Map">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            vcode_activity_key = null,
+            start_date = null,
+            end_date = null,
+            adjust_user = null,
+            adjust_time = null,
+            status = '3',
+            update_user = #{optUserKey},
+            update_time = NOW()
+        </set>
+        where batch_key in 
+        <foreach collection="batchKeyList" item="batchKey" open="(" close=")" separator=",">
+           #{batchKey}
+        </foreach>
+    </update>
+    
+    <!-- 更新批次信息 -->
+    <update id="updateBatchForMap" parameterType="Map">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            <if test="orderKey != null and orderKey != ''">
+            order_key = #{orderKey},
+            </if>
+            <if test="vcodeFlag != null and vcodeFlag != ''">
+                vcode_flag = #{vcodeFlag},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="wanBatchFlag == '1'.toString()">
+                BATCH_DESC = CONCAT(BATCH_DESC, '_WAN'),
+            </if>
+            update_time = NOW()
+        </set>
+        where batch_key in 
+        <foreach collection="batchKeyList" item="batchKey" open="(" close=")" separator=",">
+           #{batchKey}
+        </foreach>
+    </update>
+    
+    <update id="updateBatchForOrderKey" parameterType="Map">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            <if test="vcodeFlag != null and vcodeFlag != ''">
+                vcode_flag = #{vcodeFlag},
+            </if>
+            <if test="importFlag != null and importFlag != ''">
+                IMPORT_FLAG = #{importFlag},
+            </if>
+            <choose>
+                <when test="importFlag == '0'.toString()">
+	                import_time = null,
+                </when>
+                <when test="importTime != null and importTime != ''">
+	                import_time = #{importTime},
+                </when>
+            </choose>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            update_time = NOW()
+        </set>
+         where 
+            DELETE_FLAG = '0' 
+            and order_key = #{orderKey}
+    </update>
+    
+    <!-- 清空批次订单主键 -->
+    <update id="clearBatchOrderKey" parameterType="String">
+        update vps_vcode_qrcode_batch_info
+        <set>
+            order_key = NULL,
+            status = '0',
+            update_time = NOW()
+        </set>
+        where 
+            DELETE_FLAG = '0'
+            and order_key = #{orderKey}
+    </update>
+    
+    <!-- 生成码源批次列表 -->
+    <select id="queryForLst" resultMap="baseResult" parameterType="Map">
+        select
+            *
+        from
+            vps_vcode_qrcode_batch_info
+        where
+            delete_flag = '0' and status = '0'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and batch_name like '%${queryBean.batchName}%'
+        </if>
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, CREATE_TIME DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY CREATE_TIME DESC</otherwise>
+        </choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+    <!-- 生成码源批次列表记录总条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+            count(1)
+        from
+            vps_vcode_qrcode_batch_info
+        where
+            delete_flag = '0' and status = '0'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and batch_name like '%${queryBean.batchName}%'
+        </if>
+    </select>
+    
+    <!-- 回传码源批次列表 -->
+    <select id="queryForImportLst" resultMap="baseResult" parameterType="Map">
+        select
+            b.*,
+            o.order_no orderNo,
+            s.sku_name skuName
+        from
+            vps_vcode_qrcode_batch_info b
+        left join vps_qrcode_order_info o on b.order_key = o.order_key and o.delete_flag = '0'
+        left join vps_sku_info s on s.sku_key = b.sku_key
+        where b.delete_flag = '0' and b.status = '3'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and b.company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and o.order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and b.client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != ''">
+            and b.batch_no like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and b.batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and b.batch_name like '%${queryBean.batchName}%'
+        </if>
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'o.create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, b.create_time DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY b.create_time DESC</otherwise>
+        </choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+    <!-- 回传码源批次列表记录总条数 -->
+    <select id="queryForImportCount" resultType="int" parameterType="Map">
+        select
+            count(1)
+        from
+            vps_vcode_qrcode_batch_info b
+        left join vps_qrcode_order_info o on b.order_key = o.order_key and o.delete_flag = '0'
+        where b.delete_flag = '0' and b.status = '3'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and b.company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and o.order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and b.client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != ''">
+            and b.batch_no like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and b.batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and b.batch_name like '%${queryBean.batchName}%'
+        </if>
+    </select>
+    
+    <!-- 已使用回传码源批次列表 -->
+    <select id="queryForImportUsedLst" resultMap="baseResult" parameterType="Map">
+        select
+            b.*,
+            CASE
+                WHEN b.START_DATE is null or b.END_DATE is null THEN -1
+                WHEN CURDATE() >= b.START_DATE AND CURDATE() <![CDATA[<=]]> b.END_DATE THEN 1 
+                WHEN CURDATE() > b.END_DATE THEN 2 
+                ELSE 0
+            END AS isBegin,
+            o.order_no orderNo,
+            acg.vcode_activity_name activityName,
+            acg.vcode_activity_no activityNo,
+            DATEDIFF(b.END_DATE,CURDATE()) between 0 and 15 expireWarning
+        from
+            vps_vcode_qrcode_batch_info b
+        left join vps_qrcode_order_info o on b.order_key = o.order_key and o.DELETE_FLAG = '0'
+        inner join vps_vcode_activity_cog acg on b.vcode_activity_key = acg.vcode_activity_key and acg.delete_flag = '0'
+        where 
+            b.delete_flag = '0' and b.status = '4'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and b.company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.vcodeActivityKey != null and queryBean.vcodeActivityKey != ''">
+            and acg.vcode_activity_key = #{queryBean.vcodeActivityKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and o.order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and b.client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != ''">
+            and b.batch_no like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and b.batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and b.batch_name like '%${queryBean.batchName}%'
+        </if>
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and acg.vcode_activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityNo != null and queryBean.activityNo != ''">
+            and acg.vcode_activity_no like '%${queryBean.activityNo}%'
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND  (b.start_date >= #{queryBean.startDate} and #{queryBean.endDate} >= b.end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND b.start_date >= #{queryBean.startDate} 
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} >= b.end_date
+            </when>
+        </choose>
+        <choose>
+            <when test="queryBean.activateStartDate != null and queryBean.activateStartDate != '' and  queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+                AND b.ACTIVATE_TIME between #{queryBean.activateStartDate} and #{queryBean.activateEndDate}
+            </when>
+            <when test="queryBean.activateStartDate != null and queryBean.activateStartDate != ''">
+                AND b.ACTIVATE_TIME >= #{queryBean.activateStartDate}
+            </when>
+            <when test="queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+                AND #{queryBean.activateEndDate} >= b.ACTIVATE_TIME 
+            </when>
+        </choose>
+        <choose>
+            <when test="queryBean.batchStatus == '0'.toString()">
+                and b.start_date > CURDATE() 
+            </when>
+            <when test="queryBean.batchStatus == '1'.toString()">
+                and CURDATE() between b.start_date and b.end_date
+            </when>
+            <when test="queryBean.batchStatus == '2'.toString()">
+                and CURDATE() > b.end_date
+            </when>
+            <when test="queryBean.batchStatus == '3'.toString()">
+                and b.start_date is null 
+            </when>
+            <when test="queryBean.batchStatus == '4'.toString()">
+                and DATEDIFF(b.END_DATE,CURDATE()) between 0 and 15
+            </when>
+        </choose>
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'b.adjust_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, b.adjust_time DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY isBegin, b.activate_time DESC</otherwise>
+        </choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+    <!-- 已使用回传码源批次列表记录总条数 -->
+    <select id="queryForImportUsedCount" resultType="int" parameterType="Map">
+        select
+            count(1)
+        from
+            vps_vcode_qrcode_batch_info b
+        left join vps_qrcode_order_info o on b.order_key = o.order_key and o.DELETE_FLAG = '0'
+        inner join vps_vcode_activity_cog acg on b.vcode_activity_key = acg.vcode_activity_key and acg.delete_flag = '0'
+        where 
+            b.delete_flag = '0' and b.status = '4'
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and b.company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.vcodeActivityKey != null and queryBean.vcodeActivityKey != ''">
+            and acg.vcode_activity_key = #{queryBean.vcodeActivityKey}
+        </if>
+        <if test="queryBean.orderNo != null and queryBean.orderNo != ''">
+            and o.order_no like '%${queryBean.orderNo}%'
+        </if>
+        <if test="queryBean.clientOrderNo != null and queryBean.clientOrderNo != ''">
+            and b.client_order_no like '%${queryBean.clientOrderNo}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != ''">
+            and b.batch_no like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != ''">
+            and b.batch_desc like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.batchName != null and queryBean.batchName != ''">
+            and b.batch_name like '%${queryBean.batchName}%'
+        </if>
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and acg.vcode_activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityNo != null and queryBean.activityNo != ''">
+            and acg.vcode_activity_no like '%${queryBean.activityNo}%'
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND  (b.start_date >= #{queryBean.startDate} and #{queryBean.endDate} >= b.end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND b.start_date >= #{queryBean.startDate} 
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} >= b.end_date
+            </when>
+        </choose>
+        <choose>
+            <when test="queryBean.activateStartDate != null and queryBean.activateStartDate != '' and  queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+                AND b.ACTIVATE_TIME between #{queryBean.activateStartDate} and #{queryBean.activateEndDate}
+            </when>
+            <when test="queryBean.activateStartDate != null and queryBean.activateStartDate != ''">
+                AND b.ACTIVATE_TIME >= #{queryBean.activateStartDate}
+            </when>
+            <when test="queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+                AND #{queryBean.activateEndDate} >= b.ACTIVATE_TIME 
+            </when>
+        </choose>
+        <choose>
+            <when test="queryBean.batchStatus == '0'.toString()">
+                and b.start_date > CURDATE() 
+            </when>
+            <when test="queryBean.batchStatus == '1'.toString()">
+                and CURDATE() between b.start_date and b.end_date
+            </when>
+            <when test="queryBean.batchStatus == '2'.toString()">
+                and CURDATE() > b.end_date
+            </when>
+            <when test="queryBean.batchStatus == '3'.toString()">
+                and b.start_date is null 
+            </when>
+            <when test="queryBean.batchStatus == '4'.toString()">
+                and DATEDIFF(b.END_DATE,CURDATE()) between 0 and 15
+            </when>
+        </choose>
+    </select>
+    
+    <select id="findById" resultMap="baseResult" parameterType="String">
+         select 
+             t.*,
+             (select sum(t2.QRCODE_AMOUNTS) from VPS_VCODE_QRCODE_PACK_INFO t2 where t.BATCH_KEY=t2.BATCH_KEY) VCODE_COUNTS
+         from vps_vcode_qrcode_batch_info t
+         where batch_key=#{batchKey}
+    </select>
+    
+    <!-- 依据批次Key查询相应的批次信息 -->
+    <select id="queryBatchInfoByKey" resultMap="baseResult" parameterType="java.util.List">
+         select 
+             *
+         from vps_vcode_qrcode_batch_info t
+         where batch_key in 
+         <foreach collection="list" item="batchKey" open="(" close=")" separator=",">
+           #{batchKey}
+         </foreach>
+    </select>
+    <!-- 查询二维码批次信息总数 -->
+    <select id="queryQrcodeBatchInfoCount" parameterType="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo" resultType="int">
+        SELECT 
+           count(1)
+        FROM vps_vcode_qrcode_batch_info 
+        <where>
+            delete_flag = 0
+            <if test="vcodeActivityKey!=null and vcodeActivityKey!=''">
+                and vcode_activity_key=#{vcodeActivityKey}
+            </if>
+            <if test="batchNo!=null and batchNo!=''">
+                and batch_no = #{batchNo}
+            </if>
+            <if test="batchDesc!=null and batchDesc!=''">
+                and batch_desc like '%${batchDesc}%'
+            </if>
+            <if test="activateTime !=null and activateTime !=''">
+                and left(activate_Time, 10) = #{activateTime}
+            </if>
+            <if test="startDate!=null and startDate!=''">
+                and unix_timestamp(start_date)>=unix_timestamp(#{startDate})
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                <![CDATA[ 
+                and	unix_timestamp(end_date)<=unix_timestamp(#{endDate})
+                 ]]>
+            </if>
+        </where>
+    </select>
+    
+    <!-- 分页查询二维码批次信息 -->
+    <select id="queryQrcodeBatchInfoByList" parameterType="Map" resultMap="queryQrcodeBatchInfoByListResultMap">
+        SELECT 
+            t.*,
+            CASE 
+                WHEN DATE(NOW()) >= START_DATE AND DATE(NOW()) <![CDATA[<=]]> END_DATE THEN '1' 
+                WHEN DATE(NOW()) > END_DATE THEN '2' 
+                ELSE '0'
+            END AS isBegin,
+            (select sum(t2.QRCODE_AMOUNTS) from VPS_VCODE_QRCODE_PACK_INFO t2 where t.BATCH_KEY=t2.BATCH_KEY) VCODE_COUNTS
+        FROM vps_vcode_qrcode_batch_info t
+        <where>
+            delete_flag = 0
+            <if test="batchInfo!=null">
+                <if test="batchInfo.vcodeActivityKey!=null and batchInfo.vcodeActivityKey!=''">
+                    and vcode_activity_key=#{batchInfo.vcodeActivityKey}
+                </if>
+                <if test="batchInfo.batchNo!=null and batchInfo.batchNo!=''">
+                    and batch_no = #{batchInfo.batchNo}
+                </if>
+                <if test="batchInfo.batchDesc!=null and batchInfo.batchDesc!=''">
+                    and batch_desc like '%${batchInfo.batchDesc}%'
+                </if>
+                <if test="batchInfo.batchName!=null and batchInfo.batchName!=''">
+                    and batch_name like '%${batchInfo.batchName}%'
+                </if>
+                <if test="batchInfo.activateTime !=null and batchInfo.activateTime !=''">
+                    and left(activate_time, 10) = #{batchInfo.activateTime}
+                </if>
+                <if test="batchInfo.startDate!=null and batchInfo.startDate!=''">
+                    and unix_timestamp(start_date)>=unix_timestamp(#{batchInfo.startDate})
+                </if>
+                <if test="batchInfo.endDate!=null and batchInfo.endDate!=''">
+                    <![CDATA[ 
+                    and	unix_timestamp(end_date)<=unix_timestamp(#{batchInfo.endDate})
+                     ]]>
+                </if>
+            </if>
+        </where>
+        order by create_time desc 
+        limit #{param.startCount}, #{param.pagePerCount}	
+    </select>
+    
+    <!-- 查询激活批次list -->
+    <select id="queryActivateBatchList" parameterType="Map" resultMap="baseResult">
+        SELECT 
+             c.COMPANY_NAME AS companyName,
+             c.SHORT_NAME AS shortName,
+             s.SKU_NAME AS skuName,
+             b.BATCH_KEY, 
+             b.VCODE_ACTIVITY_KEY,
+             b.BATCH_DESC,
+             b.BATCH_NO,
+             b.BATCH_NAME,
+             b.START_DATE,
+             b.END_DATE,
+             B.PACK_AMOUNTS * B.QRCODE_AMOUNTS AS vcodeCounts,
+             b.ACTIVATE_OPENID,
+             b.ACTIVATE_USER_NAME,
+             b.ACTIVATE_PHONE,
+             b.ACTIVATE_FACTORY_NAME,
+             b.ACTIVATE_TIME,
+             b.PROVINCE,
+             b.CITY,
+             b.COUNTY,
+        case
+        when  b.START_DATE > CURDATE() then 1
+        when  CURDATE() between b.START_DATE and b.END_DATE then 2
+        when  CURDATE() > b.END_DATE then 3
+        else 4 end
+        as activationStatus
+        FROM VPS_VCODE_QRCODE_BATCH_INFO b
+        LEFT JOIN VPS_VCODE_ACTIVITY_COG a ON b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+        LEFT JOIN VPS_SKU_INFO s ON b.SKU_KEY = s.SKU_KEY
+        LEFT JOIN VPS_COMPANY_INFO c ON a.COMPANY_KEY = c.COMPANY_KEY
+        WHERE b.DELETE_FLAG = '0' 
+           and b.STATUS in('4','3')
+        <if test="queryBean.batchName != null and queryBean.batchName != '' ">
+            AND b.BATCH_NAME  like '%${queryBean.batchName}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != '' ">
+            AND b.BATCH_NO like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.activationStatus != null and queryBean.activationStatus != '' ">
+              <if test="queryBean.activationStatus ==1">
+                 AND  (b.START_DATE is not null or b.START_DATE !="")
+              </if>
+              <if test="queryBean.activationStatus==0">
+                  AND  (b.START_DATE is  null or b.START_DATE ="")
+              </if>
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != '' ">
+            AND s.SKU_KEY = #{queryBean.skuKey}
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != '' ">
+            AND b.BATCH_DESC like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.activateFactoryName != null and queryBean.activateFactoryName != '' ">
+            AND b.ACTIVATE_FACTORY_NAME = #{queryBean.activateFactoryName}
+        </if>
+        <if test="queryBean.activateUserName != null and queryBean.activateUserName != '' ">
+            AND b.ACTIVATE_USER_NAME like '%${queryBean.activateUserName}%'
+        </if>
+        <if test="queryBean.activatePhone != null and queryBean.activatePhone != '' ">
+            AND b.ACTIVATE_PHONE like '%${queryBean.activatePhone}%'
+        </if>
+        <if test="queryBean.activateStartDate != null and queryBean.activateStartDate != ''">
+            AND b.ACTIVATE_TIME >= CONCAT(#{queryBean.activateStartDate},' 00:00:00')
+        </if>
+        <if test="queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+            AND b.ACTIVATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.activateEndDate},' 23:59:59')
+        </if>
+        <if test="pageInfo != null">
+            <choose>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'b.activate_time'">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, b.activate_time DESC
+              </when>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+              </when>
+              <otherwise>ORDER BY b.activate_time DESC</otherwise>
+            </choose>
+            <if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+                LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+            </if>
+        </if>
+    </select>
+    
+    <!-- 查询激活批次count -->
+    <select id="queryActivateBatchCount" parameterType="Map" resultType="int">
+        SELECT 
+             COUNT(b.BATCH_KEY)
+        FROM VPS_VCODE_QRCODE_BATCH_INFO b
+        LEFT JOIN VPS_VCODE_ACTIVITY_COG a ON b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+        LEFT JOIN VPS_SKU_INFO s ON a.SKU_KEY = s.SKU_KEY
+        LEFT JOIN VPS_COMPANY_INFO c ON a.COMPANY_KEY = c.COMPANY_KEY
+        WHERE b.DELETE_FLAG = '0'
+        and b.STATUS in('4','3')
+        <if test="queryBean.batchName != null and queryBean.batchName != '' ">
+            AND b.BATCH_NAME like '%${queryBean.batchName}%'
+        </if>
+        <if test="queryBean.batchNo != null and queryBean.batchNo != '' ">
+            AND b.BATCH_NO    like '%${queryBean.batchNo}%'
+        </if>
+        <if test="queryBean.activationStatus != null and queryBean.activationStatus != '' ">
+            <if test="queryBean.activationStatus ==1">
+                AND  (b.START_DATE is not null or b.START_DATE !="")
+            </if>
+            <if test="queryBean.activationStatus==0">
+                AND  (b.START_DATE is  null or b.START_DATE ="")
+            </if>
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != '' ">
+            AND s.SKU_KEY = #{queryBean.skuKey}
+        </if>
+        <if test="queryBean.batchDesc != null and queryBean.batchDesc != '' ">
+            AND b.BATCH_DESC like '%${queryBean.batchDesc}%'
+        </if>
+        <if test="queryBean.activateFactoryName != null and queryBean.activateFactoryName != '' ">
+            AND b.ACTIVATE_FACTORY_NAME = #{queryBean.activateFactoryName}
+        </if>
+        <if test="queryBean.activateUserName != null and queryBean.activateUserName != '' ">
+            AND b.ACTIVATE_USER_NAME like '%${queryBean.activateUserName}%'
+        </if>
+        <if test="queryBean.activatePhone != null and queryBean.activatePhone != '' ">
+            AND b.ACTIVATE_PHONE like '%${queryBean.activatePhone}%'
+        </if>
+         <if test="queryBean.activateStartDate != null and queryBean.activateStartDate != ''">
+            AND b.ACTIVATE_TIME >= CONCAT(#{queryBean.activateStartDate},' 00:00:00')
+        </if>
+        <if test="queryBean.activateEndDate != null and queryBean.activateEndDate != ''">
+            AND b.ACTIVATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.activateEndDate},' 23:59:59')
+        </if>
+    </select>
+    
+    <!-- 根据活动KEY获取批次信息 -->
+    <select id="findVcodeQrcodeBatchInfoByActivityId" resultMap="baseResult" parameterType="String">
+         select 
+             t.*
+         from vps_vcode_qrcode_batch_info t
+         where 
+            DELETE_FLAG = '0'
+            and vcode_activity_key=#{vcodeActivityKey}
+    </select>
+    
+    <!-- 根据码源订单KEY获取批次信息 -->
+    <select id="queryVcodeQrcodeBatchInfoByOrderKey" resultMap="baseResult" parameterType="String">
+         select 
+             t.*,
+             CASE 
+                WHEN DATE(NOW()) >= START_DATE AND DATE(NOW()) <![CDATA[<=]]> END_DATE THEN '1' 
+                WHEN DATE(NOW()) > END_DATE THEN '2' 
+                ELSE '0'
+            END AS isBegin
+         from vps_vcode_qrcode_batch_info t
+         where 
+            DELETE_FLAG = '0'
+            and IFNULL(batch_no, '') = ''
+            and order_key=#{orderKey}
+       	 order by t.BATCH_DESC
+    </select>
+    <!-- 根据码源订单KEY获取批次信息 -->
+    <select id="queryVcodeQrcodeBatchInfoAndPrefixByOrderKey" resultMap="baseResult" parameterType="String">
+         select
+            t.`BATCH_KEY`,
+            t.`COMPANY_KEY`,
+            t.`VCODE_ACTIVITY_KEY`,
+            t.`CLIENT_ORDER_NO`,
+            t.`BATCH_NO`,
+            t.`BATCH_DESC`,
+            t.`BATCH_NAME`,
+            t.`START_DATE`,
+            t.`END_DATE`,
+            t.`QRCODE_AMOUNTS`,
+            t.`PACK_AMOUNTS`,
+            t.`VCODE_FLAG`,
+            t.`IMPORT_FLAG`,
+            t.`IMPORT_TIME`,
+            t.`FILE_NAME`,
+            t.`ACTIVATE_OPENID`,
+            t.`ACTIVATE_USER_NAME`,
+            t.`ACTIVATE_PHONE`,
+            t.`ACTIVATE_FACTORY_NAME`,
+            t.`PROVINCE`,
+            t.`CITY`,
+            t.`COUNTY`,
+            t.`LONGITUDE`,
+            t.`LATITUDE`,
+            t.`ORDER_KEY`,
+            t.`ADJUST_USER`,
+            t.`STATUS`,
+            t.`ADJUST_TIME`,
+            t.`ACTIVATE_TIME`,
+            t.`CONTRACT_YEAR`,
+            t.`CONTRACT_CHANGE_DATE`,
+            t.`NEXT_CONTRACT_YEAR`,
+            t.`DELETE_FLAG`,
+             alr.VCODE_UNIQUE_CODE vcodeUniqueCode
+          from vps_vcode_qrcode_batch_info t
+          left join VPS_VCODE_ACTIVITY_LIB_RELATION alr on t.BATCH_KEY = alr.BATCH_KEY
+         where
+            DELETE_FLAG = '0'
+            and IFNULL(batch_no, '') = ''
+            and order_key=#{orderKey}
+    </select>
+    <!-- 根据批次编号查询 -->
+    <select id="findVcodeQrcodeBatchInfoByBatchDesc" resultMap="baseResult" parameterType="String">
+        select 
+             t.*
+         from vps_vcode_qrcode_batch_info t
+         where 
+            DELETE_FLAG = '0'
+            and batch_desc=#{batchDesc}
+         limit 1
+    </select>
+    
+    <!-- 根据批码说明查询个数 -->
+    <select id="isExistActivityBatchDesc" parameterType="String" resultType="Integer">
+        select count(1) from vps_vcode_qrcode_batch_info t where delete_flag = '0' and batch_desc = #{batchDesc}
+    </select>
+    
+    <!-- 码源生成所需批次 -->
+    <select id="queryQrcodeBatchByOrderKey" parameterType="Map" resultMap="baseResult">
+        select 
+            qbi.COMPANY_KEY,
+            qbi.PACK_AMOUNTS,
+            qbi.VCODE_ACTIVITY_KEY,
+            qbi.BATCH_KEY,
+            qbi.small_batch_parent_key,
+            qbi.batch_start_auto_no,
+            alr.LIB_NAME libName,
+            qbi.QRCODE_AMOUNTS * qbi.pack_amounts vcodeCounts,
+            alr.VCODE_UNIQUE_CODE vcodeUniqueCode
+        from VPS_VCODE_QRCODE_BATCH_INFO qbi 
+        left join VPS_VCODE_ACTIVITY_LIB_RELATION alr on qbi.BATCH_KEY = alr.BATCH_KEY or qbi.small_batch_parent_key = alr.batch_key
+        where qbi.VCODE_FLAG = '0'
+        and qbi.ORDER_KEY = #{orderKey}
+        order by alr.LIB_NAME asc
+    </select>
+
+    <select id="queryBatchExpireRemind" resultMap="queryBatchByExpireRemindTotal">
+        SELECT
+        vcqb.VCODE_ACTIVITY_KEY,vac.ACTIVITY_TYPE,vac.START_DATE,vac.END_DATE,vac.VCODE_ACTIVITY_NO,vac.VCODE_ACTIVITY_NAME, COUNT(1) as total
+        FROM
+        VPS_VCODE_QRCODE_BATCH_INFO vcqb
+        inner JOIN vps_vcode_activity_cog vac ON vac.VCODE_ACTIVITY_KEY = vcqb.VCODE_ACTIVITY_KEY
+        WHERE
+            vcqb.DELETE_FLAG = '0'
+            and vcqb.START_DATE IS NOT NULL
+	        AND timestampdiff(DAY,date_format(now(), '%y-%m-%d'), vcqb.END_DATE ) <![CDATA[ <= ]]> 15
+	        AND timestampdiff(DAY,date_format(now(), '%y-%m-%d'), vcqb.END_DATE) > 0
+	        AND DATE_FORMAT(NOW(),'%Y-%m-%d') BETWEEN vac.START_DATE AND vac.END_DATE
+        GROUP BY vcqb.VCODE_ACTIVITY_KEY
+    </select>
+    
+    
+    <!-- 	物理删除 -->
+    <delete id="removeByOrderKey" parameterType="String">
+        delete from 
+            vps_vcode_qrcode_batch_info
+        WHERE 
+            order_key = #{orderKey}
+    </delete>
+    
+      <!-- 根据批码说明查询批次数, delete_flag不能加入where条件否是会有重复批次号 -->
+    <select id="findExistBatchPrefix" parameterType="String" resultType="String">
+        select 
+            case when right(batch_desc, 4) = '_WAN' then left(right(batch_desc, 7), 3) else RIGHT(batch_desc,3) end batchDescSuffix
+        from 
+            vps_vcode_qrcode_batch_info  
+        where 
+            batch_desc like '%${batchDesc}%' 
+        order by batchDescSuffix desc  
+        limit 1
+    </select>
+    
+<!--     蒙牛高印更新批次状态 -->
+    <update id="updateForMN" parameterType="com.dbt.platform.activity.bean.VcodeQrcodeBatchInfo">
+        update 
+            vps_vcode_qrcode_batch_info
+        set
+            qrcode_amounts = IF(import_flag = '1', qrcode_amounts + #{qrcodeAmounts}, #{qrcodeAmounts}),
+            status = #{status},
+            batch_desc = #{batchDesc},
+            import_flag = '1',
+            import_time = now()
+        where
+            batch_key = #{batchKey}
+    </update>
+
+    <!-- 根据批次key查询批次活动 -->
+    <select id="queryVcodeQrcodeBatchByBatchKey" parameterType="String" resultMap="baseResult">
+		SELECT
+            b.*,
+            o.brewery,
+            case when b.CONTRACT_CHANGE_DATE is not null and CURDATE() >= b.CONTRACT_CHANGE_DATE then NEXT_CONTRACT_YEAR else CONTRACT_YEAR end currContractYear
+        FROM
+            VPS_VCODE_QRCODE_BATCH_INFO b
+        left join vps_qrcode_order_info o on o.order_key = b.order_key
+        WHERE
+            b.BATCH_KEY = #{batchKey}
+        AND
+            b.DELETE_FLAG = '0'
+	</select>
+</mapper>

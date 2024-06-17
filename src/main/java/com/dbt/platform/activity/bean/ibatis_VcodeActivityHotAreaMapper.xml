@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityHotAreaCogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityHotAreaCog" id="VcodeActivityHotAreaCogResultMap">
+		<result property="hotAreaKey" column="HOTAREA_KEY"/>
+		<result property="hotAreaName" column="HOTAREA_NAME"/>
+		<result property="areaCode" column="AREACODE"/>
+		<result property="coordinate" column="COORDINATE"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			HOTAREA_KEY,
+			HOTAREA_NAME,
+			AREACODE,
+            COORDINATE,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+    <!-- 插入 -->
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityHotAreaCog">
+	   INSERT INTO vps_vcode_activity_hotarea_cog (
+            HOTAREA_KEY,
+            HOTAREA_NAME,
+            AREACODE,
+            COORDINATE,
+            DELETE_FLAG,
+            CREATE_TIME,
+            CREATE_USER,
+            UPDATE_TIME,
+            UPDATE_USER
+	   ) VALUES (
+	       #{hotAreaKey},
+           #{hotAreaName},
+           #{areaCode},
+           #{coordinate},
+           #{deleteFlag},
+           #{createTime},
+           #{createUser},
+           #{updateTime},
+           #{updateUser}
+	   )
+	</insert>
+	
+    <!-- 获取所有有效的区域配置 -->
+	<select id="queryAll" resultMap="VcodeActivityHotAreaCogResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        from vps_vcode_activity_hotarea_cog
+        where DELETE_FLAG = '0'
+        <if test="queryBean.hotAreaName != null and queryBean.hotAreaName != ''">
+        	AND	HOTAREA_NAME like '%${queryBean.hotAreaName}%'
+        </if>
+        <if test="queryBean.areaCode != null and queryBean.areaCode != ''">
+        	AND	AREACODE like '${queryBean.areaCode}%'
+        </if>
+        order by AREACODE
+	</select>
+    
+    <!-- 根据主键获取记录 -->
+    <select id="findById" parameterType="String" resultMap="VcodeActivityHotAreaCogResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        from vps_vcode_activity_hotarea_cog
+        where DELETE_FLAG = '0'
+        and HOTAREA_KEY = #{id}
+        limit 1
+    </select>
+    
+    <!-- 更新 -->
+    <update id="updateHotAreaCog" parameterType="com.dbt.platform.activity.bean.VcodeActivityHotAreaCog">
+        update vps_vcode_activity_hotarea_cog
+        <set>
+            <if test="hotAreaName != null">
+                HOTAREA_NAME = #{hotAreaName},
+            </if>
+            <if test="coordinate != null">
+            	COORDINATE = #{coordinate},
+            </if>
+            <if test="deleteFlag != null">
+                DELETE_FLAG = #{deleteFlag},
+            </if>
+            <if test="updateTime != null">
+            	UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+            	UPDATE_USER = #{updateUser},
+            </if>
+        </set>
+        where HOTAREA_KEY = #{hotAreaKey}
+    </update>
+    
+    <!-- 根据主键删 -->
+    <delete id="deleteByHotAreaKey" parameterType="Map">
+       UPDATE vps_vcode_activity_hotarea_cog
+       SET DELETE_FLAG = '1',
+           UPDATE_TIME = #{updateTime},
+           UPDATE_USER = #{updateUser}
+       WHERE HOTAREA_KEY = #{hotAreaKey}
+    </delete>
+    
+    <!-- 根据地区areaCode获取热区List     -->
+    <select id="findHotAreaListByAreaCode" parameterType="Map" resultMap="VcodeActivityHotAreaCogResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        from vps_vcode_activity_hotarea_cog
+        where DELETE_FLAG = '0'
+        <if test="areaCodeLst != null and areaCodeLst.size() > 0">
+            <choose>
+                <when test="provinceOuterFlag != null and provinceOuterFlag == '1'.toString()">
+		            <foreach collection="areaCodeLst" item="itemVal" open="and " close="" separator=" and ">
+		                AREACODE not like '${itemVal}%'
+		            </foreach>
+                </when>
+                <otherwise>
+		            <foreach collection="areaCodeLst" item="itemVal" open="and (" close=")" separator=" or ">
+		                AREACODE like '${itemVal}%'
+		            </foreach>
+                </otherwise>
+            </choose>
+            
+        </if>
+        order by AREACODE
+    </select>
+    
+    <!-- 根据区域Code获取记录 -->
+    <select id="queryByAreaCode" parameterType="String" resultMap="VcodeActivityHotAreaCogResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        from vps_vcode_activity_hotarea_cog
+        where DELETE_FLAG = '0'
+        and AREACODE = #{areaCode}
+        limit 1
+    </select>
+    
+</mapper>

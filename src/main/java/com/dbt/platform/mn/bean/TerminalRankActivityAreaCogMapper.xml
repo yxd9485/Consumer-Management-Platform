@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.ITerminalRankActivityAreaCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.mn.bean.TerminalRankActivityAreaCog">
+        <id column="id" property="id" />
+        <result column="terminal_rank_info_key" property="terminalRankInfoKey" />
+        <result column="province_name" property="provinceName" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="city_name" property="cityName" />
+        <result column="county" property="county" />
+        <result column="county_name" property="countyName" />
+        <result column="LEVEL_CODE2" property="levelCode2" />
+        <result column="LEVEL_NAME2" property="levelName2" />
+        <result column="LEVEL_CODE3" property="levelCode3" />
+        <result column="LEVEL_NAME3" property="levelName3" />
+        <result column="LEVEL_CODE4" property="levelCode4" />
+        <result column="LEVEL_NAME4" property="levelName4" />
+        <result column="LEVEL_CODE5" property="levelCode5" />
+        <result column="LEVEL_NAME5" property="levelName5" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, terminal_rank_info_key, province_name, province, city, city_name, county, county_name, LEVEL_CODE2, LEVEL_NAME2, LEVEL_CODE3, LEVEL_NAME3, LEVEL_CODE4, LEVEL_NAME4, LEVEL_CODE5, LEVEL_NAME5
+    </sql>
+
+</mapper>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.fission.dao.IVpsVcodeActivateRedEnvelopeRuleCogMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.fission.bean.VpsVcodeActivateRedEnvelopeRuleCogEntity">
+        <result column="ACTIVITY_KEY" property="activityKey" />
+        <result column="USER_KEY" property="userKey" />
+        <result column="RULE_NO" property="ruleNo" />
+        <result column="RULE_NAME" property="ruleName" />
+        <result column="START_DATE" property="startDate" />
+        <result column="END_DATE" property="endDate" />
+        <result column="RECEIVE_TIME_LIMIT" property="receiveTimeLimit" />
+        <result column="TASK_COMPLETION_TIME_LIMIT" property="taskCompletionTimeLimit" />
+        <result column="ACTIVATION_SKU_KEY_LIST" property="activationSkuKeyList" />
+        <result column="STATE_FLAG" property="stateFlag" />
+        <result column="LIMIT_TYPE" property="limitType" />
+        <result column="MONEY_LIMIT" property="moneyLimit" />
+        <result column="NUMBER_LIMIT" property="numberLimit" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="MONEY_CONFIG_FLAG" property="moneyConfigFlag" />
+        <result column="DELETE_FLAG" property="deleteFlag" />
+        <result column="SHARE_VCODE_ACTIVITY_KEY" property="shareVcodeActivityKey" />
+        <result column="RECEIVE_NUMBER" property="receiveNumber" />
+        <result column="USER_RECEIVE_NUMBER_LIMIT" property="userReceiveNumberLimit" />
+        <result column="OFFICIAL_ACCOUNT_URL" property="officialAccountUrl" />
+        <result column="OFFICIAL_ACCOUNT_FLAG" property="officialAccountFlag" />
+        <result column="USER_REWARD_FLAG" property="userRewardFlag" />
+        <result column="SHARE_FLAG" property="shareFlag" />
+        <result column="MONEY_REGION" property="moneyRegion" />
+        <result column="POINT_REGION" property="pointRegion" />
+        <result column="SHARE_AREA" property="shareArea" />
+        <result column="SHARE_MONEY_LIMIT" property="shareMoneyLimit" />
+        <result column="SHARE_POINT_LIMIT" property="sharePointLimit" />
+        <result column="REWARD_RECEIVE_LIMIT" property="rewardReceiveLimit" />
+        <result column="sharer_get_reward_limit" property="sharerGetRewardLimit" />
+        <result column="ROLE_DESCRIBE" property="roleDescribe" />
+        <result column="NEW_USER_TYPE" property="newUserType" />
+        <result column="SHARE_AWARD_TYPE" property="shareAwardType" />
+        <result column="ACCEPT_SHARE_NEW_USER_MIN_MONEY" property="acceptShareNewUserMinMoney" />
+        <result column="ACCEPT_SHARE_NEW_USER_MAX_MONEY" property="acceptShareNewUserMaxMoney" />
+        <result column="SHARER_GET_REWARD_DAY_LIMIT" property="sharerGetRewardDayLimit" />
+        <result column="SHARER_USER_RECEIVE_NUM_LIMIT" property="sharerUserReceiveNumLimit" />
+        <result column="TASK_COMPLETION_LIMIT_DAY" property="taskCompletionLimitDay" />
+        <result column="USER_RECEIVE_NUMBER_DAY_LIMIT" property="userReceiveNumberDayLimit" />
+        <result column="NEW_USER_ASK" property="newUserAsk" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ACTIVITY_KEY,REWARD_RECEIVE_LIMIT,sharer_get_reward_limit,RULE_NO,SHARE_VCODE_ACTIVITY_KEY,USER_RECEIVE_NUMBER_LIMIT,RECEIVE_NUMBER, USER_KEY, RULE_NAME, START_DATE, END_DATE, RECEIVE_TIME_LIMIT, TASK_COMPLETION_TIME_LIMIT, ACTIVATION_SKU_KEY_LIST, STATE_FLAG, LIMIT_TYPE, MONEY_LIMIT, NUMBER_LIMIT, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER
+    </sql>
+
+    <select id="selectPageVo" resultType="com.dbt.platform.fission.vo.VpsVcodeActivateRedEnvelopeRuleCogVO">
+        select
+        rulecog.ACTIVITY_KEY,
+        rulecog.RULE_NO,
+        rulecog.SHARE_VCODE_ACTIVITY_KEY,
+        rulecog.USER_RECEIVE_NUMBER_LIMIT,
+        rulecog.RECEIVE_NUMBER,
+        rulecog.USER_KEY,
+        rulecog.RULE_NAME,
+        DATE_FORMAT(rulecog.START_DATE,'%Y-%m-%d') as START_DATE,
+        DATE_FORMAT(rulecog.END_DATE,'%Y-%m-%d') as END_DATE,
+        rulecog.RECEIVE_TIME_LIMIT,
+        rulecog.TASK_COMPLETION_TIME_LIMIT,
+        rulecog.ACTIVATION_SKU_KEY_LIST,
+        rulecog.STATE_FLAG,
+        rulecog.LIMIT_TYPE,
+        rulecog.MONEY_LIMIT,
+        rulecog.NUMBER_LIMIT,
+        rulecog.CREATE_TIME,
+        rulecog.CREATE_USER,
+        rulecog.USER_REWARD_FLAG,
+        rulecog.OFFICIAL_ACCOUNT_FLAG,
+        rulecog.OFFICIAL_ACCOUNT_URL,
+        rulecog.SHARE_FLAG,
+        rulecog.MONEY_REGION,
+        rulecog.POINT_REGION,
+        rulecog.SHARE_AREA,
+        rulecog.SHARE_TYPE,
+        rulecog.SHARE_MONEY_LIMIT,
+        rulecog.SHARE_POINT_LIMIT,
+        rulecog.REWARD_RECEIVE_LIMIT,
+        rulecog.sharer_get_reward_limit,
+        activity.vcode_activity_name vcodeActivityName
+        from vps_vcode_activate_red_envelope_rule_cog rulecog
+        left join vps_vcode_activity_cog activity
+        on rulecog.SHARE_VCODE_ACTIVITY_KEY = activity.vcode_activity_key
+        <where>
+            rulecog.DELETE_FLAG='0'
+            <if test="vo.ruleNo != null and vo.ruleNo != ''">
+                and rulecog.RULE_NO = #{vo.ruleNo}
+            </if>
+            <if test="vo.ruleName != null and vo.ruleName != ''">
+                and rulecog.RULE_NAME like concat('%',#{vo.ruleName},'%')
+            </if>
+            <if test="vo.stateFlag != null and vo.stateFlag != ''">
+                and rulecog.STATE_FLAG = #{vo.stateFlag}
+            </if>
+            <if test="vo.tabsFlag == '0'.toString()">
+                and ( rulecog.START_DATE &lt;= now()
+                and rulecog.END_DATE >= now()
+                and rulecog.STATE_FLAG = '0') or rulecog.START_DATE > now()
+            </if>
+            <if test="vo.tabsFlag == '1'.toString()">
+                and rulecog.START_DATE &lt;= now()
+                and rulecog.END_DATE >= now()
+                and rulecog.STATE_FLAG = '1'
+            </if>
+            <if test="vo.tabsFlag == '2'.toString()">
+                and (rulecog.START_DATE > now()
+                or rulecog.END_DATE &lt; now())
+                and rulecog.START_DATE &lt; now()
+            </if>
+        </where>
+        <if test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+            order by rulecog.${pageInfo.orderCol} ${pageInfo.orderType}
+        </if>
+    </select>
+    <select id="getTabs1SkuKey" resultType="string">
+  select
+        ACTIVATION_SKU_KEY_LIST
+        from vps_vcode_activate_red_envelope_rule_cog rulecog
+        where   ((rulecog.START_DATE &lt;= str_to_date(#{startDate},'%Y-%m-%d')  and rulecog.END_DATE >=  str_to_date(#{startDate},'%Y-%m-%d'))
+                or (rulecog.END_DATE >=  str_to_date(#{endDate},'%Y-%m-%d') and rulecog.START_DATE &lt;= str_to_date(#{endDate},'%Y-%m-%d')))
+                and rulecog.STATE_FLAG = '1'
+                <if test="ruleKey!='' and ruleKey!= null">
+                    and rulecog.ACTIVITY_KEY not in( #{ruleKey})
+                </if>
+                <if test=" shareType!= null">
+                    and rulecog.share_type =#{shareType}
+                </if>
+    </select>
+
+    <select id="getTabs1ActivateList" resultType="string">
+        select
+        SHARE_VCODE_ACTIVITY_KEY
+        from vps_vcode_activate_red_envelope_rule_cog rulecog
+        where   ((rulecog.START_DATE &lt;= str_to_date(#{startDate},'%Y-%m-%d')  and rulecog.END_DATE >=  str_to_date(#{startDate},'%Y-%m-%d'))
+        or (rulecog.END_DATE >=  str_to_date(#{endDate},'%Y-%m-%d') and rulecog.START_DATE &lt;= str_to_date(#{endDate},'%Y-%m-%d')))
+        and rulecog.STATE_FLAG = '1'
+        <if test="ruleKey!='' and ruleKey!= null">
+            and rulecog.ACTIVITY_KEY not in( #{ruleKey})
+        </if>
+        <if test=" shareType!= null">
+            and rulecog.share_type =#{shareType}
+        </if>
+    </select>
+
+    <select id="queryOverlapActivity" parameterType="map" resultType="java.lang.Integer">
+        select count(*)
+        from vps_vcode_activate_red_envelope_rule_cog
+        where
+        DELETE_FLAG = '0' and
+        ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+        (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+        (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        <if test="activityKey != null and activityKey != ''">
+            and ACTIVITY_KEY != #{activityKey}
+        </if>
+    </select>
+
+    <update id="updateActivityCog" parameterType="com.dbt.platform.fission.bean.VpsVcodeActivateRedEnvelopeRuleCogEntity">
+        update
+        vps_vcode_activate_red_envelope_rule_cog
+        <set>
+            <if test="ruleName != null and ruleName != ''">
+             RULE_NAME = #{ruleName},
+            </if>
+             RECEIVE_TIME_LIMIT = #{receiveTimeLimit},
+            <if test="activationSkuKeyList != null and activationSkuKeyList != ''">
+             ACTIVATION_SKU_KEY_LIST = #{activationSkuKeyList},
+            </if>
+            <if test="stateFlag != null and stateFlag != ''">
+             STATE_FLAG = #{stateFlag},
+            </if>
+            <if test="limitType != null and limitType != ''">
+             LIMIT_TYPE = #{limitType},
+            </if>
+             MONEY_LIMIT = #{moneyLimit},
+             NUMBER_LIMIT = #{numberLimit},
+            <if test="moneyConfigFlag != null and moneyConfigFlag != ''">
+             MONEY_CONFIG_FLAG = #{moneyConfigFlag},
+            </if>
+            <if test="deleteFlag != null and deleteFlag != ''">
+             DELETE_FLAG = #{deleteFlag},
+            </if>
+            <if test="shareVcodeActivityKey != null and shareVcodeActivityKey != ''">
+             SHARE_VCODE_ACTIVITY_KEY = #{shareVcodeActivityKey},
+            </if>
+             RECEIVE_NUMBER = #{receiveNumber},
+             USER_RECEIVE_NUMBER_LIMIT = #{userReceiveNumberLimit},
+            <if test="officialAccountUrl != null and officialAccountUrl != ''">
+             OFFICIAL_ACCOUNT_URL = #{officialAccountUrl},
+            </if>
+            <if test="officialAccountFlag != null and officialAccountFlag != ''">
+             OFFICIAL_ACCOUNT_FLAG = #{officialAccountFlag},
+            </if>
+            <if test="userRewardFlag != null and userRewardFlag != ''">
+             USER_REWARD_FLAG = #{userRewardFlag},
+            </if>
+            <if test="shareFlag != null and shareFlag != ''">
+             SHARE_FLAG = #{shareFlag},
+            </if>
+            <if test="moneyRegion != null and moneyRegion != ''">
+             MONEY_REGION = #{moneyRegion},
+            </if>
+            <if test="pointRegion != null and pointRegion != ''">
+             POINT_REGION = #{pointRegion},
+            </if>
+            <if test="shareArea != null and shareArea != ''">
+             SHARE_AREA = #{shareArea},
+            </if>
+            <if test="shareMoneyLimit != null and shareMoneyLimit != ''">
+             SHARE_MONEY_LIMIT = #{shareMoneyLimit},
+            </if>
+             SHARE_POINT_LIMIT = #{sharePointLimit},
+             REWARD_RECEIVE_LIMIT = #{rewardReceiveLimit},
+             sharer_get_reward_limit = #{sharerGetRewardLimit},
+             ROLE_DESCRIBE = #{roleDescribe},
+            <if test="newUserType != null and newUserType != ''">
+             NEW_USER_TYPE = #{newUserType},
+            </if>
+            SHARE_AWARD_TYPE = #{shareAwardType},
+            ACCEPT_SHARE_NEW_USER_MIN_MONEY = #{acceptShareNewUserMinMoney},
+            ACCEPT_SHARE_NEW_USER_MAX_MONEY = #{acceptShareNewUserMaxMoney},
+            SHARER_GET_REWARD_DAY_LIMIT = #{sharerGetRewardDayLimit},
+            SHARER_USER_RECEIVE_NUM_LIMIT = #{sharerUserReceiveNumLimit},
+            USER_RECEIVE_NUMBER_DAY_LIMIT = #{userReceiveNumberDayLimit},
+            NEW_USER_ASK = #{newUserAsk},
+            START_DATE = #{startDate},
+            END_DATE = #{endDate},
+            TASK_COMPLETION_TIME_LIMIT = #{taskCompletionTimeLimit},
+            TASK_COMPLETION_LIMIT_DAY = #{taskCompletionLimitDay},
+            UPDATE_USER = #{updateUser},
+            UPDATE_TIME = #{updateTime},
+            RISK_USER_LIMIT_MIN_MONEY = #{riskUserLimitMinMoney},
+            RISK_USER_LIMIT_MAX_MONEY = #{riskUserLimitMaxMoney}
+        </set>
+        where
+        ACTIVITY_KEY = #{activityKey}
+    </update>
+</mapper>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activityui.dao.IVpsTemplateUiDao">
+
+	<resultMap type="com.dbt.platform.activityui.bean.VpsTemplateUi" id="baseResultMap">
+		<result property="templateKey" column="template_key"/>
+  		<result property="templateNo" column="template_no"/>
+  		<result property="templateName" column="template_name"/>
+  		<result property="orderNo" column="order_no"/>
+  		<result property="businessType" column="business_type"/>
+  		<result property="dateType" column="date_type"/>
+  		<result property="startDate" column="start_date"/>
+  		<result property="endDate" column="end_date"/>
+  		<result property="coverPic" column="cover_pic"/>
+  		<result property="templateProperty" column="template_property"/>
+  		<result property="publishStatus" column="publish_status"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createUser" column="create_user"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateUser" column="update_user"/>
+  		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<resultMap id="allTemplateResultMap" type="com.dbt.platform.activityui.bean.VpsTemplateUi" extends="baseResultMap">
+       <association property="activityTemplateUiList" column="template_key" 
+                select="com.dbt.platform.activityui.dao.IVpsActivityTemplateUiDao.queryInfoByTemplateKey"></association>
+    </resultMap>
+
+	<insert id="addTemplateUi" parameterType="com.dbt.platform.activityui.bean.VpsTemplateUi" >
+		INSERT INTO vps_vcode_template_ui_info(
+		 	 template_key,
+		 	 template_no,
+  			 template_name,
+  			 business_type,
+  			 date_type,
+  			 start_date,
+  			 end_date,
+  			 cover_pic,
+  			 template_property,
+  			 publish_status,
+  			 delete_flag,
+  			 create_time,
+  			 create_user,
+  			 update_time,
+  			 update_user
+		)
+		VALUES(
+		    #{templateKey},
+		    #{templateNo},
+  			#{templateName},
+  			#{businessType},
+  			#{dateType},
+  			#{startDate},
+  			#{endDate},
+			#{coverPic},
+  			#{templateProperty},
+  			#{publishStatus},
+  			0,
+  			#{createTime},
+  			#{createUser},
+  			#{updateTime},
+  			#{updateUser}
+		)
+	</insert>
+	
+	<update id="updateTemplateUi" parameterType="com.dbt.platform.autocode.bean.VpsQrcodeOrder">
+		update vps_vcode_template_ui_info
+		<set>
+			<if test="templateNo != null and templateNo != ''">
+				template_no = #{templateNo},
+			</if>
+			<if test="templateName != null and templateName != ''">
+				template_name = #{templateName},
+			</if>
+			<if test="dateType != null and dateType != ''">
+				date_type = #{dateType},
+			</if>
+			<if test="startDate != null and startDate != ''">
+				start_date = #{startDate},
+			</if>
+			<if test="endDate != null and endDate != ''">
+				end_date = #{endDate},
+			</if>
+			<if test="coverPic != null and coverPic != ''">
+				cover_pic = #{coverPic},
+			</if>
+			<if test="templateProperty != null and templateProperty != ''">
+				template_property = #{templateProperty},
+			</if>
+			<if test="publishStatus != null and publishStatus != ''">
+				publish_status = #{publishStatus},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime},
+			</if>
+			<if test="createUser != null and createUser != ''">
+				create_user = #{createUser},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time = #{updateTime},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser}
+			</if>
+		</set>
+		 where template_key=#{templateKey}
+	</update>
+	
+	<!-- 列表 -->
+	<select id="queryForLst" parameterType="Map" resultMap="allTemplateResultMap">
+		select
+		 	t.*
+		from 
+		 	vps_vcode_template_ui_info t
+		where 
+		    t.delete_flag = '0'
+		<if test="queryBean.templateName != '' and queryBean.templateName != null ">
+			AND t.template_name like '%${queryBean.templateName}%'
+		</if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND t.start_date #{queryBean.startDate} and #{queryBean.endDate}
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND t.start_date >= #{queryBean.startDate}
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND t.start_date <![CDATA[<=]]> #{queryBean.startDate}
+            </when>
+        </choose>
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'qr.create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, t.CREATE_TIME DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY t.CREATE_TIME DESC</otherwise>
+        </choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	<select id="getTemplateUi" parameterType="Map" resultMap="baseResultMap">
+select
+		 	t.*
+		from
+		 	vps_vcode_template_ui_info t
+		 where template_key=#{templateKey}
+	</select>
+	
+	<!-- 用户列表count -->
+	<select id="queryForCount" parameterType="Map" resultType="Integer">
+		select
+		 	count(1)
+		from 
+		 	vps_vcode_template_ui_info t
+		where 
+		    t.delete_flag = '0'
+        <if test="queryBean.templateName != '' and queryBean.templateName != null ">
+			AND t.template_name like '%${queryBean.templateName}%'
+		</if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND t.start_date #{queryBean.startDate} and #{queryBean.endDate}
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND t.start_date >= #{queryBean.startDate}
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND t.start_date <![CDATA[<=]]> #{queryBean.startDate}
+            </when>
+        </choose>
+	</select>
+	
+</mapper>

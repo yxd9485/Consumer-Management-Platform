@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.smallticket.dao.IVpsTicketPromotionUserDao">
+
+    <resultMap type="com.dbt.smallticket.bean.VpsTicketPromotionUser" id="baseResultMap">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="userKey" column="USER_KEY"/>
+        <result property="phoneNum" column="PHONE_NUM"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="userCode" column="USER_CODE"/>
+        <result property="ticketChannel" column="TICKET_CHANNEL"/>
+        <result property="terminalSystem" column="TERMINAL_SYSTEM"/>
+        <result property="terminalCode" column="TERMINAL_CODE"/>
+        <result property="terminalName" column="TERMINAL_NAME"/>
+        <result property="terminalAddress" column="TERMINAL_ADDRESS"/>
+        <result property="province" column="PROVINCE"/>
+        <result property="city" column="CITY"/>
+        <result property="county" column="COUNTY"/>
+        <result property="terminalOpenid" column="TERMINAL_OPENID"/>
+        <result property="warAreaName" column="WAR_AREA_NAME"/>
+        <result property="isJoinVote" column="IS_JOIN_VOTE"/>
+        <result property="uploadPic" column="UPLOAD_PIC"/>
+        <result property="introduce" column="INTRODUCE"/>
+        <result property="firstImgH" column="FIRST_IMGH"/>
+        <result property="status" column="STATUS"/>
+        <result property="checkStatus" column="CHECK_STATUS"/>
+        <result property="checkOpinion" column="CHECK_OPINION"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+    
+    <insert id="create" parameterType="com.dbt.smallticket.bean.VpsTicketPromotionUser">
+        insert into vps_ticket_promotion_user(
+            INFO_KEY, PHONE_NUM, USER_NAME, USER_CODE, TICKET_CHANNEL,TERMINAL_SYSTEM, TERMINAL_CODE, TERMINAL_NAME, 
+            TERMINAL_ADDRESS, PROVINCE, CITY, COUNTY, WAR_AREA_NAME, DELETE_FLAG, CREATE_USER, CREATE_TIME
+        ) 
+        values(
+            UUID(), #{phoneNum}, #{userName}, #{userCode}, #{ticketChannel}, #{terminalSystem}, #{terminalCode}, #{terminalName}, 
+            #{terminalAddress}, #{province}, #{city}, #{county}, #{warAreaName}, '0', #{createUser}, #{createTime}
+        )
+    </insert>
+    
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into vps_ticket_promotion_user(
+            INFO_KEY, PHONE_NUM, USER_NAME, USER_CODE,TICKET_CHANNEL, TERMINAL_SYSTEM, TERMINAL_CODE, TERMINAL_NAME, 
+            TERMINAL_ADDRESS, PROVINCE, CITY, COUNTY, WAR_AREA_NAME, DELETE_FLAG, CREATE_USER, CREATE_TIME
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+        (
+            UUID(), #{item.phoneNum}, #{item.userName}, #{item.userCode},#{item.ticketChannel}, #{item.terminalSystem}, #{item.terminalCode}, #{item.terminalName}, 
+            #{item.terminalAddress}, #{item.province}, #{item.city}, #{item.county}, #{item.warAreaName}, '0', #{item.createUser}, #{item.createTime}        
+        )
+        </foreach>
+    </insert>
+    
+    <!-- 修改促销员 -->
+    <update id="update" parameterType="com.dbt.smallticket.bean.VpsTicketPromotionUser">
+        UPDATE vps_ticket_promotion_user
+        <set>
+            <if test="phoneNum != null and phoneNum != ''">
+                PHONE_NUM = #{phoneNum},
+            </if>
+            <if test="userName != null and userName != ''">
+                USER_NAME = #{userName},
+            </if>
+            <if test="userCode != null and userCode != ''">
+                USER_CODE = #{userCode},
+            </if>
+            <if test="ticketChannel != null and ticketChannel != ''">
+                TICKET_CHANNEL = #{ticketChannel},
+            </if>
+            <if test="terminalSystem != null and terminalSystem != ''">
+                TERMINAL_SYSTEM = #{terminalSystem},
+            </if>
+            <if test="terminalCode != null and terminalCode != ''">
+                TERMINAL_CODE = #{terminalCode},
+            </if>
+            <if test="terminalName != null and terminalName != ''">
+                TERMINAL_NAME = #{terminalName},
+            </if>
+            <if test="terminalAddress != null and terminalAddress != ''">
+                TERMINAL_ADDRESS = #{terminalAddress},
+            </if>
+            <if test="province != null and province != ''">
+                PROVINCE = #{province},
+            </if>
+            <if test="city != null and city != ''">
+                CITY = #{city},
+            </if>
+            <if test="county != null and county != ''">
+                COUNTY = #{county},
+            </if>
+            <if test="warAreaName != null and warAreaName != ''">
+                WAR_AREA_NAME = #{warAreaName},
+            </if>
+            <if test="checkStatus != null and checkStatus != ''">
+                CHECK_STATUS = #{checkStatus},
+            </if>
+            <!-- 审核原因可以为空 -->
+            CHECK_OPINION = #{checkOpinion},
+            
+            <!-- 每次修改，促销员都需要重新激活 -->
+            USER_KEY = NULL,
+            TERMINAL_OPENID = NULL,
+            STATUS = '0',
+            UPDATE_USER =#{updateUser},
+            UPDATE_TIME = #{updateTime}
+        </set>
+        WHERE  INFO_KEY = #{infoKey}
+    </update>
+    
+    <select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+        SELECT * FROM vps_ticket_promotion_user
+        WHERE delete_flag != '1'
+        <if test="queryBean.searchVal != null and queryBean.searchVal != ''">
+            AND (phone_num = #{queryBean.searchVal} or user_name like '%${queryBean.searchVal}%' or terminal_name like '%${queryBean.searchVal}%')
+        </if>
+        <if test="queryBean.province != null and queryBean.province  != ''">
+            and province =#{queryBean.province}
+        </if>
+        <if test="queryBean.city != null and queryBean.city  != ''">
+            and city =#{queryBean.city}
+        </if>
+        <if test="queryBean.county != null and queryBean.county  != ''">
+            and county =#{queryBean.county}
+        </if>
+        <if test="queryBean.warAreaName != null and queryBean.warAreaName  != ''">
+            and war_area_name =#{queryBean.warAreaName}
+        </if>
+        <if test="queryBean.isJoinVote != null and queryBean.isJoinVote  != ''">
+            and is_join_vote =#{queryBean.isJoinVote}
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and status =#{queryBean.status}
+        </if>
+        <if test="queryBean.checkStatus != null and queryBean.checkStatus != ''">
+            <choose>
+                <when test="queryBean.checkStatus == '0'.toString()">
+                    and check_status = '0' and is_join_vote = '1'
+                </when>
+                <otherwise>
+                    and check_status = #{queryBean.checkStatus}
+                </otherwise>
+            </choose>
+            
+        </if>
+        ORDER BY CREATE_TIME DESC
+        <if test="pageInfo != null">
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+    
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        SELECT count(1) FROM vps_ticket_promotion_user
+        WHERE
+            delete_flag != '1'
+            <if test="queryBean.searchVal != null and queryBean.searchVal != ''">
+                AND (phone_num = #{queryBean.searchVal} or user_name like '%${queryBean.searchVal}%' or terminal_name like '%${queryBean.searchVal}%')
+            </if>
+            <if test="queryBean.province != null and queryBean.province  != ''">
+                and province =#{queryBean.province}
+            </if>
+            <if test="queryBean.city != null and queryBean.city  != ''">
+                and city =#{queryBean.city}
+            </if>
+            <if test="queryBean.county != null and queryBean.county  != ''">
+                and county =#{queryBean.county}
+            </if>
+            <if test="queryBean.warAreaName != null and queryBean.warAreaName  != ''">
+                and war_area_name =#{queryBean.warAreaName}
+            </if>
+            <if test="queryBean.isJoinVote != null and queryBean.isJoinVote  != ''">
+                and is_join_vote =#{queryBean.isJoinVote}
+            </if>
+            <if test="queryBean.status != null and queryBean.status != ''">
+                and status =#{queryBean.status}
+            </if>
+            <if test="queryBean.checkStatus != null and queryBean.checkStatus != ''">
+            <choose>
+                <when test="queryBean.checkStatus == '0'.toString()">
+                    and check_status = '0' and is_join_vote = '1'
+                </when>
+                <otherwise>
+                    and check_status = #{queryBean.checkStatus}
+                </otherwise>
+            </choose>
+            
+        </if>
+    </select>
+    
+    
+<!--     依据手机号查询促销人员信息 -->
+    <select id="findByPhoneNum" parameterType="String" resultMap="baseResultMap">
+        select
+            *
+        from
+            vps_ticket_promotion_user
+        where 
+            delete_flag = '0'
+            and phone_num = #{phoneNum}
+        limit 1
+    </select>
+    
+<!--     依据用户主键查询促销人员信息 -->
+    <select id="findByUserKey" parameterType="String" resultMap="baseResultMap">
+        select
+            *
+        from
+            vps_ticket_promotion_user
+        where
+            delete_flag = '0'
+            and user_key = #{userKey}
+        limit 1
+    </select>
+    
+    <select id="findById" parameterType="String" resultMap="baseResultMap">
+        select u.*, d.areacode from vps_ticket_promotion_user u 
+        left join sys_area_m c on u.city = c.areaname and c.level = '2'
+        left join sys_area_m d on u.county = d.areaname and c.areacode = d.parentcode and d.level = '3'
+        where u.info_key = #{id}
+    </select>
+    
+    <select id="queryRepetitionList" parameterType="java.util.List" resultType="String">
+        select phone_num from vps_ticket_promotion_user where phone_num in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.phoneNum}
+        </foreach>
+    </select>
+    
+    <!-- 查询战区 -->
+    <select id="queryWarareaAll" resultType="com.dbt.smallticket.bean.VpsTicketWararea">
+       select big_area_name as bigAreaName, war_area_name as warAreaName from vps_ticket_wararea_report
+    </select>
+    
+     <!-- 促销员审核 -->
+    <update id="updatePromotionUserForCheck" parameterType="com.dbt.smallticket.bean.VpsTicketPromotionUser">
+        UPDATE vps_ticket_promotion_user
+        <set>
+            <if test="checkStatus != null and checkStatus != ''">
+                CHECK_STATUS = #{checkStatus},
+            </if>
+            <if test="checkOpinion != null and checkOpinion != ''">
+                CHECK_OPINION = #{checkOpinion},
+            </if>
+            UPDATE_USER =#{updateUser},
+            UPDATE_TIME = #{updateTime}
+        </set>
+        WHERE  INFO_KEY = #{infoKey}
+    </update>
+    
+    <!-- 删除促销员 -->
+    <delete id="deleteById" parameterType="String">
+        delete from vps_ticket_promotion_user where info_key = #{id}
+    </delete>
+</mapper>

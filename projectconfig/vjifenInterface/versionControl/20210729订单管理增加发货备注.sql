@@ -1,0 +1,3 @@
+-- 省区数据库执行
+ALTER TABLE `vpoints_exchange_log`
+ADD COLUMN `EXPRESS_SEND_MESSAGE`  varchar(100) NULL DEFAULT '' COMMENT '发货备注' AFTER `EXPRESS_SEND_TIME`;

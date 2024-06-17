@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.prize.dao.IMajorInfoDao">
+
+	<resultMap type="com.dbt.platform.prize.bean.MajorInfo" id="majorInfoResultMap">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="userKey" column="USER_KEY" />
+        <result property="prizeVcode" column="PRIZE_VCODE" />
+		<result property="userName" column="USER_NAME" />
+		<result property="idCard" column="ID_CARD" />
+		<result property="phoneNum" column="PHONE_NUM" />
+		<result property="address" column="ADDRESS" />
+		<result property="province" column="PROVINCE" />
+		<result property="city" column="CITY" />
+		<result property="county" column="COUNTY" />
+		<result property="skuKey" column="SKU_KEY" />
+		<result property="earnTime" column="EARN_TIME" />
+		<result property="earnMoney" column="EARN_MONEY" />
+		<result property="grandPrizeType" column="GRAND_PRIZE_TYPE" />
+		<result property="exchangeMoney" column="EXCHANGE_MONEY" />
+		<result property="useTime" column="USE_TIME" />
+		<result property="expireTime" column="EXPIRE_TIME" />
+		<result property="recycleFlag" column="RECYCLE_FLAG" />
+		<result property="useStatus" column="USE_STATUS" />
+		<result property="checkStatus" column="CHECK_STATUS"/>
+  		<result property="checkOpenid" column="CHECK_OPENID"/>
+  		<result property="checkTime" column="CHECK_TIME"/>
+  		<result property="checkRemarks" column="CHECK_REMARKS"/>
+		<result property="skuName" column="SKU_NAME" />
+		<result property="vcodeActivityKey" column="vcode_activity_key" />
+		<result property="rebateRuleKey" column="rebate_rule_key" />
+		<result property="vpointsCogKey" column="vpoints_cog_key" />
+		<result property="prizeName" column="prize_name" />
+		<result property="terminalKey" column="terminal_Key" />
+		<result property="expressCompany" column="express_company" />
+		<result property="expressNumber" column="express_number" />
+		<result property="expressSendMessage" column="express_send_message" />
+	</resultMap>
+
+
+    <insert id="addFirstPrizeRecord" parameterType="com.dbt.platform.prize.bean.MajorInfo">
+        insert into VPS_VCODE_PRIZE_RECORD(
+            INFO_KEY,
+            COMPANY_KEY,
+            USER_KEY,
+            GRAND_PRIZE_TYPE,
+            CONTRACT_YEAR,
+            PRIZE_IMG,
+            PRIZE_NAME,
+            EARN_TIME,
+            EARN_MONEY,
+            PRIZE_VCODE,
+            PROVINCE,
+            CITY,
+            COUNTY,
+            USE_STATUS,
+            EXCHANGE_CHANNEL,
+            EXPIRE_TIME
+        ) values (
+                  #{infoKey},
+                  #{companyKey},
+                  #{userKey},
+                  #{grandPrizeType},
+                  #{contractYear},
+                  #{prizeImg},
+                  #{prizeName},
+                  #{earnTime},
+                  #{earnMoney},
+                  #{prizeVcode},
+                  #{province},
+                  #{city},
+                  #{county},
+                  #{useStatus},
+                  #{exchangeChannel},
+                  #{expireTime}
+                         )
+    </insert>
+
+	<select id="queryMajorInfoListForPage" resultMap="majorInfoResultMap" parameterType="Map">
+        SELECT
+             p.INFO_KEY,
+             p.COMPANY_KEY,
+             p.VCODE_ACTIVITY_KEY,
+             p.REBATE_RULE_KEY,
+             p.VPOINTS_COG_KEY,
+             p.USER_KEY,
+             p.GRAND_PRIZE_TYPE,
+             p.PRIZE_PAY_MONEY,
+             p.PRIZE_DISCOUNT,
+             p.PRIZE_NAME,
+             p.PRIZE_IMG,
+             p.CONTRACT_YEAR,
+             p.EARN_TIME,
+             p.EARN_MONEY,
+             p.EXCHANGE_MONEY,
+             p.SKU_KEY,
+             p.PRIZE_VCODE,
+             p.MZT_FLAG,
+             p.PROVINCE,
+             p.CITY,
+             p.COUNTY,
+             p.ADDRESS,
+             p.EXPRESS_COMPANY,
+             p.EXPRESS_NUMBER,
+             p.EXPRESS_SEND_MESSAGE,
+             p.customer_message,
+             p.USE_STATUS,
+             p.USE_TIME,
+             p.GOODS_RETURN_SUCCESS_TIME,
+             p.EXPIRE_TIME,
+             p.RECYCLE_FLAG,
+             p.EXCHANGE_DATE,
+             p.EXCHANGE_CHANNEL,
+             p.OPENID,
+             p.USER_NAME,
+             p.ID_CARD,
+             p.PHONE_NUM,
+             p.CHECK_STATUS,
+             p.CHECK_OPENID,
+             p.CHECK_TIME,
+             p.CHECK_REMARKS,
+             p.GOODS_ID,
+             p.TERMINAL_KEY,
+             p.EXCHANGE_ID,
+             p.WINE_SHOP_USER_KEY,
+             p.POSTER_IMG_URL,
+             case when p.EXCHANGE_CHANNEL = '15' then p.SKU_NAME
+             else s.SKU_NAME
+             end SKU_NAME,
+			 u.nick_name as nickName,
+			case when p.GRAND_PRIZE_TYPE = '0' then '5'
+                 when p.GRAND_PRIZE_TYPE = '1' then '6'
+                 when p.GRAND_PRIZE_TYPE = '2' then '7'
+                 else UPPER(p.GRAND_PRIZE_TYPE)
+            end prizeType,
+            IF(p.EXCHANGE_CHANNEL = '15','终端促销','消费者促销') AS projectChannel,
+            cu.USER_NAME AS checkUserName,
+            cu.PHONE_NUM AS checkPhoneNum
+            <if test="projectServerName == 'liaoning'">
+            ,IF(p.EXCHANGE_CHANNEL = '10','抽奖','扫码') AS prizeSource            
+            </if>
+            ,t.TERMINAL_NAME as 'terminalName'
+		FROM
+			VPS_VCODE_PRIZE_RECORD p
+		LEFT JOIN VPS_SKU_INFO s ON p.SKU_KEY = s.SKU_KEY
+		LEFT JOIN VPS_CONSUMER_USER_INFO u ON p.USER_KEY = u.USER_KEY
+		LEFT JOIN VPS_CONSUMER_CHECK_USER_INFO cu ON p.CHECK_OPENID = cu.OPENID
+		LEFT JOIN vps_terminal_info t ON t.TERMINAL_KEY = p.TERMINAL_KEY and p.terminal_key != '' AND t.DELETE_FLAG = '0'
+		WHERE
+			<!-- 中奖渠道:2积分抽奖，3扫码中奖，4一码双奖, 5逢尾数 , 6商城兑换优品推荐商品, 7集卡兑大奖,10转盘中奖,11积盖兑换,12二重惊喜，13海报中奖 ,14专项激励奖励 15 音乐节门票 16 盲盒中奖-->
+              <choose>
+              		<when test="projectServerName == 'shandongagt'">
+              			p.EXCHANGE_CHANNEL in ('3', '4', '5', '10', '11', '12', '13','14','15','16')
+              		</when>
+              		<otherwise>
+                        p.EXCHANGE_CHANNEL in ('3', '4', '5', '10', '11', '12', '13','14','15','16')
+              		</otherwise>
+              </choose>
+            and p.earn_time <![CDATA[<=]]> now()
+           <!-- 
+           <choose>
+               <when test="queryBean.grandPrizeType == '5'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('0', '5')
+               </when>
+               <when test="queryBean.grandPrizeType == '6'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('1', '6')
+               </when>
+               <when test="queryBean.grandPrizeType == '7'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('2', '7')
+               </when>
+               <when test="queryBean.grandPrizeType != null and queryBean.grandPrizeType != '' ">
+                   and p.GRAND_PRIZE_TYPE = #{queryBean.grandPrizeType}
+               </when>
+            </choose> 
+            -->
+            
+            <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+                 AND t.TERMINAL_NAME like '%${queryBean.terminalName}%' 
+            </if>
+            
+            <if test="queryBean.typeString != null and queryBean.typeString != ''">
+            	and (p.GRAND_PRIZE_TYPE in (${queryBean.typeString})
+            	<if test="queryBean.typeString.contains('5'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '0'
+            	</if>
+            	<if test="queryBean.typeString.contains('6'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '1'
+            	</if>
+            	<if test="queryBean.typeString.contains('7'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '2'
+            	</if>
+            	)
+            </if>
+            
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND u.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND p.PHONE_NUM like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.checkPhoneNum != null and queryBean.checkPhoneNum != ''">
+                 AND (cu.PHONE_NUM like '%${queryBean.checkPhoneNum}%' 
+                 		OR p.CHECK_REMARKS like '%${queryBean.checkPhoneNum}%'
+                 )
+            </if>
+            <if test="queryBean.checkStatus != null and queryBean.checkStatus != ''">
+                <choose>
+                    <when test="queryBean.checkStatus == 9">
+                        AND now() > p.EXPIRE_TIME and p.USE_STATUS = '0'
+                    </when>
+                    <when test="queryBean.checkStatus == 10">
+                        AND p.EXCHANGE_MONEY > 0
+                    </when>
+                    <otherwise>
+                        AND p.CHECK_STATUS = #{queryBean.checkStatus} 
+                    </otherwise>
+                </choose>
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    and p.earn_time >= '${queryBean.startDate} 00:00:00' and p.earn_time <![CDATA[ <=]]> '${queryBean.endDate} 23:59:59'
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    and p.earn_time >= '${queryBean.startDate} 00:00:00'
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    and p.earn_time <![CDATA[ <=]]> '${queryBean.endDate} 23:59:59'
+                </when>
+            </choose>
+            <choose>
+                <when test="queryBean.useStartDate != null and queryBean.useStartDate != '' and  queryBean.useEndDate != null and queryBean.useEndDate != ''">
+                    and p.USE_TIME >= '${queryBean.useStartDate} 00:00:00' and p.USE_TIME <![CDATA[ <=]]> '${queryBean.useEndDate} 23:59:59'
+                </when>
+                <when test="queryBean.useStartDate != null and queryBean.useStartDate != ''">
+                    and p.USE_TIME >= '${queryBean.useStartDate} 00:00:00'
+                </when>
+                <when test="queryBean.useEndDate != null and queryBean.useEndDate != ''">
+                    and p.USE_TIME <![CDATA[ <=]]> '${queryBean.useEndDate} 23:59:59'
+                </when>
+            </choose>
+            <choose>
+                <when test="queryBean.checkStartDate != null and queryBean.checkStartDate != '' and  queryBean.checkEndDate != null and queryBean.checkEndDate != ''">
+                    and p.CHECK_TIME >= '${queryBean.checkStartDate} 00:00:00' and p.CHECK_TIME <![CDATA[ <=]]> '${queryBean.checkEndDate} 23:59:59'
+                </when>
+                <when test="queryBean.checkStartDate != null and queryBean.checkStartDate != ''">
+                    AND date(p.CHECK_TIME) >= #{queryBean.checkStartDate}
+                    and p.CHECK_TIME >= '${queryBean.checkStartDate} 00:00:00'
+                </when>
+                <when test="queryBean.checkEndDate != null and queryBean.checkEndDate != ''">
+                    and p.CHECK_TIME <![CDATA[ <=]]> '${queryBean.checkEndDate} 23:59:59'
+                </when>
+            </choose>
+            <if test="queryBean.prizeVcode != null and queryBean.prizeVcode != ''">
+                 AND p.prize_vcode = #{queryBean.prizeVcode} 
+            </if>
+        <if test="pageInfo != null">
+            <choose>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'p.earn_time'">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, p.earn_time DESC
+              </when>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+              </when>
+              <otherwise>ORDER BY p.earn_time DESC</otherwise>
+            </choose>
+	        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+        <if test="pageInfo == null">
+        		ORDER BY p.earn_time DESC
+        </if>
+	</select>
+	
+	<select id="queryMajorInfoListForTotal" resultType="int" parameterType="Map">
+        SELECT
+            count(p.info_key)
+        FROM
+            VPS_VCODE_PRIZE_RECORD p
+        LEFT JOIN VPS_SKU_INFO s ON p.SKU_KEY = s.SKU_KEY
+        LEFT JOIN VPS_CONSUMER_USER_INFO u ON p.USER_KEY = u.USER_KEY
+        LEFT JOIN VPS_CONSUMER_CHECK_USER_INFO cu ON p.CHECK_OPENID = cu.OPENID
+        LEFT JOIN vps_terminal_info t ON t.TERMINAL_KEY = p.TERMINAL_KEY and p.terminal_key != '' AND t.DELETE_FLAG = '0'
+        WHERE
+            <!-- 中奖渠道:2积分抽奖，3扫码中奖，4一码双奖, 5逢尾数 , 6商城兑换优品推荐商品, 7集卡兑大奖,10转盘中奖,11积盖兑换,12二重惊喜，13海报中奖-->
+            <choose>
+                    <when test="projectServerName == 'shandongagt'">
+                        p.EXCHANGE_CHANNEL in ('2','3', '4', '5', '10', '11', '12', '13','14','15','16')
+                    </when>
+                    <otherwise>
+                        p.EXCHANGE_CHANNEL in ('3', '4', '5', '10', '11', '12', '13','14','15','16')
+                    </otherwise>
+            </choose>
+            and p.earn_time <![CDATA[<=]]> now()
+            <!-- 
+            <choose>
+               <when test="queryBean.grandPrizeType == '5'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('0', '5')
+               </when>
+               <when test="queryBean.grandPrizeType == '6'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('1', '6')
+               </when>
+               <when test="queryBean.grandPrizeType == '7'.toString()">
+                   and p.GRAND_PRIZE_TYPE in ('2', '7')
+               </when>
+               <when test="queryBean.grandPrizeType != null and queryBean.grandPrizeType != '' ">
+                   and p.GRAND_PRIZE_TYPE = #{queryBean.grandPrizeType}
+               </when>
+            </choose> 
+            -->
+             <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+                 AND t.TERMINAL_NAME like '%${queryBean.terminalName}%' 
+            </if>
+            <if test="queryBean.typeString != null and queryBean.typeString != ''">
+            	and (p.GRAND_PRIZE_TYPE in (${queryBean.typeString})
+            	<if test="queryBean.typeString.contains('5'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '0'
+            	</if>
+            	<if test="queryBean.typeString.contains('6'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '1'
+            	</if>
+            	<if test="queryBean.typeString.contains('7'.toString())">
+            		or p.GRAND_PRIZE_TYPE = '2'
+            	</if>
+            	)
+            </if>
+            
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND u.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND p.PHONE_NUM like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.checkPhoneNum != null and queryBean.checkPhoneNum != ''">
+                 AND (cu.PHONE_NUM like '%${queryBean.checkPhoneNum}%' 
+                        OR p.CHECK_REMARKS like '%${queryBean.checkPhoneNum}%'
+                 )
+            </if>
+            <if test="queryBean.checkStatus != null and queryBean.checkStatus != ''">
+                <choose>
+                    <when test="queryBean.checkStatus == 9">
+                        AND now() > p.EXPIRE_TIME and p.USE_STATUS = '0'
+                    </when>
+                    <otherwise>
+                        AND p.CHECK_STATUS = #{queryBean.checkStatus} 
+                    </otherwise>
+                </choose>
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    and p.earn_time >= '${queryBean.startDate} 00:00:00' and p.earn_time <![CDATA[ <=]]> '${queryBean.endDate} 23:59:59'
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    and p.earn_time >= '${queryBean.startDate} 00:00:00'
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    and p.earn_time <![CDATA[ <=]]> '${queryBean.endDate} 23:59:59'
+                </when>
+            </choose>
+            <choose>
+                <when test="queryBean.useStartDate != null and queryBean.useStartDate != '' and  queryBean.useEndDate != null and queryBean.useEndDate != ''">
+                    and p.USE_TIME >= '${queryBean.useStartDate} 00:00:00' and p.USE_TIME <![CDATA[ <=]]> '${queryBean.useEndDate} 23:59:59'
+                </when>
+                <when test="queryBean.useStartDate != null and queryBean.useStartDate != ''">
+                    and p.USE_TIME >= '${queryBean.useStartDate} 00:00:00'
+                </when>
+                <when test="queryBean.useEndDate != null and queryBean.useEndDate != ''">
+                    and p.USE_TIME <![CDATA[ <=]]> '${queryBean.useEndDate} 23:59:59'
+                </when>
+            </choose>
+            <choose>
+                <when test="queryBean.checkStartDate != null and queryBean.checkStartDate != '' and  queryBean.checkEndDate != null and queryBean.checkEndDate != ''">
+                    and p.CHECK_TIME >= '${queryBean.checkStartDate} 00:00:00' and p.CHECK_TIME <![CDATA[ <=]]> '${queryBean.checkEndDate} 23:59:59'
+                </when>
+                <when test="queryBean.checkStartDate != null and queryBean.checkStartDate != ''">
+                    AND date(p.CHECK_TIME) >= #{queryBean.checkStartDate}
+                    and p.CHECK_TIME >= '${queryBean.checkStartDate} 00:00:00'
+                </when>
+                <when test="queryBean.checkEndDate != null and queryBean.checkEndDate != ''">
+                    and p.CHECK_TIME <![CDATA[ <=]]> '${queryBean.checkEndDate} 23:59:59'
+                </when>
+            </choose>
+            <if test="queryBean.prizeVcode != null and queryBean.prizeVcode != ''">
+                 AND p.prize_vcode = #{queryBean.prizeVcode} 
+            </if>
+    </select>
+    
+    <update id="update" parameterType="com.dbt.platform.prize.bean.MajorInfo">
+    	UPDATE VPS_VCODE_PRIZE_RECORD 
+    	SET
+    		CHECK_OPENID = #{checkOpenid},
+	    	CHECK_TIME = #{checkTime},
+	    	CHECK_STATUS = #{checkStatus},
+	    	CHECK_REMARKS = #{checkRemarks},
+	    	express_company = #{expressCompany},
+	    	express_number = #{expressNumber},
+	    	express_send_message = #{expressSendMessage}
+	    WHERE INFO_KEY = #{infoKey}
+    </update>
+    
+    <select id="findById" resultMap="majorInfoResultMap" parameterType="String">
+        SELECT * FROM VPS_VCODE_PRIZE_RECORD 
+        WHERE info_key = #{infoKey}
+        LIMIT 1
+    </select>
+    
+    <select id="findMajorInfoByInfoKey" resultMap="majorInfoResultMap" parameterType="String">
+        SELECT
+            p.*,
+            s.SKU_NAME,
+            u.nick_name as nickName,
+            cu.USER_NAME AS checkUserName,
+            cu.PHONE_NUM AS checkPhoneNum 
+        FROM
+            VPS_VCODE_PRIZE_RECORD p
+        LEFT JOIN VPS_SKU_INFO s ON p.SKU_KEY = s.SKU_KEY
+        LEFT JOIN VPS_CONSUMER_USER_INFO u ON p.USER_KEY = u.USER_KEY
+        LEFT JOIN VPS_CONSUMER_CHECK_USER_INFO cu ON p.CHECK_OPENID = cu.OPENID
+        WHERE p.info_key = #{infoKey}
+    </select>
+    
+    <select id="findMajorInfoByExchangeId" resultMap="majorInfoResultMap" parameterType="String">
+        SELECT
+            p.*,
+            s.SKU_NAME,
+            u.nick_name as nickName,
+            cu.USER_NAME AS checkUserName,
+            cu.PHONE_NUM AS checkPhoneNum 
+        FROM
+            VPS_VCODE_PRIZE_RECORD p
+        LEFT JOIN VPS_SKU_INFO s ON p.SKU_KEY = s.SKU_KEY
+        LEFT JOIN VPS_CONSUMER_USER_INFO u ON p.USER_KEY = u.USER_KEY
+        LEFT JOIN VPS_CONSUMER_CHECK_USER_INFO cu ON p.CHECK_OPENID = cu.OPENID
+        WHERE p.exchange_id = #{exchangeId}
+    </select>
+    
+<!--     获取当天过期要回收的扫码中出的大奖 -->
+    <select id="queryForExpired" resultMap="majorInfoResultMap" parameterType="Map">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_PRIZE_RECORD 
+        WHERE 
+            USE_STATUS = '0' and RECYCLE_FLAG = '0'
+            <!-- 加入一码双奖 -->
+            and EXCHANGE_CHANNEL in ('3','4')
+            <if test="recoveryPrizeList != null and recoveryPrizeList.size() > 0">
+            	and GRAND_PRIZE_TYPE in 
+            	<foreach collection="recoveryPrizeList" item="prizeType" open="(" separator="," close=")">
+            		#{prizeType}
+            	</foreach>          
+            </if> 
+            and left(EXPIRE_TIME, 10) = #{expireTime}
+    </select>
+<!--     标记为已回收 -->
+    <update id="updateRecycleFlag" parameterType="String">
+        UPDATE 
+            VPS_VCODE_PRIZE_RECORD 
+        SET
+            RECYCLE_FLAG = '1'
+        WHERE 
+            INFO_KEY = #{infoKey}
+    </update>
+    
+    <!-- 查询某类型大奖中奖详情 -->
+    <select id="queryPrizeTypeLst" parameterType="Map" resultMap="majorInfoResultMap">
+        select 
+          *,
+          concat_ws('-',province,city,county) as 'prizeAddress'
+        from 
+            vps_vcode_prize_record
+        where 
+            GRAND_PRIZE_TYPE = #{prizeType}
+        <if test="isTicketFlag == true">
+            and DATE(USE_TIME) = DATE_SUB(curdate(),INTERVAL+1 DAY)
+        </if>   
+	</select>
+</mapper>

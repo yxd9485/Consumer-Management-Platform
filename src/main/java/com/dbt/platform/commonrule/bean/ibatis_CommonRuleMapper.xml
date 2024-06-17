@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.commonrule.dao.ICommonRuleDao">
+
+	<resultMap type="com.dbt.platform.commonrule.bean.CommonRule" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="ruleType" column="RULE_TYPE"/>
+		<result property="ruleValue" column="RULE_VALUE"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.commonrule.bean.CommonRule">
+		INSERT INTO vps_common_rule_cog (
+			INFO_KEY,
+			RULE_TYPE,
+			RULE_VALUE,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			CASE WHEN #{infoKey} IS NULL OR #{infoKey} = '' THEN UUID() ELSE #{infoKey} END,
+			#{ruleType},
+			#{ruleValue},
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.commonrule.bean.CommonRule">
+		UPDATE
+			vps_common_rule_cog
+		<set>
+            <if test="ruleType != null and ruleType != ''">
+                RULE_TYPE = #{ruleType},
+            </if>
+            <if test="ruleValue != null and ruleValue != ''">
+				RULE_VALUE = #{ruleValue},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+				UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+				UPDATE_USER = #{updateUser}
+            </if>
+        </set>
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findByRuleType" parameterType="String" resultMap="baseResultMap">
+		SELECT * FROM vps_common_rule_cog WHERE RULE_TYPE = #{ruleType} LIMIT 1
+	</select>
+</mapper>

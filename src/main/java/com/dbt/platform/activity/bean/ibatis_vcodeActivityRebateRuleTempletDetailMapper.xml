@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityRebateRuleTempletDetailDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityRebateRuleTempletDetail" id="baseResult">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="templetKey" column="TEMPLET_KEY" />
+		<result property="scanType" column="SCAN_TYPE" />
+		<result property="randomType" column="RANDOM_TYPE" />
+		<result property="prizeType" column="PRIZE_TYPE" />
+		<result property="minMoney" column="MIN_MONEY" />
+		<result property="maxMoney" column="MAX_MONEY" />
+        <result property="minVpoints" column="MIN_VPOINTS" />
+        <result property="maxVpoints" column="MAX_VPOINTS" />
+        <result property="prizePercent" column="PRIZE_PERCENT" />
+        <result property="prizePercentWarn" column="PRIZE_PERCENT_WARN"/>
+        <result property="prizePayMoney" column="PRIZE_PAY_MONEY" />
+        <result property="allowanceType" column="ALLOWANCE_TYPE" />
+        <result property="allowanceMoney" column="ALLOWANCE_MONEY" />
+        <result property="prizeDiscount" column="PRIZE_DISCOUNT" />
+        <result property="scanNum" column="SCAN_NUM" />
+        <result property="cardNo" column="CARD_NO" />
+        <result property="cogAmounts" column="COG_AMOUNTS" />
+        <result property="sequenceNum" column="SEQUENCE_NUM" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+		<result property="isScanqrcodeWaitActivation" column="IS_SCANQRCODE_WAIT_ACTIVATION"/>
+		<result property="waitActivationPrizeKey" column="WAIT_ACTIVATION_PRIZE_KEY"/>
+		<result property="waitActivationMinMoney" column="WAIT_ACTIVATION_MIN_MONEY"/>
+		<result property="waitActivationMaxMoney" column="WAIT_ACTIVATION_MAX_MONEY"/>
+
+	</resultMap>
+	
+	<insert id="batchWrite" parameterType="Map">
+		INSERT INTO vps_vcode_activity_rebate_rule_templet_detail (
+	        INFO_KEY,
+	        TEMPLET_KEY,
+	        SCAN_TYPE,
+	        RANDOM_TYPE,
+	        PRIZE_TYPE,
+	        MIN_MONEY,
+	        MAX_MONEY,
+	        MIN_VPOINTS,
+	        MAX_VPOINTS,
+	        PRIZE_PERCENT,
+	        PRIZE_PERCENT_WARN,
+	        PRIZE_PAY_MONEY,
+	        ALLOWANCE_TYPE,
+	        ALLOWANCE_MONEY,
+	        PRIZE_DISCOUNT,
+	        SCAN_NUM,
+	        CARD_NO,
+            COG_AMOUNTS,
+	        SEQUENCE_NUM,
+	        DELETE_FLAG,
+	        CREATE_TIME,
+	        CREATE_USER,
+	        UPDATE_TIME,
+	        UPDATE_USER,
+			IS_SCANQRCODE_WAIT_ACTIVATION,
+			WAIT_ACTIVATION_PRIZE_KEY,
+			WAIT_ACTIVATION_MIN_MONEY,
+			WAIT_ACTIVATION_MAX_MONEY
+		) VALUES 
+        <foreach collection="templetDetailLst" item="item" separator=",">
+        (
+			#{item.infoKey},
+			#{item.templetKey},
+			#{item.scanType},
+			#{item.randomType},
+			#{item.prizeType},
+			#{item.minMoney},
+			#{item.maxMoney},
+			#{item.minVpoints},
+			#{item.maxVpoints},
+			#{item.prizePercent},
+			#{item.prizePercentWarn},
+			#{item.prizePayMoney},
+			#{item.allowanceType},
+			#{item.allowanceMoney},
+			#{item.prizeDiscount},
+			#{item.scanNum},
+			#{item.cardNo},
+			#{item.cogAmounts},
+			#{item.sequenceNum},
+			'0',
+			#{item.createTime},
+			#{item.createUser},
+			#{item.updateTime},
+			#{item.updateUser},
+			#{item.isScanqrcodeWaitActivation},
+			#{item.waitActivationPrizeKey},
+			#{item.waitActivationMinMoney},
+			#{item.waitActivationMaxMoney}
+		)
+		</foreach>
+	</insert>
+
+	<delete id="removeByTempletKey" parameterType="String">
+	   delete from
+	       vps_vcode_activity_rebate_rule_templet_detail
+        WHERE 
+            TEMPLET_KEY = #{templetKey}
+	</delete>
+	
+	<select id="queryByTempletKey" resultMap="baseResult" parameterType="Map">
+        SELECT
+			*
+		FROM
+			vps_vcode_activity_rebate_rule_templet_detail
+		WHERE
+			DELETE_FLAG = 0
+			and TEMPLET_KEY = #{templetKey}
+	    ORDER BY SEQUENCE_NUM
+	</select>
+	
+	<select id="queryCouponNoByTempletKey" resultType="String" parameterType="String">
+        SELECT
+			t.prize_type
+		FROM
+			vps_vcode_activity_rebate_rule_templet_detail t
+	    inner join vpoints_coupon_cog c on t.prize_type = c.coupon_no
+		WHERE
+			t.DELETE_FLAG = 0
+			and t.TEMPLET_KEY = #{templetKey}
+	</select>
+</mapper>

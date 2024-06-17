@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.invitationActivity.dao.InvitationOrderDao">
+    <resultMap id="resultMap" type="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationOrder">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="companyKey" column="COMPANY_KEY"/>
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="orderName" column="ORDER_NAME"/>
+        <result property="qrcodeType" column="QRCODE_TYPE"/>
+        <result property="qrcodeNum" column="QRCODE_NUM"/>
+        <result property="status" column="STATUS"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+
+    <select id="queryForList" parameterType="map" resultMap="resultMap">
+        SELECT * FROM (
+            SELECT
+                *
+            FROM
+                VPS_VCODE_INVITATION_ORDER io
+            WHERE
+                ACTIVITY_KEY = #{queryBean.activityKey}
+                and io.DELETE_FLAG = '0'
+                <if test="queryBean.orderName != null and queryBean.orderName != ''">
+                    and io.ORDER_NAME like '%${queryBean.orderName}%'
+                </if>
+        ) a
+        WHERE 1=1
+            ORDER BY
+            <choose>
+                <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                    <![CDATA[a.${pageInfo.orderCol} ${pageInfo.orderType}]]>
+                </when>
+                <otherwise>
+                    a.CREATE_TIME DESC
+                </otherwise>
+            </choose>
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            ACTIVITY_KEY = #{queryBean.activityKey}
+            and DELETE_FLAG = '0'
+            <if test="queryBean.orderName != null and queryBean.orderName != ''">
+                and ORDER_NAME like '%${queryBean.orderName}%'
+            </if>
+    </select>
+
+    <!--检查二维码订单名称-->
+    <select id="checkName" parameterType="map" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            DELETE_FLAG = '0'
+            AND ACTIVITY_KEY = #{activityKey}
+            <if test="checkName != null and checkName != ''">
+                AND ORDER_NAME = #{checkName}
+            </if>
+            <if test="infoKey != null and infoKey != ''">
+                AND INFO_KEY != #{infoKey}
+            </if>
+        LIMIT 1
+    </select>
+
+    <!--创建二维码订单-->
+    <insert id="create" parameterType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationOrder">
+        INSERT INTO VPS_VCODE_INVITATION_ORDER
+            (INFO_KEY, COMPANY_KEY, ACTIVITY_KEY, ORDER_NAME, QRCODE_TYPE, QRCODE_NUM, STATUS,
+            DELETE_FLAG, CREATE_USER, CREATE_TIME, UPDATE_USER, UPDATE_TIME)
+        VALUES
+            (#{infoKey}, #{companyKey}, #{activityKey}, #{orderName}, #{qrcodeType}, #{qrcodeNum}, #{status},
+            #{deleteFlag}, #{createUser}, #{createTime}, #{updateUser}, #{updateTime})
+    </insert>
+
+    <!--根据id查询二维码订单-->
+    <select id="findById" parameterType="String" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            INFO_KEY = #{infoKey}
+    </select>
+
+    <!--修改二维码订单-->
+    <update id="update" parameterType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationOrder">
+        UPDATE
+            VPS_VCODE_INVITATION_ORDER
+            <set>
+                <if test="orderName != null and orderName != ''">
+                    ORDER_NAME = #{orderName},
+                </if>
+                <if test="qrcodeType != null and qrcodeType != ''">
+                    QRCODE_TYPE = #{qrcodeType},
+                </if>
+                <if test="qrcodeNum != null and qrcodeNum != ''">
+                    QRCODE_NUM = #{qrcodeNum},
+                </if>
+                <if test="status != null and status != ''">
+                    STATUS = #{status},
+                </if>
+                <if test="deleteFlag != null and deleteFlag != ''">
+                    DELETE_FLAG = #{deleteFlag},
+                </if>
+                <if test="updateTime != null and updateTime != ''">
+                    UPDATE_TIME = #{updateTime},
+                </if>
+                <if test="updateUser != null and updateUser != ''">
+                    UPDATE_USER = #{updateUser}
+                </if>
+            </set>
+        WHERE
+            INFO_KEY = #{infoKey}
+    </update>
+
+    <!--查询正在生成码的订单-->
+    <select id="findAfoot" resultType="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationOrder">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            ACTIVITY_KEY = #{activityKey}
+            AND STATUS = '1'
+        LIMIT 1
+    </select>
+
+    <!--物理删除订单根据订单主键-->
+    <delete id="removeOrderByInfoKey" parameterType="String">
+        DELETE FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            INFO_KEY = #{infoKey}
+    </delete>
+
+    <!--物理删除订单根据活动主键-->
+    <delete id="removeOrderByActivityKey" parameterType="String">
+        DELETE FROM
+            VPS_VCODE_INVITATION_ORDER
+        WHERE
+            ACTIVITY_KEY = #{activityKey}
+    </delete>
+</mapper>

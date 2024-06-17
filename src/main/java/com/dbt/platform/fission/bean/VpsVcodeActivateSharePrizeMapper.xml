@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.fission.dao.IVpsVcodeActivateSharePrizeDao">
+    <resultMap id="BaseResultMap" type="com.dbt.platform.fission.bean.VpsVcodeActivateSharePrizeCog">
+        <result property="infoKey" column="info_key"  />
+        <result property="activateActivityKey" column="ACTIVATE_ACTIVITY_KEY"  />
+        <result property="prizeType" column="prize_type"  />
+        <result property="prizeUserType" column="prize_user_type"  />
+        <result property="minMoney" column="min_money"  />
+        <result property="maxMoney" column="max_money"  />
+        <result property="prizePercent" column="prize_percent"  />
+        <result property="deleteFlag" column="delete_flag"  />
+        <result property="createTime" column="create_time"  />
+        <result property="prizeNo" column="prize_no"  />
+    </resultMap>
+
+    <insert id="create" parameterType="list">
+        insert into vps_vcode_activate_share_prize_cog(
+        info_key,
+        ACTIVATE_ACTIVITY_KEY,
+        prize_type,
+        prize_user_type,
+        min_money,
+        max_money,
+        prize_percent,
+        delete_flag,
+        create_time,
+        prize_no
+        )
+        values
+        <foreach collection="list" item="itm" separator=",">
+            (
+            #{itm.infoKey},
+            #{itm.activateActivityKey},
+            #{itm.prizeType},
+            #{itm.prizeUserType},
+            #{itm.minMoney},
+            #{itm.maxMoney},
+            #{itm.prizePercent},
+            #{itm.deleteFlag},
+            #{itm.createTime},
+            #{itm.prizeNo}
+             )
+        </foreach>
+    </insert>
+
+    <update id="deletePrizeCogByActivityKey">
+        update vps_vcode_activate_share_prize_cog
+        set delete_flag = '1'
+        where ACTIVATE_ACTIVITY_KEY = #{activityKey}
+    </update>
+
+    <select id="queryPrizeCogByActivityKeyAndUserType" parameterType="map" resultMap="BaseResultMap">
+        select *
+        from vps_vcode_activate_share_prize_cog
+        where ACTIVATE_ACTIVITY_KEY = #{activityKey}
+        and prize_user_type = #{prizeUserType}
+        and delete_flag = '0'
+        order by prize_no
+    </select>
+
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.enterprise.dao.ISpuInfoDao">
+
+	<resultMap type="com.dbt.platform.enterprise.bean.SpuInfo" id="resultSpuInfo">
+		<result property="spuInfoKey" column="SPU_INFO_KEY" />
+		<result property="spuCode" column="SPU_CODE" />
+		<result property="spuName" column="SPU_NAME" />
+		<result property="companyKey" column="COMPANY_KEY" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	<resultMap type="com.dbt.platform.enterprise.bean.SpuInfo" id="resultSpuInfoAll" extends="resultSpuInfo">
+		<association property="skuList" column="SPU_INFO_KEY" 
+			select="com.dbt.platform.enterprise.dao.ISkuInfoDao.queryForListBySpuKey">
+		</association>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.enterprise.bean.SpuInfo">
+		INSERT INTO VPS_SPU_INFO (
+			SPU_INFO_KEY,
+			SPU_CODE,
+			SPU_NAME,
+			COMPANY_KEY,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER	
+		) VALUES (
+			#{spuInfoKey},
+			#{spuCode},
+			#{spuName},
+			#{companyKey},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.enterprise.bean.SpuInfo">
+		UPDATE VPS_SPU_INFO 
+		<set>
+			<if test="spuCode != null and spuCode != '' ">
+				SPU_CODE = #{spuCode},
+			</if>
+			<if test="spuName != null and spuName != '' ">
+				SPU_NAME = #{spuName},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE SPU_INFO_KEY = #{spuInfoKey}
+	</update>
+	
+	<delete id="deleteById" parameterType="String">
+		DELETE FROM VPS_SPU_INFO WHERE SPU_INFO_KEY = #{spuInfoKey}
+	</delete>
+	
+	<select id="queryForLst" resultMap="resultSpuInfoAll" parameterType="Map">
+		SELECT
+			*
+		FROM
+			VPS_SPU_INFO
+		WHERE
+			DELETE_FLAG = 0
+		<if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+		    and company_key = #{queryBean.companyKey}
+		</if>
+		<if test="queryBean.spuCode != null and queryBean.spuCode != ''">
+		    and spu_code like '%${queryBean.spuCode}%'
+		</if>
+		<if test="queryBean.spuName != null and queryBean.spuName != ''">
+		    and spu_name like '%${queryBean.spuName}%'
+		</if>
+		<if test="queryBean.commodityCode != null and queryBean.commodityCode != ''">
+			and spu_info_key in (select s.spu_info_key from vps_sku_info s where s.commodity_code like '%${queryBean.commodityCode}%')
+		</if>
+		<if test="queryBean.skuName != null and queryBean.skuName != ''">
+			and spu_info_key in (select s.spu_info_key from vps_sku_info s where s.sku_name like '%${queryBean.skuName}%')
+		</if>
+		<choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, create_time DESC
+          </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY create_time DESC</otherwise>
+		</choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+			VPS_SPU_INFO
+		WHERE
+			DELETE_FLAG = 0
+		<if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+		    and company_key = #{queryBean.companyKey}
+		</if>
+		<if test="queryBean.spuCode != null and queryBean.spuCode != ''">
+		    and spu_code like '%${queryBean.spuCode}%'
+		</if>
+		<if test="queryBean.spuName != null and queryBean.spuName != ''">
+		    and spu_name like '%${queryBean.spuName}%'
+		</if>
+		<if test="queryBean.commodityCode != null and queryBean.commodityCode != ''">
+			and spu_info_key in (select s.spu_info_key from vps_sku_info s where s.commodity_code like '%${queryBean.commodityCode}%')
+		</if>
+		<if test="queryBean.skuName != null and queryBean.skuName != ''">
+			and spu_info_key in (select s.spu_info_key from vps_sku_info s where s.sku_name like '%${queryBean.skuName}%')
+		</if>
+	</select>
+	
+	<select id="findById" resultMap="resultSpuInfoAll" parameterType="String">
+		SELECT
+			*
+		FROM
+			VPS_SPU_INFO
+		WHERE
+			SPU_INFO_KEY = #{spuInfoKey}
+	</select>
+	
+	<select id="findMaxSpuKeyNum" resultType="int">
+		SELECT IFNULL(MAX(CAST(RIGHT(SPU_INFO_KEY,3) AS SIGNED)),0) AS num FROM vps_spu_info
+	</select>
+	
+</mapper>

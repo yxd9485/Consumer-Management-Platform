@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.piclib.dao.IPicLibDao">
+
+	<resultMap type="com.dbt.platform.piclib.bean.PicLibrary" id="resultPicLibrary">
+		<result property="infoKey" column="info_key"/>
+		<result property="picName" column="pic_name"/>
+		<result property="picTemplate" column="pic_template"/>
+		<result property="picBrandType" column="pic_brand_type"/>
+		<result property="picGroup" column="pic_group"/>
+		<result property="picWidth" column="pic_width"/>
+		<result property="picHeight" column="pic_height"/>
+		<result property="picX" column="pic_x"/>
+		<result property="picY" column="pic_y"/>
+		<result property="picUrl" column="pic_url"/>
+		<result property="deleteFlag" column="delete_flag"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+		<result property="startPoint" column="start_point"/>
+		<result property="isDefault" column="is_default"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+			info_key,
+			pic_name,
+			pic_template,
+			pic_brand_type,
+			pic_group,
+			pic_width,
+			pic_height,
+			pic_x,
+			pic_y,
+			pic_url,
+			delete_flag,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			start_point,
+			is_default
+	</sql>
+	
+	<insert id="addPicLib" parameterType="com.dbt.platform.piclib.bean.PicLibrary">
+		INSERT INTO vps_pic_library (
+			info_key,
+			pic_name,
+			pic_template,
+			pic_brand_type,
+			pic_group,
+			pic_width,
+			pic_height,
+			pic_x,
+			pic_y,
+			pic_url,
+			delete_flag,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			start_point,
+			is_default
+		) VALUES (
+			UUID(),
+			#{picName},
+			#{picTemplate},
+			#{picBrandType},
+			#{picGroup},
+			#{picWidth},
+			#{picHeight},
+			#{picX},
+			#{picY},
+			#{picUrl},
+			0,
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser},
+			#{startPoint},
+			#{isDefault}
+		) 
+	</insert>
+	
+	<update id="updatePicLib" parameterType="com.dbt.platform.piclib.bean.PicLibrary">
+        UPDATE
+		vps_pic_library
+		SET
+            <if test="picName != null and picName != ''">
+				pic_name = #{picName},
+            </if>
+            <if test="picTemplate != null and picTemplate != ''">
+				pic_template = #{picTemplate},
+            </if>
+		<if test="picBrandType != null and picBrandType != ''">
+			pic_brand_type = #{picBrandType},
+		</if>
+		<if test="picGroup != null and picGroup != ''">
+			pic_group = #{picGroup},
+		</if>
+		<if test="picWidth != null and picWidth != ''">
+			pic_width = #{picWidth},
+		</if>
+		<if test="picHeight != null and picHeight != ''">
+			pic_height = #{picHeight},
+		</if>
+		<if test="picX != null and picX != ''">
+			pic_x = #{picX},
+		</if>
+		<if test="picY != null and picY != ''">
+			pic_y = #{picY},
+		</if>
+		<if test="picUrl != null and picUrl != ''">
+			pic_url = #{picUrl},
+		</if>
+		<if test="isDefault != null and isDefault != ''">
+			is_default = #{isDefault},
+		</if>
+		<if test="startPoint != null and startPoint != ''">
+			start_point = #{startPoint},
+		</if>
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findPicLibByKey" resultMap="resultPicLibrary" parameterType="Map">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM
+		vps_pic_library
+		WHERE
+			DELETE_FLAG = '0'
+		and info_key = #{infoKey}
+	</select>
+	<delete id="deleteByIds" parameterType="Map">
+	   delete from vps_pic_library
+	   where info_key in
+		<foreach collection="infoKeyList" item="infoKey" open="(" close=")" separator=",">
+			#{infoKey}
+		</foreach>
+	</delete>
+	<select id="findPicLib" resultMap="resultPicLibrary" parameterType="Map">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM
+		vps_pic_library
+		WHERE
+		DELETE_FLAG = '0'
+		<if test="queryBean.picName != null and queryBean.picName != ''">
+			and pic_name like '%${queryBean.picName}%'
+		</if>
+		<if test="queryBean.picGroup != null and queryBean.picGroup != ''">
+			and pic_group = '${queryBean.picGroup}'
+		</if>
+		<if test="queryBean.picBrandType != null and queryBean.picBrandType != ''">
+			and pic_brand_type = '${queryBean.picBrandType}'
+		</if>
+		<choose>
+			<when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+				ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, create_time DESC
+			</when>
+			<when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+				ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+			</when>
+			<otherwise>ORDER BY create_time DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	<select id="queryAll" resultMap="resultPicLibrary" parameterType="Map">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM
+		vps_pic_library
+		WHERE
+		DELETE_FLAG = '0'
+		ORDER BY create_time DESC
+	</select>
+	<select id="findPicLibCount" resultType="Integer" parameterType="Map">
+		SELECT COUNT(1) FROM vps_pic_library
+		WHERE DELETE_FLAG = '0'
+		<if test="queryBean.picName != null and queryBean.picName != ''">
+			and pic_name like '%${queryBean.picName}%'
+		</if>
+		<if test="queryBean.picGroup != null and queryBean.picGroup != ''">
+			and pic_group = '${queryBean.picGroup}'
+		</if>
+        <if test="queryBean.picBrandType != null and queryBean.picBrandType != ''">
+            and pic_brand_type = '${queryBean.picBrandType}'
+        </if>
+	</select>
+	<update id="doBatchPicLibUpdate" parameterType="Map">
+		UPDATE
+		vps_pic_library
+		SET
+		<if test="queryBean.picGroup != null and queryBean.picGroup != ''">
+			pic_group = #{queryBean.picGroup},
+		</if>
+		UPDATE_TIME = #{queryBean.updateTime},
+		UPDATE_USER = #{queryBean.updateUser}
+		WHERE info_key in
+		<foreach collection="infoKeyList" item="infoKey" open="(" close=")" separator=",">
+			#{infoKey}
+		</foreach>
+	</update>
+	<update id="setPicUnDefault" parameterType="Map">
+		UPDATE
+		vps_pic_library
+		SET
+			is_default = '0'
+		WHERE pic_group = #{picGroup}
+	</update>
+
+</mapper>

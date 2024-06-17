@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsVerificationDetailDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsVerificationDetail" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="verificationId" column="VERIFICATION_ID" />
+		<result property="exchangeId" column="EXCHANGE_ID" />
+		<result property="brandName" column="brand_name" />
+		<result property="goodsName" column="goods_name" />
+		<result property="goodsClientNo" column="goods_client_no" />
+		<result property="exchangeNum" column="exchange_num" />
+		<result property="unitVpoints" column="unit_vpoints" />
+		<result property="exchangeVpoints" column="exchange_vpoints" />
+		<result property="unitMoney" column="unit_money" />
+		<result property="totalMoney" column="total_money" />
+		<result property="nickName" column="NICK_NAME" />
+		<result property="userName" column="user_name" />
+		<result property="phoneNum" column="phone_num" />
+		<result property="address" column="address" />
+		<result property="exchangeTime" column="exchange_time" />
+		<result property="expressCompany" column="EXPRESS_COMPANY" />
+		<result property="expressNumber" column="EXPRESS_NUMBER" />
+		<result property="expressSendTime" column="EXPRESS_SEND_TIME" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	<insert id="batchWrite" parameterType="Map">
+		INSERT INTO vpoints_verification_detail (
+	        INFO_KEY,
+	        VERIFICATION_ID,
+	        EXCHANGE_ID,
+	        DELETE_FLAG,
+	        CREATE_TIME,
+	        CREATE_USER,
+	        UPDATE_TIME,
+	        UPDATE_USER
+		) VALUES 
+		<foreach collection="detailLst" item="detail" separator=",">
+        (
+            #{detail.infoKey},
+            #{detail.verificationId},
+            #{detail.exchangeId},
+            '0',
+            #{detail.createTime},
+            #{detail.createUser},
+            #{detail.updateTime},
+            #{detail.updateUser}
+        )
+        </foreach>
+	</insert>
+	
+	<select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			t.*
+		FROM (
+            select 
+			    b.brand_name,
+			    g.goods_name,
+			    g.goods_client_no,
+			    sum(e.exchange_num) exchange_num,
+			    sum(e.exchange_vpoints) exchange_vpoints,
+			    g.daicai_money unit_money,
+			    sum(e.exchange_num * g.daicai_money) total_money
+			from vpoints_verification_detail v
+			INNER JOIN vpoints_exchange_log e on v.EXCHANGE_ID = e.exchange_id
+			INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+			LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+			where 
+                v.delete_flag = '0' 
+                and v.verification_id = #{queryBean.verificationId}
+            group by g.goods_id
+			) t
+        <if test="pageInfo != nul">
+			<choose>
+			  <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 't.brand_name'">
+			      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, t.brand_name DESC
+			  </when>
+			  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+			      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+			  </when>
+			  <otherwise>ORDER BY t.brand_name DESC</otherwise>
+			</choose>
+	        <if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+		        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	        </if>
+        </if>
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM (
+            select 
+                b.brand_name,
+                g.goods_name,
+                g.goods_client_no,
+                sum(e.exchange_num) exchange_num,
+                sum(e.exchange_vpoints) exchange_vpoints,
+                g.daicai_money unit_money,
+                sum(e.exchange_num * g.daicai_money) total_money
+            from vpoints_verification_detail v
+            INNER JOIN vpoints_exchange_log e on v.EXCHANGE_ID = e.exchange_id
+            INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+            LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+            where 
+                v.delete_flag = '0' 
+                and v.verification_id = #{queryBean.verificationId}
+            group by g.goods_id
+            ) t
+	</select>
+	
+	<!-- 依据核销记录主键获取核销明细 -->
+    <select id="queryByVerificationId" resultMap="baseResultMap" parameterType="Map">
+        select 
+		    e.exchange_id,
+		    b.brand_name,
+		    g.goods_name,
+		    g.goods_client_no,
+		    e.exchange_num,
+		    e.exchange_vpoints / exchange_num unit_vpoints,
+		    e.exchange_vpoints,
+		    g.daicai_money unit_money,
+		    e.exchange_num * g.daicai_money total_money,
+		    u.NICK_NAME,
+		    e.user_name,
+		    e.phone_num,
+		    e.address,
+		    e.exchange_time,
+		    e.EXPRESS_COMPANY,
+		    e.EXPRESS_NUMBER,
+		    e.EXPRESS_SEND_TIME
+		from vpoints_verification_detail v
+		INNER JOIN vpoints_exchange_log e on v.EXCHANGE_ID = e.exchange_id
+		INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+		LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+		LEFT JOIN vps_consumer_user_info u on e.user_key = u.USER_KEY
+		where v.delete_flag = '0'
+            and v.verification_id = #{verificationId}
+        order by e.exchange_time
+    </select>
+	
+	<select id="queryPreviewForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			t.*
+		FROM (
+            select 
+			    b.brand_name,
+			    g.goods_name,
+			    g.goods_client_no,
+			    sum(e.exchange_num) exchange_num,
+			    sum(e.exchange_vpoints) exchange_vpoints,
+			    g.daicai_money unit_money,
+			    sum(e.exchange_num * g.daicai_money) total_money
+			from vpoints_exchange_log e 
+			INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+			LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+			where e.exchange_type = '1'
+                and e.exchange_status = '0'
+                and IFNULL(e.group_buying_status, '0') = '0'
+	            and IFNULL(e.verification_id, '') = ''
+	            and IFNULL(e.express_send_time, '') != ''
+                and DATE(e.express_send_time) <![CDATA[<=]]> #{queryBean.verificationEndDate}
+                and b.brand_id in
+	           <foreach collection="queryBean.brandKeys.split(',')" item="brankKey" open="(" separator="," close=")">
+	           		#{brankKey}
+	           </foreach>
+            group by g.goods_id
+			) t
+        <if test="pageInfo != nul">
+			<choose>
+			  <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 't.brand_name'">
+			      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, t.brand_name DESC
+			  </when>
+			  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+			      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+			  </when>
+			  <otherwise>ORDER BY t.brand_name DESC</otherwise>
+			</choose>
+	        <if test="pageInfo.pagePerCount != null and pageInfo.pagePerCount > 0">
+		        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	        </if>
+        </if>
+	</select>
+	
+	<select id="queryPreviewForCount" resultType="int" parameterType="Map">
+		SELECT count(1) FROM (
+	        select 
+	            count(g.goods_id)
+	        from vpoints_exchange_log e
+	        INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+	        LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+	        where e.exchange_type = '1'
+                and e.exchange_status = '0'
+                and IFNULL(e.group_buying_status, '0') = '0'
+	            and IFNULL(e.verification_id, '') = ''
+	            and IFNULL(e.express_send_time, '') != ''
+	            and DATE(e.express_send_time) <![CDATA[<=]]> #{queryBean.verificationEndDate}
+	            and b.brand_id in
+	           <foreach collection="queryBean.brandKeys.split(',')" item="brankKey" open="(" separator="," close=")">
+	           		#{brankKey}
+	           </foreach>
+	        group by g.goods_id
+	    ) t
+	</select>
+	
+	<!-- 依据核销截止日期获取核销明细 -->
+    <select id="queryByPreviewVerificationId" resultMap="baseResultMap" parameterType="Map">
+        select 
+		    e.exchange_id,
+		    b.brand_name,
+		    g.goods_name,
+		    g.goods_client_no,
+		    e.exchange_num,
+		    e.exchange_vpoints / exchange_num unit_vpoints,
+		    e.exchange_vpoints,
+		    g.daicai_money unit_money,
+		    e.exchange_num * g.daicai_money total_money,
+		    u.NICK_NAME,
+		    e.user_name,
+		    e.phone_num,
+		    e.address,
+		    e.exchange_time,
+		    e.EXPRESS_COMPANY,
+		    e.EXPRESS_NUMBER,
+		    e.EXPRESS_SEND_TIME
+		from vpoints_exchange_log e
+		INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+		LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+		LEFT JOIN vps_consumer_user_info u on e.user_key = u.USER_KEY
+		where e.exchange_type = '1'
+            and e.exchange_status = '0'
+            and IFNULL(e.group_buying_status, '0') = '0'
+	        and IFNULL(e.verification_id, '') = ''
+	        and IFNULL(e.express_send_time, '') != ''
+	        and DATE(e.express_send_time) <![CDATA[<=]]> #{verificationEndDate}
+	        and b.brand_id in
+	        <foreach collection="brandKeys" item="brankKey" open="(" separator="," close=")">
+	        		#{brankKey}
+	        </foreach>
+        order by e.exchange_time
+    </select>
+</mapper>

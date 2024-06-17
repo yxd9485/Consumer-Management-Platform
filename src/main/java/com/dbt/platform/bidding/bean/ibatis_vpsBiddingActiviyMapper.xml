@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.bidding.dao.IVpsBiddingActiviyDao">
+
+	<resultMap type="com.dbt.platform.bidding.bean.VpsBiddingActiviy" id="baseResultMap">
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="activityNo" column="ACTIVITY_NO"/>
+		<result property="activityName" column="ACTIVITY_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="activityType" column="ACTIVITY_TYPE"/>
+		<result property="goodsId" column="GOODS_ID"/>
+		<result property="openingNumber" column="OPENING_NUMBER"/>
+		<result property="virtualNumber" column="VIRTUAL_NUMBER"/>
+		<result property="exchangeVpoints" column="EXCHANGE_VPOINTS"/>
+        <result property="prizeExpireType" column="PRIZE_EXPIRE_TYPE"/>
+        <result property="prizeExpireDate" column="PRIZE_EXPIRE_DATE"/>
+        <result property="prizeValidDay" column="PRIZE_VALID_DAY"/>
+        <result property="isDedicated" column="IS_DEDICATED"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.bidding.bean.VpsBiddingActiviy">
+		INSERT INTO vps_bidding_activity_cog (
+			ACTIVITY_KEY,
+			COMPANY_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+			ACTIVITY_TYPE,
+			GOODS_ID,
+			OPENING_NUMBER,
+			VIRTUAL_NUMBER,
+			EXCHANGE_VPOINTS,
+            PRIZE_EXPIRE_TYPE,
+            PRIZE_EXPIRE_DATE,
+            PRIZE_VALID_DAY,
+            IS_DEDICATED,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{activityKey},
+			#{companyKey},
+			#{activityNo},
+			#{activityName},
+			#{startDate},
+			#{endDate},
+			#{activityType},
+			#{goodsId},
+			#{openingNumber},
+			#{virtualNumber},
+			#{exchangeVpoints},
+            #{prizeExpireType},
+            #{prizeExpireDate},
+            #{prizeValidDay},
+            #{isDedicated},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.bidding.bean.VpsBiddingActiviy">
+		UPDATE
+			vps_bidding_activity_cog
+		<set>
+            <if test="companyKey != null and companyKey != ''">
+                COMPANY_KEY = #{companyKey},
+            </if>
+            <if test="activityName != null and activityName != ''">
+				ACTIVITY_NAME = #{activityName},
+            </if>
+            <if test="startDate != null and startDate != ''">
+				START_DATE = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+				END_DATE = #{endDate},
+            </if>
+            <if test="activityType != null">
+            	ACTIVITY_TYPE = #{activityType},
+            </if>
+            <if test="goodsId != null">
+				GOODS_ID = #{goodsId},
+            </if>
+            OPENING_NUMBER = #{openingNumber},
+            VIRTUAL_NUMBER = #{virtualNumber},
+            EXCHANGE_VPOINTS = #{exchangeVpoints},
+            PRIZE_EXPIRE_TYPE = #{prizeExpireType},
+            PRIZE_EXPIRE_DATE = #{prizeExpireDate},
+            PRIZE_VALID_DAY = #{prizeValidDay},
+            IS_DEDICATED = #{isDedicated},
+            UPDATE_TIME = #{updateTime},
+            UPDATE_USER = #{updateUser}
+        </set>
+		WHERE
+			ACTIVITY_KEY = #{activityKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="baseResultMap" >
+		SELECT
+			cog.*,
+			CASE 
+				WHEN CURDATE() BETWEEN cog.START_DATE AND cog.END_DATE THEN '1' 
+				WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+				ELSE '0'
+			END AS isBegin,
+			g.goods_name as goodsName
+		FROM vps_bidding_activity_cog cog
+		LEFT JOIN vpoints_goods_info g ON cog.goods_id = g.goods_id
+		WHERE cog.ACTIVITY_KEY = #{id}
+		LIMIT 1
+	</select>
+	
+	<select id="queryValidBiddingList" parameterType="Map" resultMap="baseResultMap">
+		SELECT * FROM vps_bidding_activity_cog 
+		WHERE ACTIVITY_TYPE = #{activityType}
+		AND CURDATE() BETWEEN START_DATE AND END_DATE 
+		AND DELETE_FLAG != '1' 
+	</select>
+	
+	<select id="loadActivityList" parameterType="Map" resultMap="baseResultMap" >
+		SELECT a.* FROM(
+			SELECT
+				cog.*,
+				g.goods_name as goodsName,
+				CASE 
+					WHEN CURDATE() BETWEEN cog.START_DATE AND cog.END_DATE THEN '1' 
+					WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				(SELECT count(1) FROM vps_bidding_periods WHERE ACTIVITY_KEY = cog.ACTIVITY_KEY) as periodsCount
+			FROM vps_bidding_activity_cog cog
+			INNER JOIN vpoints_goods_info g ON cog.goods_id = g.goods_id
+			WHERE
+				cog.DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND (cog.activity_no like '%${queryBean.keyword}%' or cog.activity_name like '%${queryBean.keyword}%' and g.goods_name like '%${queryBean.keyword}%')
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+	        	</when>
+	         	<when test="queryBean.startDate != null and queryBean.startDate != ''">
+	            	AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.goodsId != null and queryBean.goodsId != ''">
+	            	AND cog.goods_id = #{queryBean.goodsId}
+	        	</when>
+	         	<when test="queryBean.activityType != null and queryBean.activityType != ''">
+	            	AND cog.activity_type = #{queryBean.activityType}
+	        	</when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="countActivityList" parameterType="Map" resultType="Integer" >
+		SELECT COUNT(1) FROM(
+			SELECT
+				CASE 
+					WHEN DATE(NOW()) >= cog.START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1' 
+					WHEN DATE(NOW()) > cog.END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin
+			FROM vps_bidding_activity_cog cog
+			INNER JOIN vpoints_goods_info g ON cog.goods_id = g.goods_id
+			WHERE
+				cog.DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND (cog.activity_no like '%${queryBean.keyword}%' or cog.activity_name like '%${queryBean.keyword}%' and g.goods_name like '%${queryBean.keyword}%')
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND !(cog.start_date > #{queryBean.endDate} or #{queryBean.startDate} > cog.end_date)
+	        	</when>
+	         	<when test="queryBean.startDate != null and queryBean.startDate != ''">
+	            	AND #{queryBean.startDate} between cog.start_date and cog.end_date 
+	        	</when>
+	         	<when test="queryBean.endDate != null and queryBean.endDate != ''">
+	            	AND #{queryBean.endDate} between cog.start_date and cog.end_date 
+	        	</when>
+	        	<when test="queryBean.goodsId != null and queryBean.goodsId != ''">
+	            	AND cog.goods_id = #{queryBean.goodsId}
+	        	</when>
+	         	<when test="queryBean.activityType != null and queryBean.activityType != ''">
+	            	AND cog.activity_type = #{queryBean.activityType}
+	        	</when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+	</select>
+	
+	
+	<delete id="deleteById" parameterType="String">
+		update vps_bidding_activity_cog set delete_flag = '1' where activity_key = #{id}
+	</delete>
+</mapper>

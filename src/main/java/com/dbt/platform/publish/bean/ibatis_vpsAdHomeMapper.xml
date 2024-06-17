@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.publish.dao.AdHomeDao">
+
+	<resultMap type="com.dbt.platform.publish.bean.VpsAdHome" id="vpsAdHomeResultMap">
+	    <result property="adHomeKey" column="ADHOME_KEY"/>
+  		<result property="title" column="TITLE"/>
+  		<result property="stGmt" column="STGMT"/>
+  		<result property="endGmt" column="ENDGMT"/>
+  		<result property="modUser" column="MOD_USER"/>
+  		<result property="modGmt" column="MOD_GMT"/>
+  		<result property="picUrl" column="PIC_URL"/>
+  		<result property="creGmt" column="CRE_GMT"/>
+  		<result property="areaCode" column="AREACODE"/>
+  		<result property="areaName" column="AREANAME"/>
+        <result property="crowdLimitType" column="CROWD_LIMIT_TYPE"/>
+        <result property="userGroupIds" column="USER_GROUP_IDS"/>
+  		<result property="jumpTyp" column="JUMP_TYP"/>
+  		<result property="appid" column="appid"/>
+  		<result property="jumpUrl" column="JUMP_URL"/>
+  		<result property="sequenceNo" column="SEQUENCENO"/>
+  		<result property="isDefault" column="IS_DEFAULT"/>
+		<result property="picWidth" column="PIC_WIDTH"/>
+		<result property="picHeight" column="PIC_HEIGHT"/>
+		<result property="picX" column="PIC_X"/>
+		<result property="picY" column="PIC_Y"/>
+		<result property="picJumpUrl" column="PIC_JUMP_URL"/>
+	</resultMap>
+
+  	<!-- 根据二维码查询 -->
+	<select id="queryForLst" parameterType="Map" resultMap="vpsAdHomeResultMap">
+		SELECT 
+			* ,
+		CASE
+		WHEN NOW() >= STGMT AND NOW() <![CDATA[<=]]> ENDGMT THEN '1'
+		WHEN NOW() > ENDGMT THEN '2'
+		ELSE '0'
+		END AS picStatus
+		FROM 
+			VPS_AD_HOME
+         WHERE
+         	IS_DEL = '0'
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+			AND NOW() >= STGMT AND NOW() <![CDATA[<=]]> ENDGMT
+		</if>
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+			AND NOW() > ENDGMT
+		</if>
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "0"'>
+			AND NOW() <![CDATA[<]]> STGMT
+		</if>
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (TITLE LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.stGmt != null and queryBean.stGmt != ''">
+			AND STGMT >= CONCAT(#{queryBean.stGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+			AND ENDGMT <![CDATA[<=]]> CONCAT(#{queryBean.endGmt}, ' 23:59:59')
+		</if>
+		<if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+			AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+			AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+		</if>
+		 ORDER BY SEQUENCENO ASC LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+
+	<select id="queryAllAdHome" parameterType="Map" resultMap="vpsAdHomeResultMap">
+		SELECT
+		*
+		FROM
+		VPS_AD_HOME
+		WHERE
+		IS_DEL = '0'
+		ORDER BY SEQUENCENO ASC
+	</select>
+	
+	 <!-- 查询符合条件的记录条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+            count(1)
+        from
+            VPS_AD_HOME
+           WHERE    
+           	IS_DEL = '0'
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+			AND NOW() >= STGMT AND NOW() <![CDATA[<=]]> ENDGMT
+		</if>
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+			AND NOW() > ENDGMT
+		</if>
+		<if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "3"'>
+			AND NOW() <![CDATA[<]]> STGMT
+		</if>
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (TITLE LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.stGmt != null and queryBean.stGmt != ''">
+			AND STGMT > #{queryBean.stGmt}
+		</if>
+		<if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+			AND ENDGMT <![CDATA[<=]]> #{queryBean.endGmt}
+		</if>
+		<if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+			AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+		</if>
+		<if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+			AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+		</if>
+	</select>
+	
+	<!-- 更新 -->
+	<update id="updateVpsAdHome" parameterType="com.dbt.platform.publish.bean.VpsAdHome">
+		UPDATE VPS_AD_HOME
+		<set>
+			TITLE =  #{title},
+			STGMT =  #{stGmt},
+			ENDGMT =  #{endGmt},
+			MOD_USER =  #{modUser},
+			MOD_GMT =  #{modGmt},
+			PIC_URL =  #{picUrl},
+			AREACODE =  #{areaCode},
+			AREANAME =  #{areaName},
+            crowd_limit_type = #{crowdLimitType},
+            user_group_ids = #{userGroupIds},
+			SEQUENCENO = #{sequenceNo},
+			JUMP_TYP =  #{jumpTyp},
+			appid =  #{appid},
+			JUMP_URL =  #{jumpUrl},
+
+		<if test="picWidth != null and picWidth != ''">
+			pic_width = #{picWidth},
+		</if>
+		<if test="picHeight != null and picHeight != ''">
+			pic_height = #{picHeight},
+		</if>
+		<if test="picX != null and picX != ''">
+			pic_x = #{picX},
+		</if>
+		<if test="picY != null and picY != ''">
+			pic_y = #{picY},
+		</if>
+		<if test="picUrl != null and picUrl != ''">
+			pic_url = #{picUrl},
+		</if>
+		<if test="picJumpUrl != null and picJumpUrl != ''">
+			PIC_JUMP_URL = #{picJumpUrl}
+		</if>
+		</set>
+		WHERE ADHOME_KEY = #{adHomeKey}
+	</update>
+		<insert id="addAdHome" parameterType="com.dbt.platform.publish.bean.VpsAdHome">
+		
+		INSERT INTO VPS_AD_HOME (
+  			 TITLE,
+  			 STGMT, 
+  			 ENDGMT, 
+  			 MOD_USER,
+  			 MOD_GMT,
+  			 PIC_URL,
+  			 CRE_GMT,
+  			 AREACODE,
+  			 AREANAME,
+             CROWD_LIMIT_TYPE,
+             USER_GROUP_IDS,
+  			 JUMP_TYP,
+  			 appid,
+  			 JUMP_URL,
+  			 SEQUENCENO,
+  			 IS_DEL,
+  			 IS_DEFAULT,
+  			 pic_width,
+			 pic_height,
+			 pic_x,
+			 pic_y,
+			 PIC_JUMP_URL
+		) VALUES (
+  			 #{title},
+  			 #{stGmt}, 
+  			 #{endGmt}, 
+  			 #{modUser},
+  			 #{modGmt},
+  			 #{picUrl},
+  			 #{creGmt},
+  			 #{areaCode},
+  			 #{areaName},
+             #{crowdLimitType},
+             #{userGroupIds},
+  			 #{jumpTyp},
+  			 #{appid},
+  			 #{jumpUrl},
+  			 #{sequenceNo},
+  			 0,
+  			 1,
+  			 #{picWidth},
+			 #{picHeight},
+			 #{picX},
+			 #{picY},
+			 #{picJumpUrl}
+		) 
+	</insert>
+		<delete id="deleteById" parameterType="Map">
+	   delete from VPS_AD_HOME
+	   where ADHOME_KEY = #{adHomeKey}
+	</delete>
+	
+	 <select id="findById" parameterType="Map" resultMap="vpsAdHomeResultMap">
+        select
+            * 
+        from
+            VPS_AD_HOME
+           WHERE  ADHOME_KEY = #{adHomeKey}
+	</select>
+	
+</mapper>

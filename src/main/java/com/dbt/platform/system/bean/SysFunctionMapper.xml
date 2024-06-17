@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.system.dao.ISysFunctionDao">
+	
+	<resultMap type="com.dbt.platform.system.bean.SysFunction" id="sysFuncResultMap">
+		<result property="functionKey" column="FUNCTION_KEY"/>
+  		<result property="functionName" column="FUNCTION_NAME"/>
+  		<result property="functionDesc" column="FUNCTION_DESC"/>
+  		<result property="parentKey" column="PARENT_KEY"/>
+  		<result property="startUrl" column="LINK_URL"/>
+  		<result property="functionType" column="FUNCTION_TYPE"/>
+  		<result property="fuctionLevel" column="FUNCTION_LEVEL"/>
+  		<result property="fuctionCode" column="FUNCTION_CODE"/>
+  		<result property="menuIcon" column="MENU_ICON"/>
+  		<result property="functionStatus" column="FUNCTION_STATUS"/>
+  		<result property="sequenceNum" column="SEQUENCE_NUM"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+  		<result property="createUser" column="CREATE_USER"/>
+  		<result property="updateTime" column="UPDATE_TIME"/>
+  		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<select id="loadCurrentFunctionByUser" resultType="String" parameterType="String">
+		SELECT  
+			FUNCTION_CODE
+		FROM
+			sys_user_role_relation l,
+			sys_role_function_relation r,
+			sys_function f
+		WHERE
+			l.USER_KEY = #{userKey}
+			AND f.FUNCTION_TYPE = '1' AND f.DELETE_FLAG = '0'
+			AND l.ROLE_KEY = r.ROLE_KEY
+			AND r.FUNCTION_KEY = f.FUNCTION_KEY
+	</select>
+	
+	<select id="loadFunctionListByUserKey" resultMap="sysFuncResultMap" parameterType="Map">
+		SELECT  
+			DISTINCT f.FUNCTION_KEY,
+			FUNCTION_NAME,
+			PARENT_KEY,
+			LINK_URL,
+			FUNCTION_TYPE,
+			FUNCTION_LEVEL,
+			FUNCTION_CODE,
+			MENU_ICON
+		FROM
+            sys_user_role_relation l
+            inner join sys_role_function_relation r on l.ROLE_KEY = r.ROLE_KEY 
+            inner join sys_function f on r.FUNCTION_KEY = f.FUNCTION_KEY 
+            left join sys_function_invalid_view v on f.FUNCTION_KEY =  v.FUNCTION_KEY
+		WHERE 
+			l.USER_KEY = #{userKey}
+			AND f.FUNCTION_TYPE = '0'
+			<if test="projectServerName != null and projectServerName != ''">
+	<!-- 			禁用菜单 -->
+				and (IFNULL(v.invalidAuth, '') not like concat('%', #{projectServerName}, ',%')
+				 <foreach collection="roleKeyLst" item="itemRole" open="and (" close=")" separator=" and ">
+				     IFNULL(v.invalidAuth, '') not like concat('%', #{itemRole}, ',%')
+				 </foreach>
+				)
+	<!-- 			启用菜单 -->
+				and (IFNULL(v.validAuth, '') = '' or v.validAuth like concat('%', #{projectServerName}, ',%')
+				 <foreach collection="roleKeyLst" item="itemRole" open="or (" close=")" separator=" or ">
+				     v.validAuth like concat('%', #{itemRole}, ',%')
+				 </foreach>
+				)
+			</if>
+		ORDER BY SEQUENCE_NUM, FUNCTION_KEY
+	</select>
+</mapper>

@@ -1,0 +1,8 @@
+-- 各省区数据库执行
+CREATE TABLE `vps_crm_group` (
+  `GROUP_ID` varchar(36) NOT NULL COMMENT '群组ID',
+  `GROUP_NAME` varchar(50) DEFAULT NULL COMMENT '群组名称',
+  `GROUP_PRIORITY` int(11) DEFAULT NULL COMMENT '群组优先级值越小优先级越大',
+  `DELETE_FLAG` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`GROUP_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

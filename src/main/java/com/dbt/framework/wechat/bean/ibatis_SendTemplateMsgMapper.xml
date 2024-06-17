@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.framework.wechat.dao.ISendTemplateMsgDao">
+
+	<resultMap type="com.dbt.framework.wechat.bean.SendTemplateMsg" id="resultInfo">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="templateNo" column="TEMPLATE_NO"/>
+		<result property="messageType" column="MESSAGE_TYPE"/>
+		<result property="templateType" column="TEMPLATE_TYPE"/>
+		<result property="first" column="FIRST"/>
+		<result property="keyword1" column="KEYWORD1"/>
+		<result property="keyword2" column="KEYWORD2"/>
+		<result property="keyword3" column="KEYWORD3"/>
+		<result property="keyword4" column="KEYWORD4"/>
+		<result property="urlType" column="URL_TYPE"/>
+		<result property="url" column="URL"/>
+		<result property="remark" column="REMARK"/>
+        <result property="describes" column="DESCRIBES"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="minVpoint" column="MIN_VPOINT"/>
+		<result property="maxVpoint" column="MAX_VPOINT"/>
+		<result property="minMoney" column="MIN_MONEY"/>
+		<result property="maxMoney" column="MAX_MONEY"/>
+		<result property="sendTime" column="SEND_TIME"/>
+		<result property="status" column="STATUS"/>
+		<result property="sendCount" column="SEND_COUNT"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.framework.wechat.bean.SendTemplateMsg">
+		INSERT INTO send_template_message (
+			INFO_KEY,
+			COMPANY_KEY,
+			TEMPLATE_NO,
+			MESSAGE_TYPE,
+			TEMPLATE_TYPE,
+			FIRST,
+			KEYWORD1,
+			KEYWORD2,
+			KEYWORD3,
+			KEYWORD4,
+			URL_TYPE,
+			URL,
+            REMARK,
+			DESCRIBES,
+			USER_KEY,
+			MIN_VPOINT,
+			MAX_VPOINT,
+			MIN_MONEY,
+			MAX_MONEY,
+			SEND_TIME,
+			SEND_COUNT,
+			STATUS,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			UUID(),
+			#{companyKey},
+			#{templateNo},
+			#{messageType},
+			#{templateType},
+			#{first},
+			#{keyword1},
+			#{keyword2},
+			#{keyword3},
+			#{keyword4},
+			#{urlType},
+			#{url},
+            #{remark},
+			#{describes},
+			#{userKey},
+			#{minVpoint},
+			#{maxVpoint},
+			#{minMoney},
+			#{maxMoney},
+			#{sendTime},
+			#{sendCount},
+			'0',
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.framework.wechat.bean.SendTemplateMsg">
+		UPDATE
+			send_template_message
+		SET
+			<if test="first != null and first != ''">
+				FIRST = #{first},
+			</if>
+			<if test="keyword1 != null and keyword1 != ''">
+			KEYWORD1 = #{keyword1},
+			</if>
+			<if test="keyword2 != null and keyword2 != ''">
+			KEYWORD2 = #{keyword2},
+			</if>
+			<if test="keyword3 != null and keyword3 != ''">
+			KEYWORD3 = #{keyword3},
+			</if>
+			<if test="keyword4 != null and keyword4 != ''">
+			KEYWORD4 = #{keyword4},
+			</if>
+			<if test="remark != null and remark != ''">
+            REMARK = #{remark},
+            </if>
+            <if test="describes != null and describes != ''">
+			DESCRIBES = #{describes},
+			</if>
+			USER_KEY = #{userKey},
+			MIN_VPOINT = #{minVpoint},
+			MAX_VPOINT = #{maxVpoint},
+			MIN_MONEY = #{minMoney},
+			MAX_MONEY = #{maxMoney},
+			<if test="sendTime != null and sendTime != ''">
+			SEND_TIME = #{sendTime},
+			</if>
+			<if test="sendCount > 0">
+			SEND_COUNT = #{sendCount},
+			</if>
+			<if test="status != null and status != ''">
+			STATUS = #{status},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != ''">
+			DELETE_FLAG = #{deleteFlag},
+			</if>
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<update id="changeStatus" parameterType="Map">
+		UPDATE
+			send_template_message
+		SET
+			STATUS = #{status},
+			UPDATE_TIME = #{updateTime}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findById" resultMap="resultInfo" parameterType="String">
+		SELECT
+			*
+		FROM
+			send_template_message 
+		WHERE
+			INFO_KEY = #{infoKey}
+	</select>
+	
+	<select id="queryForLst" resultMap="resultInfo" parameterType="Map">
+		SELECT
+			*
+		FROM
+			send_template_message a
+		WHERE
+			a.DELETE_FLAG = '0'
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (TEMPLATE_NO LIKE '%${queryBean.keyword}%' OR DESCRIBES LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			AND SEND_TIME >= CONCAT(#{queryBean.startDate},' 00:00:00')
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND SEND_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' 23:59:59')
+		</if>
+		<if test="queryBean.status != null and queryBean.status != ''">
+			AND STATUS = #{queryBean.status}
+		</if>
+		<if test="queryBean.userKey != null and queryBean.userKey != ''">
+			AND USER_KEY like '%${queryBean.userKey}%' 
+		</if>
+		<if test="queryBean.templateType > 0">
+			AND TEMPLATE_TYPE = #{queryBean.templateType}
+		</if>
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, CREATE_TIME DESC
+		  </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY CREATE_TIME DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="Integer" parameterType="Map">
+		SELECT 
+			COUNT(0)
+		FROM
+			send_template_message
+		WHERE
+			DELETE_FLAG = '0'
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+			AND (TEMPLATE_NO LIKE '%${queryBean.keyword}%' OR DESCRIBES LIKE '%${queryBean.keyword}%')
+		</if>
+		<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			AND SEND_TIME >= CONCAT(#{queryBean.startDate},' 00:00:00')
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND SEND_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' 23:59:59')
+		</if>
+		<if test="queryBean.status != null and queryBean.status != ''">
+			AND STATUS = #{queryBean.status}
+		</if>
+		<if test="queryBean.userKey != null and queryBean.userKey != ''">
+			AND USER_KEY like '%${queryBean.userKey}%' 
+		</if>
+		<if test="queryBean.templateType > 0">
+			AND TEMPLATE_TYPE = #{queryBean.templateType}
+		</if>
+	</select>
+	
+	
+	<select id="queryForSendMessageCount" resultType="Integer" parameterType="Map">
+		SELECT 
+			IFNULL(SUM(IFNULL(SEND_COUNT,0)),0)
+		FROM
+			send_template_message
+		WHERE DELETE_FLAG = '0'
+		AND SEND_TIME >= CONCAT(#{queryBean.startDate},' 00:00:00')
+		AND SEND_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' 23:59:59')
+		AND MESSAGE_TYPE = #{queryBean.messageType}
+		AND STATUS = '1'
+	</select>
+	
+	<select id="queryNonExecutionMsgList" resultMap="resultInfo">
+		SELECT * FROM send_template_message 
+		WHERE DELETE_FLAG = '0'
+		AND	STATUS = '0'
+		ORDER BY SEND_TIME
+			
+	</select>
+</mapper>

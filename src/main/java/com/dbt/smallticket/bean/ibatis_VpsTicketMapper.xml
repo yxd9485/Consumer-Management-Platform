@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.smallticket.dao.VpsTicketRecordDao">
+
+	<resultMap type="com.dbt.smallticket.bean.VpsTicketRecord" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY" />
+		<result property="ticketChannel" column="TICKET_CHANNEL" />
+		<result property="projressName" column="PROJRESS_NAME" />
+		<result property="userKey" column="USER_KEY" />
+		<result property="ticketNo" column="TICKET_NO" />
+		<result property="terminalKey" column="TERMINAL_KEY" />
+		<result property="ticketTerminalName" column="TICKET_TERMINAL_NAME" />
+        <result property="province" column="PROVINCE" />
+        <result property="city" column="CITY" />
+        <result property="county" column="COUNTY" />
+        <result property="longitude" column="LONGITUDE" />
+        <result property="latitude" column="LATITUDE" />
+        <result property="geoHash" column="GEO_HASH" />
+        <result property="goodsNum" column="GOODS_NUM" />
+        <result property="goodsMoney" column="GOODS_MONEY" />
+        <result property="ticketMoney" column="TICKET_MONEY" />
+         <result property="skuMoney" column="SKU_MONEY" />
+        <result property="uploadTime" column="UPLOAD_TIME" />
+        <result property="ticketUrl" column="TICKET_URL" />
+        <result property="qrcodeContent" column="QRCODE_CONTENT" />
+        <result property="winShopKey" column="WIN_SHOP_KEY" />
+        <result property="ticketStatus" column="TICKET_STATUS" />
+        <result property="inputUserKey" column="INPUT_USER_KEY" />
+        <result property="inputUserName" column="INPUT_USER_NAME" />
+        <result property="inputTime" column="INPUT_TIME" />
+        <result property="warAreaName" column="WAR_AREA_NAME" />
+        <result property="submintCheckReason" column="SUBMINT_CHECK_REASON" />
+        <result property="checkUserKey" column="CHECK_USER_KEY" />
+        <result property="checkUserName" column="CHECK_USER_NAME" />
+        <result property="dismissReason" column="DISMISS_REASON" />
+        <result property="prizeType" column="PRIZE_TYPE" />
+        <result property="earnTime" column="EARN_TIME" />
+        <result property="earnMoney" column="EARN_MONEY" />
+        <result property="ocrContent" column="OCR_CONTENT" />
+        <result property="remark" column="remark" />
+        <result property="ticketInsideCodeType" column="TICKET_INSIDE_CODE_TYPE" />
+        <result property="promotionUserKey" column="PROMOTION_USER_KEY" />
+        <result property="promotionTerminalName" column="PROMOTION_TERMINAL_NAME" />
+        <result property="promotionEarnFlag" column="PROMOTION_EARN_FLAG" />
+        <result property="ticketRecordKey" column="TICKET_RECORD_KEY" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	<select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			a.*,
+			b.NICK_NAME as 'userName',
+			c.PRIZE_NAME as 'prizeName',
+			p.phone_num as 'promotionPhoneNum',
+			p.user_name as 'promotionUserName',
+            case when a.ticket_Status = '0' and a.promotion_user_key is not null then '1'
+                 when a.ticket_Status = '0' then '2' else '3' end orderCol
+		FROM
+			vps_ticket_record_report a
+			inner join vps_consumer_user_info b on b.user_key = a.user_key
+			left join vps_vcode_prize_record c on a.PRIZE_INFO_KEY = c.INFO_KEY
+			left join vps_ticket_promotion_user p on a.PROMOTION_USER_KEY = p.USER_KEY
+		WHERE
+			a.delete_flag = '0'
+			and (a.TICKET_CHANNEL is null or a.TICKET_CHANNEL in ('1','2'))
+			<if test="queryBean.ticketNo != null and queryBean.ticketNo  != ''">
+				and a.ticket_No =#{queryBean.ticketNo}
+			</if>
+			<if test="queryBean.ticketChannel != null and queryBean.ticketChannel  != ''">
+                and a.TICKET_CHANNEL = #{queryBean.ticketChannel}
+            </if>
+			<if test="queryBean.userName != null and queryBean.userName  != ''">
+				and b.NICK_NAME  like '%${queryBean.userName}%'  
+			</if>
+			<if test="queryBean.province != null and queryBean.province  != ''">
+				and a.province =#{queryBean.province}
+			</if>
+			<if test="queryBean.prizeType != null and queryBean.prizeType  != ''">
+				and a.prize_type =#{queryBean.prizeType}
+			</if>
+			 <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(a.create_time) >= #{queryBean.startDate}
+        	</if>
+        	<if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(a.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        	</if>
+        	<if test="queryBean.inputUserName != null and queryBean.inputUserName != ''">
+                AND a.input_User_Name   like '%${queryBean.inputUserName}%' 
+        	</if>
+        	<if test="queryBean.promotionPhoneNum != null and queryBean.promotionPhoneNum != ''">
+                AND (p.phone_num = #{queryBean.promotionPhoneNum} or p.user_name like '%${queryBean.promotionPhoneNum}%')
+        	</if>
+        	<if test="queryBean.ticketStatus != null and queryBean.ticketStatus != ''">
+        		<choose>
+        			<when test="queryBean.ticketStatus == 2">
+        				AND a.TICKET_STATUS in ('2','4')
+        			</when>
+        			<otherwise>
+        				AND a.ticket_Status   =  #{queryBean.ticketStatus} 
+        			</otherwise>
+        		</choose>
+        	</if>
+        	 <if test="queryBean.inputStartTime != null and queryBean.inputStartTime != ''">
+                AND date(a.input_time) >= #{queryBean.inputStartTime}
+        	</if>
+        	<if test="queryBean.inputEndTime != null and queryBean.inputEndTime != ''">
+                AND date(a.input_time)  <![CDATA[ <= ]]> #{queryBean.inputEndTime}
+        	</if>
+			ORDER BY orderCol asc, a.CREATE_TIME
+        	LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_ticket_record_report a
+			inner join vps_consumer_user_info b on b.user_key = a.user_key
+			left join vps_vcode_prize_record c on a.PRIZE_INFO_KEY = c.INFO_KEY
+            left join vps_ticket_promotion_user p on a.PROMOTION_USER_KEY = p.USER_KEY
+		WHERE
+			a.delete_flag = '0'
+			and (a.TICKET_CHANNEL is null or a.TICKET_CHANNEL in ('1','2'))
+			<if test="queryBean.ticketNo != null and queryBean.ticketNo  != ''">
+				and a.ticket_No =#{queryBean.ticketNo}
+			</if>
+			<if test="queryBean.ticketChannel != null and queryBean.ticketChannel  != ''">
+                and a.TICKET_CHANNEL = #{queryBean.ticketChannel}
+            </if>
+			<if test="queryBean.userName != null and queryBean.userName  != ''">
+				and b.NICK_NAME  like '%${queryBean.userName}%'  
+			</if>
+			<if test="queryBean.province != null and queryBean.province  != ''">
+				and a.province =#{queryBean.province}
+			</if>
+			<if test="queryBean.prizeType != null and queryBean.prizeType  != ''">
+                and a.prize_type =#{queryBean.prizeType}
+            </if>
+			 <if test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND date(a.create_time) >= #{queryBean.startDate}
+        	</if>
+        	<if test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND date(a.create_time)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        	</if>
+        	<if test="queryBean.inputUserName != null and queryBean.inputUserName != ''">
+                AND a.input_User_Name   like '%${queryBean.inputUserName}%' 
+        	</if>
+            <if test="queryBean.promotionPhoneNum != null and queryBean.promotionPhoneNum != ''">
+                AND (p.phone_num = #{queryBean.promotionPhoneNum} or p.user_name like '%${queryBean.promotionPhoneNum}%')
+            </if>
+        	<if test="queryBean.ticketStatus != null and queryBean.ticketStatus != ''">
+        		<choose>
+        			<when test="queryBean.ticketStatus == 2">
+        				AND a.TICKET_STATUS in ('2','4')
+        			</when>
+        			<otherwise>
+        				AND a.ticket_Status = #{queryBean.ticketStatus} 
+        			</otherwise>
+        		</choose>
+        	</if>
+        	 <if test="queryBean.inputStartTime != null and queryBean.inputStartTime != ''">
+                AND date(a.input_time) >= #{queryBean.inputStartTime}
+        	</if>
+        	<if test="queryBean.inputEndTime != null and queryBean.inputEndTime != ''">
+                AND date(a.input_time)  <![CDATA[ <= ]]> #{queryBean.inputEndTime}
+        	</if>
+	</select>
+	
+	<!-- 查询小票 -->
+	<select id="findById" parameterType="String" resultMap="baseResultMap">
+	   select 
+	       *, 
+	       IFNULL(b.INSIDE_CODE_TYPE,a.TICKET_INSIDE_CODE_TYPE) as 'insideCode'
+	   from
+	       vps_ticket_record  a
+	       LEFT JOIN vps_ticket_terminal_cog b ON a.TERMINAL_KEY = b.TERMINAL_KEY
+	   where 
+	       a.info_Key = #{infoKey}
+	</select>
+
+	
+	
+	<!-- 根据小票查询店内体系码 -->
+	<select id="findTerminalInside" parameterType="String" resultType="com.dbt.smallticket.bean.VpsTicketTerminalInsideType">
+		select
+            INSIDE_CODE_TYPE as 'insideCodeType',
+            INSIDE_CODE_NAME as 'insideCodeName',
+            IF(province = 'ALL' or locate(#{province}, province) > 0, '1', '0') insideOrder
+        from
+            vps_ticket_terminal_inside_code_type
+        where
+            DELETE_FLAG ='0'
+        order by insideOrder desc, convert(INSIDE_CODE_NAME using gbk)
+	</select>
+
+<!-- 更新小票查询店内体系码适用省份 -->
+    <update id="updateTerminalInsideProvince" parameterType="Map">
+        update
+            vps_ticket_terminal_inside_code_type
+        set 
+            province = IFNULL(#{province}, CONCAT(province, ',', #{province}))
+        where 
+            INSIDE_CODE_TYPE = #{insideCodeType}
+            and province != 'ALL'
+            and (province is null or province not like '%${province}%')
+    </update>
+		
+	<!-- 查询十八款长城产品 -->
+	<select id="findSkuLst" resultType="com.dbt.platform.enterprise.bean.SkuInfo">
+		select 		
+			 SKU_KEY as 'skuKey',
+			 SKU_NAME as 'skuName'
+			 FROM vps_sku_info
+		where DELETE_FLAG = '0'
+	</select>
+
+
+	
+	
+	<!-- 校验流水号以及门店名称-->
+	<select id="checkTicket" parameterType="com.dbt.smallticket.bean.VpsTicketRecord" resultType="String">	
+			select 	
+				<if test="searchType == 1">
+					t.TERMINAL_KEY as 'terminalKey'
+				</if>
+				<if test="searchType == 2">
+					count(1)
+				</if>
+			from	
+			<!-- 查询门店是否存在 -->
+			<if test="searchType == 1">
+				vps_ticket_terminal_cog t where t.TERMINAL_NAME = #{ticketTerminalName}
+				and t.PROVINCE = #{province}
+				and t.CITY = #{city}
+				and t.COUNTY = #{county}
+				and t.DELETE_FLAG = '0'
+				limit 1
+			</if>
+			<!-- 查询店内码是否是唯一 -->
+			<if test="searchType == 2">
+				vps_ticket_record t 
+				where t.TICKET_NO = #{ticketNo}
+				and t.INFO_KEY != #{infoKey}
+				and t.TICKET_STATUS not in ('0', '1')
+			</if>		
+	</select>
+	
+	
+	<!-- 修改小票 -->
+	<update id="update" parameterType="com.dbt.smallticket.bean.VpsTicketRecord">
+		UPDATE vps_ticket_record
+		<set>
+			<if test="ticketChannel != null and ticketChannel != ''">
+				ticket_channel = #{ticketChannel},
+			</if>
+			<if test="submintCheckReason != null and submintCheckReason != ''">
+				SUBMINT_CHECK_REASON = #{submintCheckReason},
+			</if>
+			<if test="inputUserName != null and inputUserName != ''">
+				INPUT_USER_NAME = #{inputUserName},
+			</if>
+			<if test="ticketTerminalName != null and ticketTerminalName != ''">
+				TICKET_TERMINAL_NAME = #{ticketTerminalName},
+			</if>
+			<if test="dismissReason != null and dismissReason != ''">
+				dismiss_Reason = #{dismissReason},
+			</if>
+			<if test="ticketStatus != null and ticketStatus != ''">
+				ticket_Status = #{ticketStatus},
+			</if>
+			<if test="terminalKey != null and terminalKey != ''">
+				TERMINAL_KEY = #{terminalKey},
+			</if>
+			<if test="ticketNo != null and ticketNo != ''">
+				TICKET_NO = #{ticketNo},
+			</if>
+			<if test="insideCodeType != null and insideCodeType != ''">
+				TICKET_INSIDE_CODE_TYPE = #{insideCodeType},
+			</if>
+			<if test="ticketMoney != null and ticketMoney != ''">
+				TICKET_MONEY = #{ticketMoney},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark},
+			</if>
+			<if test="projressName != null and projressName != ''">
+				projress_Name = #{projressName},
+			</if>
+			<if test="terminalKey != null and terminalKey != ''">
+				TERMINAL_KEY = #{terminalKey},
+			</if>
+			<if test="goodsMoney != null and goodsMoney != ''">
+				GOODS_MONEY = #{goodsMoney},
+			</if>
+			<if test="goodsNum != null and goodsNum != ''">
+				GOODS_NUM = #{goodsNum},
+			</if>
+			<if test="skuMoney != null and skuMoney != ''">
+				SKU_MONEY = #{skuMoney},
+			</if>
+			<if test="promotionEarnFlag != null and promotionEarnFlag != ''">
+				PROMOTION_EARN_FLAG = #{promotionEarnFlag},
+			</if>
+			input_User_Key= #{updateUser},
+			input_Time = #{updateTime},
+			UPDATE_USER =#{updateUser},
+            UPDATE_TIME = #{updateTime}
+		</set>
+		WHERE  INFO_KEY = #{infoKey}
+	</update>
+	
+	
+	<!-- 创建门店 -->
+	<insert id="createTerminal" parameterType="com.dbt.smallticket.bean.VpsTicketTerminalCog">
+		INSERT INTO vps_ticket_terminal_cog (
+			TERMINAL_KEY,
+			TERMINAL_NAME,
+			INSIDE_CODE_TYPE,
+			PROVINCE,
+			CITY,
+			COUNTY,
+			TERMINAL_STATUS,
+			DELETE_FLAG,
+			CREATE_USER,
+			CREATE_TIME,
+			UPDATE_USER,
+			UPDATE_TIME
+		) VALUES (
+			#{terminalKey},
+		    #{terminalName},
+		    #{insideCodeType},
+		    #{province},
+		    #{city},
+		    #{county},
+		    #{terminalStatus},
+			'0',
+			#{createUser},
+			#{createTime},
+			#{updateUser},
+			#{updateTime}
+		) 
+	</insert>
+	
+	
+	<!-- 省区审核人员-->
+	<select id="findCheckUserByOpenid"  resultType="String">	
+			select OPENID from vps_ticket_province_check_user where DELETE_FLAG = '0'
+			<choose>
+				<when test="warAreaName != null and warAreaName != ''">
+					and PROVINCE = #{warAreaName} and (TICKET_CHANNEL = #{ticketChannel} or TICKET_CHANNEL  = '' or TICKET_CHANNEL is null)
+				</when>
+				<otherwise>
+					and (PROVINCE is null or  PROVINCE = '') and TICKET_CHANNEL  = #{ticketChannel}
+				</otherwise>
+			</choose>
+	</select>
+	
+	
+	<!-- 查询出当天五点之前的所有送审未审核的数据 -->
+	<select id="findExpireTicketRecord" resultMap="baseResultMap">
+	  	select * from vps_ticket_record  where delete_flag = '0' and (TICKET_CHANNEL is null or TICKET_CHANNEL in ('1','2')) and TICKET_STATUS = '3' and INPUT_TIME  <![CDATA[ < ]]>  date_add(now(), interval 1 hour) 
+	</select>
+	
+	<!-- 查询出excel数据 -->
+	<select id="findTicketDayExcel" resultType="com.dbt.smallticket.bean.VpsTicketDayExcelTemplet">
+		SELECT 
+            r.BIG_AREA_NAME AS 'bigAreaName',
+            r.WAR_AREA_NAME as 'warAreaName',
+            count(DISTINCT(CASE WHEN t.TICKET_CHANNEL = '0' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.USER_KEY end )) as 'dayPersonNum0',
+            round(sum(CASE WHEN t.TICKET_CHANNEL = '0' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end), 0) as 'daySaleMoney0',
+            count(DISTINCT(CASE WHEN t.TICKET_CHANNEL = '1' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.USER_KEY end )) as 'dayPersonNum1',
+            sum(CASE WHEN t.TICKET_CHANNEL = '1' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then goods_num else 0 end) as 'daySaleNum1',
+            round(sum(CASE WHEN t.TICKET_CHANNEL = '1' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end), 0) as 'daySaleMoney1',
+            count(DISTINCT(CASE WHEN t.TICKET_CHANNEL = '2' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.USER_KEY end )) as 'dayPersonNum2',
+            sum(CASE WHEN t.TICKET_CHANNEL = '2' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then goods_num else 0 end) as 'daySaleNum2',
+            round(sum(CASE WHEN t.TICKET_CHANNEL = '2' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end), 0) as 'daySaleMoney2',
+            count(DISTINCT(CASE WHEN t.TICKET_CHANNEL = '3' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.USER_KEY end )) as 'dayPersonNum3',
+            round(sum(CASE WHEN t.TICKET_CHANNEL = '3' AND DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end), 0) as 'daySaleMoney3',
+            sum( CASE WHEN  DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.GOODS_NUM else 0 end ) as 'daySaleNum',
+            round(sum( CASE WHEN  DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end ), 0) as 'daySaleMoney',
+            count(DISTINCT(CASE WHEN DATE(t.INPUT_TIME) <![CDATA[<=]]> DATE_SUB(curdate(),INTERVAL +1 DAY) then t.USER_KEY end )) as 'totalPersonNum',
+            sum( CASE WHEN  DATE(t.INPUT_TIME) <![CDATA[<=]]> DATE_SUB(curdate(),INTERVAL +1 DAY) then t.GOODS_NUM else 0 end ) as 'totalSaleNum',
+            round(sum( CASE WHEN  DATE(t.INPUT_TIME) <![CDATA[<=]]> DATE_SUB(curdate(),INTERVAL +1 DAY) then t.goods_money else 0 end), 0) as 'totalSaleMoney'
+        FROM vps_ticket_wararea_report r
+        left join vps_ticket_record_report t on r.war_area_name = t.WAR_AREA_NAME and t.delete_flag = '0'
+                and t.TICKET_CHANNEL in ('0', '1', '2', '3') and t.TICKET_STATUS in ('2','4') and t.input_time >= '2022-08-27 00:00:00'
+        group by r.WAR_AREA_NAME  
+        order by daySaleMoney desc
+	</select>
+	
+	<!-- SKU每日明细-->
+	<select id="findTicketDayExcelDetail" resultType="com.dbt.smallticket.bean.VpsTicketDayExcelTemplet">
+	select 
+		@rowNum:=@rowNum+1 as 'rowNum',
+		a.*
+		from (
+			select
+				s.COMMODITY_CODE as 'commodityCode',
+				s.SKU_NAME as 'skuName',
+				sum( CASE WHEN  DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then d.SKU_NUM else 0 end ) as 'daySaleNum',
+				round(sum( CASE WHEN  DATE(t.INPUT_TIME) = DATE_SUB(curdate(),INTERVAL +1 DAY) then d.TICKET_SKU_MONEY else 0 end ), 0) as 'daySaleMoney',
+				sum( CASE WHEN  DATE(t.INPUT_TIME) <![CDATA[<=]]> DATE_SUB(curdate(),INTERVAL +1 DAY) then d.SKU_NUM else 0 end ) as 'totalSaleNum',
+				round(sum( CASE WHEN  DATE(t.INPUT_TIME) <![CDATA[<=]]> DATE_SUB(curdate(),INTERVAL +1 DAY) then d.TICKET_SKU_MONEY else 0 end), 0) as 'totalSaleMoney'
+			from vps_sku_info s
+			left join vps_ticket_record_sku_detail_report d on s.sku_key = d.SKU_KEY and d.DELETE_FLAG = '0'
+			left join vps_ticket_record_report t on t.INFO_KEY = d.TICKET_RECORD_KEY and t.TICKET_CHANNEL in ('1', '2') and t.TICKET_STATUS in ('2','4') and t.DELETE_FLAG = '0'
+			group by s.COMMODITY_CODE
+			order by s.COMMODITY_CODE) a, (select @rowNum:=0) b
+	</select>
+</mapper>

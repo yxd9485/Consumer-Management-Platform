@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpsGiftCardQrcodeOrderInfoDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="baseResultMap" type="com.dbt.vpointsshop.bean.VpsGiftCardQrcodeOrderInfo">
+        <id column="qrcode_order_key" property="qrcodeOrderKey" />
+        <result column="order_name" property="orderName" />
+        <result column="gift_card_info_key" property="giftCardInfoKey" />
+        <result column="qrcode_num" property="qrcodeNum" />
+        <result column="order_status" property="orderStatus" />
+        <result column="activate_status" property="activateStatus" />
+        <result column="activate_time" property="activateTime" />
+        <result column="activate_user" property="activateUser" />
+        <result column="activate_phone" property="activatePhone" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="gift_card_name" property="giftCardName" />
+    </resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="baseResultMapVO" type="com.dbt.vpointsshop.dto.VpsGiftCardQrcodeOrderInfoVO">
+        <id column="qrcode_order_key" property="qrcodeOrderKey" />
+        <result column="order_name" property="orderName" />
+        <result column="gift_card_info_key" property="giftCardInfoKey" />
+        <result column="qrcode_num" property="qrcodeNum" />
+        <result column="order_status" property="orderStatus" />
+        <result column="activate_status" property="activateStatus" />
+        <result column="activate_time" property="activateTime" />
+        <result column="activate_user" property="activateUser" />
+        <result column="activate_phone" property="activatePhone" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="gift_card_name" property="giftCardName" />
+        <result column="createDate" property="createDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        qrcode_order_key,
+        order_name,
+        gift_card_info_key,
+        qrcode_num,
+        order_status,
+        activate_status,
+        activate_time,
+        activate_user,
+        activate_phone,
+        delete_flag,
+        create_user,
+        create_time,
+        update_user,
+        update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.dto.VpsGiftCardQrcodeOrderInfoVO">
+        insert into vps_gift_card_qrcode_order_info (
+                   qrcode_order_key,
+                  order_name,
+                  gift_card_info_key,
+                  qrcode_num,
+                  order_status,
+                  activate_status,
+                  card_maker,
+                  card_maker_phone,
+                  remarks,
+                <if test="startDate!='' and startDate!=null">
+                    start_date,
+                </if>
+                <if test="endDate!='' and endDate!=null">
+                    end_date,
+                </if>
+                  delete_flag,
+                  create_user,
+                  create_time,
+                  update_user,
+                  update_time
+        ) values (
+                #{qrcodeOrderKey},
+                #{orderName},
+                #{giftCardInfoKey},
+                #{qrcodeNum},
+                #{orderStatus},
+                #{activateStatus},
+                #{cardMaker},
+                #{cardMakerPhone},
+                #{remarks},
+                <if test="startDate!='' and startDate!=null">
+                    #{startDate},
+                </if>
+                <if test="endDate!='' and endDate!=null">
+                    #{endDate},
+                </if>
+                #{deleteFlag},
+                #{createUser},
+                #{createTime},
+                #{updateUser},
+                #{updateTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpsGiftCardQrcodeOrderInfo">
+        update  vps_gift_card_qrcode_order_info set
+
+                    <if test=" orderStatus!=null">
+                         order_status =   #{orderStatus},
+                    </if>
+                    <if test=" activateStatus!=null">
+                         activate_status =   #{activateStatus},
+                    </if>
+                    <if test=" qrcodeNum!=null">
+                        qrcode_num =   #{qrcodeNum},
+                    </if>
+                    <if test=" activateTime!=null">
+                         activate_time =   #{activateTime},
+                    </if>
+                    <if test=" activateUser!=null">
+                         activate_user =   #{activateUser},
+                    </if>
+                    <if test=" activatePhone!=null">
+                         activate_phone =   #{activatePhone},
+                    </if>
+                    <if test="cardMaker!='' and cardMaker!=null">
+                         card_maker =   #{cardMaker},
+                    </if>
+                    <if test="cardMakerPhone!='' and cardMakerPhone!=null">
+                        card_maker_phone =   #{cardMakerPhone},
+                    </if>
+                    <if test=" startDate!=null and startDate != ''">
+                        start_date =   #{startDate},
+                    </if>
+                    <if test=" endDate!=null  and startDate != ''">
+                         end_date =  #{endDate},
+                    </if>
+                    <if test=" remarks!=null">
+                        remarks =   #{remarks},
+                    </if>
+                    <if test=" deleteFlag!=null">
+                         delete_flag =   #{deleteFlag},
+                    </if>
+
+                    <if test=" updateUser!=null">
+                         update_user =   #{updateUser},
+                    </if>
+                     update_time =  now()
+
+                    where  qrcode_order_key =  #{qrcodeOrderKey}
+
+    </update>
+
+    <!-- 	逻辑删除 -->
+    <update id="deleteById" parameterType="Map">
+        UPDATE vps_gift_card_qrcode_order_info
+        <set>
+            DELETE_FLAG = '1',
+            UPDATE_TIME = NOW(),
+            UPDATE_USER = #{optUserKey}
+        </set>
+        WHERE qrcode_order_key=#{qrcodeOrderKey}
+    </update>
+
+    <!-- 	依据订单主键物理删除订单相关终端门店码 -->
+    <update id="removeGiftCardQrcodeByOrderKey" parameterType="Map">
+        delete from
+            vps_gift_card_qrcode_info
+        WHERE
+            qrcode_order_key=#{qrcodeOrderKey}
+    </update>
+
+    <select id="findById" parameterType="String" resultMap="baseResultMap">
+        select
+            *
+        from
+            vps_gift_card_qrcode_order_info
+        where
+            qrcode_order_key = #{qrcodeOrderKey}
+    </select>
+    <select id="findByQrcodeOrderKey" parameterType="String" resultMap="baseResultMapVO">
+        select
+            *
+        from
+            vps_gift_card_qrcode_order_info
+        where
+            qrcode_order_key = #{qrcodeOrderKey}
+    </select>
+
+    <select id="queryForLst" resultMap="baseResultMapVO" parameterType="Map">
+        select
+        info.qrcode_order_key,
+        info.order_name,
+        info.gift_card_info_key,
+        info.qrcode_num,
+        info.order_status,
+        info.activate_status,
+        info.activate_time,
+        info.activate_user,
+        info.activate_phone,
+        info.card_maker,
+        info.card_maker_phone,
+        info.delete_flag,
+        info.create_user,
+        date_format(info.create_time,'%Y-%m-%d %H:%i:%S') create_time,
+        date_format(info.create_time,'%Y%m%d') createDate,
+        cog.gift_card_name
+        from
+        vps_gift_card_qrcode_order_info info left join vpoints_goods_gift_card_cog cog
+        on cog.info_key = info.gift_card_info_key
+        where
+        info.delete_flag = '0'
+        <if test="queryBean.orderStatus != null and queryBean.orderStatus != ''">
+            and info.order_status = #{queryBean.orderStatus}
+        </if>
+        <if test="queryBean.giftCardName != null and queryBean.giftCardName != ''">
+            and cog.gift_card_name like '%${queryBean.giftCardName}%'
+        </if>
+        <if test="queryBean.orderName != null and queryBean.orderName != ''">
+            and info.order_name like '%${queryBean.orderName}%'
+        </if>
+        <if test="queryBean.giftCardInfoKey != null and queryBean.giftCardInfoKey != ''">
+            and info.gift_card_info_key =#{queryBean.giftCardInfoKey}
+        </if>
+        <if test="pageInfo != null">
+            <choose>
+                <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+                    ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, info.CREATE_TIME DESC
+                </when>
+                <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                    ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+                </when>
+                <otherwise>ORDER BY info.CREATE_TIME DESC</otherwise>
+            </choose>
+
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+        count(1)
+        from
+        vps_gift_card_qrcode_order_info info
+        where
+        delete_flag = '0'
+        <if test="queryBean.orderStatus != null and queryBean.orderStatus != ''">
+            and info.order_status = #{queryBean.orderStatus}
+        </if>
+        <if test="queryBean.orderName != null and queryBean.orderName != ''">
+            and order_name like concat('%',#{queryBean.orderName},'%')
+        </if>
+        <if test="queryBean.giftCardInfoKey != null and queryBean.giftCardInfoKey != ''">
+            and info.gift_card_info_key =#{queryBean.giftCardInfoKey}
+        </if>
+    </select>
+
+    <!-- 二维码入库 -->
+    <update id="writeQrcodeToData" parameterType="Map">
+        load data local infile #{tmpFilePath}
+        into table vps_gift_card_qrcode_info character set utf8 fields terminated by '+'
+            (GIFT_CARD_QRCODE,QRCODE_ORDER_KEY)
+    </update>
+
+    <!--     重置终端门店码 -->
+    <update id="resetGiftCardQrcode" parameterType="String">
+        update
+            vps_gift_card_qrcode_info
+        set
+            gift_card_key = null,
+            activate_time = null,
+            activate_user = null
+        where
+            gift_card_qrcode = #{gift_cardQrcode}
+    </update>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.sweep.dao.IVpsCommonPacksRecordDao">
+
+	<resultMap type="com.dbt.platform.sweep.bean.VpsCommonPacksRecord" id="resultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+  		<result property="userKey" column="USER_KEY"/>
+  		<result property="earnTime" column="EARN_TIME"/>
+  		<result property="earnMoney" column="EARN_MONEY"/>
+  		<result property="earnVpoints" column="EARN_VPOINTS"/>
+  		<result property="prizeType" column="PRIZE_TYPE"/>
+  		<result property="earnChannel" column="EARN_CHANNEL"/>
+  		<result property="cardType" column="CARD_TYPE"/>
+  		<result property="province" column="PROVINCE"/>
+  		<result property="city" column="CITY"/>
+  		<result property="county" column="COUNTY"/>
+		<result property="prizeDesc" column="PRIZE_DESC"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         INFO_KEY, 
+  			 USER_KEY,
+  			 EARN_MONEY,
+  			 EARN_VPOINTS,
+  			 EARN_TIME,
+  			 PRIZE_TYPE,
+  			 EARN_CHANNEL,
+  			 CARD_TYPE,
+  			 PROVINCE,
+  			 CITY,
+  			 COUNTY,
+			 PRIZE_DESC
+  	</sql>
+  	
+	<insert id="create" parameterType="com.dbt.platform.sweep.bean.VpsCommonPacksRecord" >
+		INSERT INTO vps_common_packs_record (
+	         INFO_KEY, 
+  			 USER_KEY,
+  			 EARN_TIME,
+  			 EARN_MONEY,
+  			 EARN_VPOINTS,
+  			 PRIZE_TYPE,
+  			 EARN_CHANNEL,
+  			 CARD_TYPE,
+  			 PROVINCE,
+  			 CITY,
+  			 COUNTY,
+			 PRIZE_DESC
+		)
+		VALUES(
+		    #{infoKey},
+  			#{userKey},
+  			#{earnTime},
+  			#{earnMoney},
+  			#{earnVpoints},
+  			#{prizeType},
+  			#{earnChannel},
+  			#{cardType},
+  			#{province},
+  			#{city},
+  			#{county},
+		    #{prizeDesc}
+		)
+	</insert>
+	
+	<select id="findForMap" parameterType="Map" resultMap="resultMap">
+		SELECT 
+			<include refid="Base_Column_List" /> 
+		FROM vps_common_packs_record
+		WHERE USER_KEY = #{userKey}
+		AND EARN_CHANNEL = #{earnChannel}
+		AND LEFT(EARN_TIME,10) = #{earnTime}
+		AND EARN_TIME >= '${earnTime} 00:00:00' and EARN_TIME <![CDATA[<=]]> '${earnTime} 23:59:59'
+		AND PRIZE_TYPE = #{prizeType}
+		LIMIT 1
+	</select>
+</mapper>

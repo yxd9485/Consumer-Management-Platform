@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.waitActivation.dao.VpsWaitActivationPrizeCogDao">
+
+    <resultMap id="VpsWaitActivationPrizeCogResultMap" type="com.dbt.platform.waitActivation.bean.VpsWaitActivationPrizeCog">
+        <id property="prizeKey" column="prize_key"/>
+        <result property="prizeName" column="prize_name"/>
+        <result property="cashPrizeEndDay" column="cash_prize_endDay"/>
+        <result property="everyoneLimitNum" column="everyone_limit_num"/>
+        <result property="dayMoneyLimit" column="day_money_limit"/>
+        <result property="totalMoneyLimit" column="total_money_limit"/>
+        <result property="activeImgUrl" column="active_img_url"/>
+        <result property="prizeExplain" column="prize_explain"/>
+        <result property="status" column="STATUS"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+    <resultMap id="VpsWaitActivationPrizeSkuResultMap" type="com.dbt.platform.waitActivation.bean.VpsWaitActivationPrizeSku">
+        <id property="infoKey" column="info_key"/>
+        <result property="prizeKey" column="prize_key"/>
+        <result property="skuKey" column="sku_key"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+    </resultMap>
+
+    <select id="queryForLst" resultMap="VpsWaitActivationPrizeCogResultMap" parameterType="Map">
+
+        SELECT
+        GROUP_CONCAT( sku.SKU_NAME  ORDER BY sku.SKU_NAME ASC SEPARATOR '<![CDATA[<br/>]]>') AS skuNames,
+        cog.*
+        FROM
+        vps_wait_activation_prize_cog cog
+        LEFT JOIN vps_wait_activation_prize_sku sku ON cog.prize_key = sku.prize_key
+        WHERE 1=1
+        AND cog.DELETE_FLAG = '0'
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            AND cog.prize_name LIKE '%${queryBean.keyword}%'
+        </if>
+        <if test="queryBean.stGmt != null and queryBean.stGmt != ''">
+            AND cog.CREATE_TIME >= CONCAT(#{queryBean.stGmt},' 00:00:00')
+        </if>
+        <if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+            AND cog.CREATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endGmt},' 23:59:59')
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+            AND cog.prize_key in ( select prize_key from vps_wait_activation_prize_sku where sku_key = #{queryBean.skuKey} )
+        </if>
+        GROUP BY
+        cog.prize_key
+        ORDER BY STATUS DESC, CREATE_TIME DESC
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+
+
+    </select>
+
+    <select id="queryAll" resultMap="VpsWaitActivationPrizeCogResultMap">
+        SELECT
+        *
+        FROM
+        vps_wait_activation_prize_cog cog
+        where
+        DELETE_FLAG = '0'
+        AND STATUS = '1'
+    </select>
+
+    <select id="queryForCount" resultType="int" parameterType="Map">
+
+        SELECT
+        count( 1 )
+        from (
+            SELECT
+            cog.prize_key
+            FROM
+            vps_wait_activation_prize_cog cog
+            LEFT JOIN vps_wait_activation_prize_sku sku ON cog.prize_key = sku.prize_key
+            WHERE 1=1
+            AND cog.DELETE_FLAG = '0'
+            <if test="queryBean.keyword != null and queryBean.keyword != ''">AND cog.prize_name LIKE
+                '%${queryBean.keyword}%'
+            </if>
+            <if test="
+            queryBean.stGmt != null and queryBean.stGmt != ''">AND cog.CREATE_TIME >= CONCAT(#{queryBean.stGmt},' 00:00:00')
+            </if>
+            <if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+                AND cog.CREATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endGmt},' 23:59:59')
+            </if>
+            <if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+                AND cog.prize_key in ( select prize_key from vps_wait_activation_prize_sku where sku_key = #{queryBean.skuKey} )
+            </if>
+            GROUP BY
+            cog.prize_key
+        ) a
+
+
+    </select>
+
+    <insert id="insert" parameterType="com.dbt.platform.waitActivation.bean.VpsWaitActivationPrizeCog">
+        INSERT INTO vps_wait_activation_prize_cog (
+            prize_key,
+            prize_name,
+            cash_prize_endDay,
+            everyone_limit_num,
+            day_money_limit,
+            total_money_limit,
+            active_img_url,
+            prize_explain,
+            STATUS,
+            CREATE_TIME,
+            CREATE_USER
+        ) VALUES (
+            #{prizeKey},
+            #{prizeName},
+            #{cashPrizeEndDay},
+            #{everyoneLimitNum},
+            #{dayMoneyLimit},
+            #{totalMoneyLimit},
+            #{activeImgUrl},
+            #{prizeExplain},
+            #{status},
+            #{createTime},
+            #{createUser}
+        )
+    </insert>
+
+    <insert id="insertSkuList">
+        INSERT INTO vps_wait_activation_prize_sku (info_key,prize_key, sku_key,sku_name,short_name, CREATE_TIME, CREATE_USER)
+        VALUES ( UUID(), #{prizeKey}, #{skuKey},#{skuName},#{shortName}, NOW(), #{createUser})
+    </insert>
+
+    <select id="selectByKey" parameterType="string" resultMap="VpsWaitActivationPrizeCogResultMap">
+
+        SELECT
+        *
+        FROM
+        vps_wait_activation_prize_cog
+        where
+        prize_key = #{prizeKey}
+
+    </select>
+
+    <select id="selectSkuKeysByPrizeKey" resultMap="VpsWaitActivationPrizeSkuResultMap">
+        select * from vps_wait_activation_prize_sku where prize_key = #{prizeKey}
+    </select>
+
+    <update id="update">
+        UPDATE vps_wait_activation_prize_cog
+        SET prize_name = #{prizeName},
+            cash_prize_endDay = #{cashPrizeEndDay},
+            everyone_limit_num = #{everyoneLimitNum},
+            day_money_limit = #{dayMoneyLimit},
+            total_money_limit = #{totalMoneyLimit},
+            active_img_url = #{activeImgUrl},
+            prize_explain = #{prizeExplain},
+            STATUS = #{status},
+            UPDATE_TIME = #{updateTime},
+            UPDATE_USER = #{updateUser}
+        WHERE prize_key = #{prizeKey}
+    </update>
+
+    <delete id="clearByPrizeKey" >
+
+        delete from vps_wait_activation_prize_sku where prize_key = #{prizeKey}
+
+    </delete>
+
+
+
+</mapper>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsSeckillActivityCogDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsSeckillActivityCog" id="resultActivityCog">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="activityNo" column="ACTIVITY_NO"/>
+		<result property="activityName" column="ACTIVITY_NAME"/>
+		<result property="ruleType" column="RULE_TYPE"/>
+		<result property="beginDate" column="BEGIN_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="beginTime" column="BEGIN_TIME"/>
+		<result property="endTime" column="END_TIME"/>
+		<result property="goodsId" column="GOODS_ID"/>
+		<result property="seckillPay" column="SECKILL_PAY"/>
+		<result property="seckillVpoints" column="SECKILL_VPOINTS"/>
+        <result property="seckillPeriodsNum" column="SECKILL_PERIODS_NUM"/>
+        <result property="seckillTotalNum" column="SECKILL_TOTAL_NUM"/>
+		<result property="unpaidOrderTime" column="UNPAID_ORDER_TIME"/>
+		<result property="isSeckillLimit" column="IS_SECKILL_LIMIT"/>
+		<result property="seckillLimitNum" column="SECKILL_LIMIT_NUM"/>
+		<result property="userGroupIds" column="USER_GROUP_IDS"/>
+		<result property="isUseDiscounts" column="IS_USE_DISCOUNTS"/>
+		<result property="crowdLimitType" column="CROWD_LIMIT_TYPE"/>
+		<result property="isNotice" column="IS_NOTICE"/>
+		<result property="noticeHour" column="NOTICE_HOUR"/>
+		<result property="isStop" column="IS_STOP"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			a.INFO_KEY,
+			a.ACTIVITY_NO,
+			a.ACTIVITY_NAME,
+			a.RULE_TYPE,
+			a.BEGIN_DATE,
+			a.END_DATE,
+			a.BEGIN_TIME,
+			a.END_TIME,
+			a.GOODS_ID,
+			FORMAT(a.SECKILL_PAY / 100, 2) as SECKILL_PAY,
+            a.SECKILL_VPOINTS,
+			a.SECKILL_PERIODS_NUM,
+			a.SECKILL_TOTAL_NUM,
+			a.UNPAID_ORDER_TIME,
+			a.IS_SECKILL_LIMIT,
+			a.SECKILL_LIMIT_NUM,
+			a.USER_GROUP_IDS,
+			a.IS_USE_DISCOUNTS,
+			a.CROWD_LIMIT_TYPE,
+			a.IS_NOTICE,
+			a.NOTICE_HOUR,
+			a.IS_STOP,
+			a.DELETE_FLAG,
+			a.CREATE_TIME,
+			a.CREATE_USER,
+			a.UPDATE_TIME,
+			a.UPDATE_USER,
+            CASE 
+				WHEN a.RULE_TYPE = '1' AND (CURDATE() BETWEEN a.BEGIN_DATE AND a.END_DATE) AND (DATE_FORMAT(NOW(),'%H:%i:%s') BETWEEN a.BEGIN_TIME AND a.END_TIME) AND IS_STOP = '0' THEN '1' 
+				WHEN a.RULE_TYPE = '2' AND (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) BETWEEN  a.BEGIN_DATE AND  a.END_DATE) AND (date_format(NOW(),'%H:%i:%s') BETWEEN a.BEGIN_TIME AND a.END_TIME) AND IS_STOP = '0' THEN '1'
+				WHEN (a.RULE_TYPE = '1' AND (NOW() > CONCAT(a.END_DATE,' ',a.END_TIME))) OR IS_STOP = '1' THEN '2' 
+				ELSE '0'
+			END AS isBegin,
+			g.goods_name as goodsName
+	</sql>
+	
+	<insert id="create" parameterType="com.dbt.vpointsshop.bean.VpointsSeckillActivityCog">
+		INSERT INTO vpoints_seckill_activity (
+			INFO_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			RULE_TYPE,
+			BEGIN_DATE,
+			END_DATE,
+			BEGIN_TIME,
+			END_TIME,
+			GOODS_ID,
+			SECKILL_PAY,
+            SECKILL_VPOINTS,
+			SECKILL_PERIODS_NUM,
+			SECKILL_TOTAL_NUM,
+			UNPAID_ORDER_TIME,
+			IS_SECKILL_LIMIT,
+			SECKILL_LIMIT_NUM,
+			IS_USE_DISCOUNTS,
+			CROWD_LIMIT_TYPE,
+			USER_GROUP_IDS,
+			IS_NOTICE,
+			NOTICE_HOUR,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{infoKey},
+			#{activityNo},
+			#{activityName},
+			#{ruleType},
+			#{beginDate},
+			#{endDate},
+			#{beginTime},
+			#{endTime},
+			#{goodsId},
+			#{seckillPay},
+            #{seckillVpoints},
+			#{seckillPeriodsNum},
+			#{seckillTotalNum},
+			#{unpaidOrderTime},
+			#{isSeckillLimit},
+			#{seckillLimitNum},
+			#{isUseDiscounts},
+			#{crowdLimitType},
+			#{userGroupIds},
+			#{isNotice},
+			#{noticeHour},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsSeckillActivityCog">
+        UPDATE
+			vpoints_seckill_activity
+		SET
+            ACTIVITY_NAME = #{activityName},
+            RULE_TYPE = #{ruleType},
+            begin_date = #{beginDate},
+            end_date = #{endDate},
+            BEGIN_TIME = #{beginTime},
+            END_TIME = #{endTime},
+            GOODS_ID = #{goodsId},
+            SECKILL_PAY = #{seckillPay},
+            SECKILL_VPOINTS = #{seckillVpoints},
+            SECKILL_PERIODS_NUM = #{seckillPeriodsNum},
+            UNPAID_ORDER_TIME = #{unpaidOrderTime},
+            IS_SECKILL_LIMIT = #{isSeckillLimit},
+            SECKILL_LIMIT_NUM = #{seckillLimitNum},
+            IS_USE_DISCOUNTS = #{isUseDiscounts},
+            CROWD_LIMIT_TYPE = #{crowdLimitType},
+            USER_GROUP_IDS = #{userGroupIds},
+            IS_NOTICE = #{isNotice},
+            NOTICE_HOUR = #{noticeHour},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findById" resultMap="resultActivityCog" parameterType="String">
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vpoints_seckill_activity a
+        left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.INFO_KEY = #{infoKey}
+	</select>
+	
+	<select id="queryForLst" resultMap="resultActivityCog" parameterType="Map">
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vpoints_seckill_activity a
+	    left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.DELETE_FLAG = '0'  
+	        <if test="queryBean.keyWord != null and queryBean.keyWord != ''">
+	            and (a.activity_name like '%${queryBean.keyWord}%' or g.goods_name like '%${queryBean.keyWord}%')
+	        </if>
+	        <choose>
+				<when test="queryBean.beginDate != null and queryBean.beginDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(a.begin_date > #{queryBean.endDate} or #{queryBean.beginDate} > a.end_date)
+		        </when>
+		        <when test="queryBean.beginDate != null and queryBean.beginDate != ''">
+		            AND #{queryBean.beginDate} between a.begin_date and a.end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between a.begin_date and a.end_date 
+		        </when>
+			</choose>
+	        <choose>
+	           <when test="queryBean.tabsFlag == 1">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and a.begin_date > #{queryBean.currDate}) 
+	               or (a.rule_type = '2' 
+	               		and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) <![CDATA[<]]> a.begin_date 
+	               		or if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) > a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 2">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and #{queryBean.currDate} between a.begin_date and a.end_date)
+	               or ( a.rule_type = '2' and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) between a.begin_date and a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 3">
+	               and (a.rule_type = '1' and #{queryBean.currDate} > a.end_date) or is_stop = '1'
+	           </when>
+	        </choose>
+	        <choose>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'a.create_time'">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, a.CREATE_TIME DESC
+	          </when>
+	          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+	              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+	          </when>
+              <when test="queryBean.tabsFlag == 4">
+                   ORDER BY isBegin, a.CREATE_TIME DESC
+              </when>
+	          <otherwise>ORDER BY a.CREATE_TIME DESC</otherwise>
+	        </choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="Integer" parameterType="Map">
+		SELECT
+			count(a.info_key)
+		FROM
+			vpoints_seckill_activity a
+	    left join vpoints_goods_info g on a.goods_id = g.goods_id
+		WHERE
+			a.DELETE_FLAG = '0'  
+	        <if test="queryBean.keyWord != null and queryBean.keyWord != ''">
+	            and (a.activity_name like '%${queryBean.keyWord}%' or g.goods_name like '%${queryBean.keyWord}%')
+	        </if>
+			<if test="queryBean.goodsId != null and queryBean.goodsId != ''">
+				and a.goods_id = #{queryBean.goodsId}
+			</if>
+	        <choose>
+				<when test="queryBean.beginDate != null and queryBean.beginDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(a.begin_date > #{queryBean.endDate} or #{queryBean.beginDate} > a.end_date)
+		        </when>
+		        <when test="queryBean.beginDate != null and queryBean.beginDate != ''">
+		            AND #{queryBean.beginDate} between a.begin_date and a.end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between a.begin_date and a.end_date 
+		        </when>
+			</choose>
+	        <choose>
+	           <when test="queryBean.tabsFlag == 1">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and a.begin_date > #{queryBean.currDate}) 
+	               or (a.rule_type = '2' 
+	               		and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) <![CDATA[<]]> a.begin_date 
+	               		or if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) > a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 2">
+	           	   and is_stop = '0'
+	               and ((a.rule_type = '1' and #{queryBean.currDate} between a.begin_date and a.end_date)
+	               or ( a.rule_type = '2' and (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) between a.begin_date and a.end_date)))
+	           </when>
+	           <when test="queryBean.tabsFlag == 3">
+	               and (a.rule_type = '1' and #{queryBean.currDate} > a.end_date) or is_stop = '1'
+	           </when>
+	        </choose>
+	</select>
+	
+	<update id="updateActivityStop" parameterType="String">
+		update vpoints_seckill_activity set is_stop = '1' where info_key = #{infoKey}
+	</update>
+	
+	<update id="updateActivityDel" parameterType="String">
+		update vpoints_seckill_activity set delete_flag = '1' where info_key = #{infoKey}
+	</update>
+	
+	<select id="queryByGoodsId" parameterType="String" resultMap="resultActivityCog">
+		select 
+			<include refid="Base_Column_List"></include>
+		from vpoints_seckill_activity a
+		left join vpoints_goods_info g on a.goods_id = g.goods_id
+		where a.delete_flag = '0'
+		and a.is_stop = '0'
+		and a.goods_id = #{goodsId}
+	</select>
+</mapper>

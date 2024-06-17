@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.bidding.dao.IBiddingActivitySubscribeInfoDao">
+
+	<resultMap type="com.dbt.platform.bidding.bean.BiddingActivitySubscribeInfo" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="isDedicated" column="IS_DEDICATED"/>
+		<result property="activityStartFlag" column="ACTIVITY_START_FLAG"/>
+		<result property="activityEndFlag" column="ACTIVITY_END_FLAG"/>
+		<result property="winningResultFlag" column="WINNING_RESULT_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.bidding.bean.BiddingActivitySubscribeInfo">
+		insert into vps_bidding_subscribe_info values(
+			#{infoKey},#{activityKey},#{userKey},#{isDedicated},#{activityStartFlag},
+			#{activityEndFlag},#{winningResultFlag},#{createTime},#{updateTime}
+		)
+	</insert>
+	
+	<update id="updateBiddingRemindFlagForSend" parameterType="Map">
+		update vps_bidding_subscribe_info set 
+		<if test="activityStartFlag == '2'.toString()">
+			ACTIVITY_START_FLAG = '2',
+		</if>
+		<if test="activityEndFlag == '2'.toString()">
+			ACTIVITY_END_FLAG = '2',
+		</if>
+		<if test="winningResultFlag == '2'.toString()">
+			WINNING_RESULT_FLAG = '2',
+		</if>
+		UPDATE_TIME = #{updateTime}
+		where INFO_KEY IN
+			<foreach collection="infoKeyLst" item="infoKey" open="(" separator="," close=")">
+				 #{infoKey}
+			</foreach>
+	</update>
+	
+	<select id="querySubscribeInfoList" parameterType="Map" resultMap="baseResultMap">
+		SELECT 
+			s.*,
+			c.ACTIVITY_NAME as activityName,
+			c.ACTIVITY_TYPE as activityType,
+			c.OPENING_NUMBER as openingNumber,
+			t.PA_OPENID as paOpenid
+		FROM vps_bidding_activity_cog c 
+		INNER JOIN vps_bidding_subscribe_info s on c.ACTIVITY_KEY = s.ACTIVITY_KEY
+		INNER JOIN vps_consumer_thirdaccount_info t ON s.USER_KEY = t.USER_KEY
+		WHERE CURDATE() BETWEEN c.START_DATE AND c.END_DATE
+		AND s.PERIODS_NUMBER = #{periodsNumber}
+		<if test="activityStartFlag == '1'.toString()">
+			AND s.ACTIVITY_START_FLAG = '1'
+		</if>
+		<if test="activityEndFlag == '1'.toString()">
+			AND s.ACTIVITY_END_FLAG = '1'
+		</if>
+		<if test="winningResultFlag == '1'.toString()">
+			AND s.WINNING_RESULT_FLAG = '1'
+		</if>
+	</select>
+</mapper>

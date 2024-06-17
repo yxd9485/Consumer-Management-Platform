@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.system.dao.ISysRoleDao">
+
+	<resultMap type="com.dbt.platform.system.bean.SysRole" id="resultSysRole">
+		<result property="roleKey" column="ROLE_KEY"/>
+  		<result property="roleName" column="ROLE_NAME"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+  		<result property="createUser" column="CREATE_USER"/>
+  		<result property="updateTime" column="UPDATE_TIME"/>
+  		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<select id="loadCurrentRoleByUser" resultMap="resultSysRole" parameterType="String">
+		SELECT 
+			r.ROLE_KEY,
+			r.ROLE_NAME 
+		FROM
+			sys_role r INNER JOIN sys_user_role_relation l ON r.ROLE_KEY = l.ROLE_KEY
+		WHERE
+			l.USER_KEY = #{userKey}
+			AND r.DELETE_FLAG = '0'
+	</select>
+</mapper>

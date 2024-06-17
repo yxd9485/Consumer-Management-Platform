@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.turntable.dao.TurntablePacksRecordDao">
+    <resultMap id="resultMap" type="com.dbt.platform.turntable.bean.VpsTurntablePacksRecord">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="userKey" column="USER_KEY"/>
+        <result property="turntableActivityKey" column="TURNTABLE_ACTIVITY_KEY"/>
+        <result property="earnTime" column="EARN_TIME"/>
+        <result property="earnMoney" column="EARN_MONEY"/>
+        <result property="earnVpoints" column="EARN_VPOINTS"/>
+        <result property="turntablePrizeType" column="TURNTABLE_PRIZE_TYPE"/>
+        <result property="turntablePrizeName" column="TURNTABLE_PRIZE_NAME"/>
+        <result property="consumeVpoints" column="CONSUME_VPOINTS"/>
+        <result property="prizePic" column="PRIZE_PIC"/>
+        <result property="province" column="PROVINCE"/>
+        <result property="city" column="CITY"/>
+        <result property="county" column="COUNTY"/>
+        <result property="longitude" column="LONGITUDE"/>
+        <result property="latitude" column="LATITUDE"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="prizeInfoKey" column="PRIZE_INFO_KEY"/>
+        <result property="nickName" column="NICK_NAME"/>
+        <result property="realName" column="REAL_NAME"/>
+        <result property="phoneNumber" column="PHONE_NUMBER"/>
+        <result property="idCard" column="ID_CARD"/>
+    </resultMap>
+
+
+    <select id="queryTurntablePacksRecordInfoByActivityKey" parameterType="map" resultMap="resultMap">
+        select a.* ,u.NICK_NAME,u.REAL_NAME,u.PHONE_NUMBER,p.ID_CARD, IFNULL(a.`prize_name` , a.`TURNTABLE_PRIZE_NAME` ) prizeDesc
+        <if test="queryBean.dbType == 'mengniu' ">
+            ,a.agency_name as agencyName,
+            dep1.DEP_NAME as depRegionName, dep2.DEP_NAME as depProvinceName, dep3.DEP_NAME as depMarketName, dep4.DEP_NAME as depCountyName
+        </if>
+        from (
+        <foreach collection="turntableSuffix" item="tableIndex" separator="UNION ALL">
+            select t.*
+            from
+            vps_turntable_packs_record_${tableIndex} t
+        </foreach>
+        ) a
+        left join vps_consumer_user_info u
+        on a.USER_KEY = u.USER_KEY
+        left join vps_vcode_prize_record p
+        on a.PRIZE_INFO_KEY = p.INFO_KEY
+        <if test="queryBean.dbType == 'mengniu' ">
+            left join com_agency_info a
+            on a.id = a.mn_first_dealerKey
+            left join mn_department dep1
+            on a.mn_regionId = dep1.ID
+            left join mn_department dep2
+            on a.mn_provinceId = dep2.ID
+            left join mn_department dep3
+            on a.mn_marketId = dep3.ID
+            left join mn_department dep4
+            on a.mn_countyId = dep4.ID
+        </if>
+        where TURNTABLE_ACTIVITY_KEY = #{activityKey}
+        <if test="queryBean.nickName != null and queryBean.nickName != ''">
+            and (u.NICK_NAME like '%${queryBean.nickName}%' or u.REAL_NAME like '%${queryBean.nickName}%')
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            and a.EARN_TIME &gt; #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            and a.EARN_TIME &lt;= #{queryBean.endDate}
+        </if>
+        <if test="queryBean.dbType == 'mengniu' ">
+            <if test="queryBean.depRegionId != null and queryBean.depRegionId != ''">
+                and a.mn_regionId = #{queryBean.depRegionId}
+            </if>
+            <if test="queryBean.depProvinceId != null and queryBean.depProvinceId != ''">
+                and a.mn_provinceId = #{queryBean.depProvinceId}
+            </if>
+            <if test="queryBean.depMarketId != null and queryBean.depMarketId != ''">
+                and a.mn_marketId = #{queryBean.depMarketId}
+            </if>
+            <if test="queryBean.depCountyId != null and queryBean.depCountyId != ''">
+                and a.mn_countyId = #{queryBean.depCountyId}
+            </if>
+            <if test="queryBean.agencyName != null and queryBean.agencyName != ''">
+                and a.agency_name like '%${queryBean.agencyName}%'
+            </if>
+        </if>
+        <if test="queryBean.turntablePrizeKey != null and queryBean.turntablePrizeKey != ''">
+            and a.TURNTABLE_PRIZE_KEY = #{queryBean.turntablePrizeKey}
+        </if>
+        <choose>
+            <when test="queryBean.turntablePrizeType == 0 and queryBean.turntablePrizeType != ''">
+                and a.TURNTABLE_PRIZE_TYPE = '3'
+            </when>
+            <when test="queryBean.turntablePrizeType == 1 and queryBean.turntablePrizeType != ''">
+                and a.TURNTABLE_PRIZE_TYPE != '3'
+            </when>
+        </choose>
+        order by a.EARN_TIME desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryTurntablePacksRecordInfoForCount" parameterType="map" resultType="int">
+        select count(*)
+        from (
+        <foreach collection="turntableSuffix" item="tableIndex" separator="UNION ALL">
+            select t.*
+            from
+            vps_turntable_packs_record_${tableIndex} t
+        </foreach>
+        ) a
+        left join vps_consumer_user_info u
+        on a.USER_KEY = u.USER_KEY
+        left join vps_vcode_prize_record p
+        on a.PRIZE_INFO_KEY = p.INFO_KEY
+        <if test="queryBean.dbType == 'mengniu' ">
+            left join com_agency_info a
+            on a.id = a.mn_first_dealerKey
+            left join mn_department dep1
+            on a.mn_regionId = dep1.ID
+            left join mn_department dep2
+            on a.mn_provinceId = dep2.ID
+            left join mn_department dep3
+            on a.mn_marketId = dep3.ID
+            left join mn_department dep4
+            on a.mn_countyId = dep4.ID
+        </if>
+        where TURNTABLE_ACTIVITY_KEY = #{activityKey}
+        <if test="queryBean.nickName != null and queryBean.nickName != ''">
+            and (u.NICK_NAME like '%${queryBean.nickName}%' or u.REAL_NAME like '%${queryBean.nickName}%')
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            and a.EARN_TIME &gt; #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            and a.EARN_TIME &lt;= #{queryBean.endDate}
+        </if>
+        <if test="queryBean.dbType == 'mengniu' ">
+            <if test="queryBean.depRegionId != null and queryBean.depRegionId != ''">
+                and a.mn_regionId = #{queryBean.depRegionId}
+            </if>
+            <if test="queryBean.depProvinceId != null and queryBean.depProvinceId != ''">
+                and a.mn_provinceId = #{queryBean.depProvinceId}
+            </if>
+            <if test="queryBean.depMarketId != null and queryBean.depMarketId != ''">
+                and a.mn_marketId = #{queryBean.depMarketId}
+            </if>
+            <if test="queryBean.depCountyId != null and queryBean.depCountyId != ''">
+                and a.mn_countyId = #{queryBean.depCountyId}
+            </if>
+            <if test="queryBean.agencyName != null and queryBean.agencyName != ''">
+                and a.agency_name like '%${queryBean.agencyName}%'
+            </if>
+        </if>
+        <if test="queryBean.turntablePrizeKey != null and queryBean.turntablePrizeKey != ''">
+            and a.TURNTABLE_PRIZE_KEY = #{queryBean.turntablePrizeKey}
+        </if>
+        <choose>
+            <when test="queryBean.turntablePrizeType == 0 and queryBean.turntablePrizeType != ''">
+                and a.TURNTABLE_PRIZE_TYPE = '3'
+            </when>
+            <when test="queryBean.turntablePrizeType == 1 and queryBean.turntablePrizeType != ''">
+                and a.TURNTABLE_PRIZE_TYPE != '3'
+            </when>
+        </choose>
+
+    </select>
+
+</mapper>

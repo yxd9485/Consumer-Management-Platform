@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.signin.dao.IVpsVcodeSigninCogDao">
+
+	<resultMap type="com.dbt.platform.signin.bean.VpsVcodeSigninCog" id="VpsVcodeSigninCogResultMap">
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="activityNo" column="ACTIVITY_NO"/>
+		<result property="activityName" column="ACTIVITY_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="periodType" column="PERIOD_TYPE"/>
+		<result property="limitNum" column="LIMIT_NUM"/>
+		<result property="skuRelationType" column="SKU_RELATION_TYPE"/>
+		<result property="prizeUpperLimit" column="PRIZE_UPPER_LIMIT"/>
+		<result property="doubtRebateFlag" column="DOUBT_REBATE_FLAG"/>
+		<result property="moneyConfigFlag" column="MONEY_CONFIG_FLAG"/>
+		<result property="activityDesc" column="ACTIVITY_DESC"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			ACTIVITY_KEY,
+			COMPANY_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+			PERIOD_TYPE,
+			LIMIT_NUM,
+			SKU_RELATION_TYPE,
+			PRIZE_UPPER_LIMIT,
+            DOUBT_REBATE_FLAG,
+			MONEY_CONFIG_FLAG,
+			ACTIVITY_DESC,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+	<insert id="create" parameterType="com.dbt.platform.signin.bean.VpsVcodeSigninCog">
+		INSERT INTO vps_vcode_signin_cog (
+			ACTIVITY_KEY,
+			COMPANY_KEY,
+			ACTIVITY_NO,
+			ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+			PERIOD_TYPE,
+			LIMIT_NUM,
+			SKU_RELATION_TYPE,
+			PRIZE_UPPER_LIMIT,
+            DOUBT_REBATE_FLAG,
+			MONEY_CONFIG_FLAG,
+			ACTIVITY_DESC,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{activityKey},
+			#{companyKey},
+			#{activityNo},
+			#{activityName},
+			#{startDate},
+			#{endDate},
+			#{periodType},
+			#{limitNum},
+			#{skuRelationType},
+			#{prizeUpperLimit},
+            #{doubtRebateFlag},
+			#{moneyConfigFlag},
+			#{activityDesc},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.signin.bean.VpsVcodeSigninCog">
+		UPDATE
+			vps_vcode_signin_cog
+		<set>
+			<if test="companyKey != null and companyKey != ''">
+				COMPANY_KEY = #{companyKey},
+			</if>
+			<if test="activityName != null and activityName != ''">
+				ACTIVITY_NAME = #{activityName},
+			</if>
+			<if test="startDate != null and startDate != ''">
+				START_DATE = #{startDate},
+			</if>
+			<if test="endDate != null and endDate != ''">
+				END_DATE = #{endDate},
+			</if>
+			<if test="periodType != null and periodType != ''">
+            	PERIOD_TYPE = #{periodType},
+			</if>
+			<if test="limitNum != null and limitNum != ''">
+				LIMIT_NUM = #{limitNum},
+			</if>
+			<if test="skuRelationType != null and skuRelationType != ''">
+				SKU_RELATION_TYPE = #{skuRelationType},
+			</if>
+				PRIZE_UPPER_LIMIT = #{prizeUpperLimit},
+			<if test="doubtRebateFlag != null and doubtRebateFlag != ''">
+				DOUBT_REBATE_FLAG = #{doubtRebateFlag},
+			</if>
+			<if test="moneyConfigFlag != null and moneyConfigFlag != ''">
+				MONEY_CONFIG_FLAG = #{moneyConfigFlag},
+			</if>
+			<if test="activityDesc != null and activityDesc != ''">
+				ACTIVITY_DESC = #{activityDesc},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != ''">
+				DELETE_FLAG = #{deleteFlag},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				UPDATE_TIME = #{updateTime},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				UPDATE_USER = #{updateUser}
+			</if>
+		</set>
+		WHERE
+			ACTIVITY_KEY = #{activityKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="VpsVcodeSigninCogResultMap" >
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vps_vcode_signin_cog 
+		WHERE
+			ACTIVITY_KEY = #{id}
+	</select>
+	
+	<select id="loadActivityList" parameterType="Map" resultMap="VpsVcodeSigninCogResultMap" >
+		SELECT a.* FROM( 
+			SELECT
+				activity_Key,
+				activity_no,
+				CASE 
+					WHEN DATE(NOW()) >= START_DATE AND DATE(NOW()) <![CDATA[<=]]> END_DATE AND MONEY_CONFIG_FLAG = '1' THEN '1' 
+					WHEN DATE(NOW()) > END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				ACTIVITY_NAME,
+	            MONEY_CONFIG_FLAG,
+				START_DATE,
+				END_DATE,
+				CREATE_TIME
+			FROM
+				vps_vcode_signin_cog
+			WHERE
+				DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND activity_no like '%${queryBean.keyword}%' or activity_name like '%${queryBean.keyword}%'
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+		        </when>
+		        <when test="queryBean.startDate != null and queryBean.startDate != ''">
+		            AND #{queryBean.startDate} between start_date and end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between start_date and end_date 
+		        </when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="countActivityList" parameterType="Map" resultType="Integer" >
+		SELECT COUNT(1) FROM( 
+			SELECT
+				activity_Key,
+				activity_no,
+				CASE 
+					WHEN DATE(NOW()) >= START_DATE AND DATE(NOW()) <![CDATA[<=]]> END_DATE AND MONEY_CONFIG_FLAG = '1' THEN '1' 
+					WHEN DATE(NOW()) > END_DATE THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				ACTIVITY_NAME,
+	            MONEY_CONFIG_FLAG,
+				START_DATE,
+				END_DATE,
+				CREATE_TIME
+			FROM
+				vps_vcode_signin_cog
+			WHERE
+				DELETE_FLAG != '1'
+			<if test="queryBean.keyword != null and queryBean.keyword != ''">
+				AND activity_no like '%${queryBean.keyword}%' or activity_name like '%${queryBean.keyword}%'
+			</if>
+			<choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+		        </when>
+		        <when test="queryBean.startDate != null and queryBean.startDate != ''">
+		            AND #{queryBean.startDate} between start_date and end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between start_date and end_date 
+		        </when>
+			</choose>
+		) a
+		WHERE 1=1
+		<if test="queryBean.tabsFlag != '3'.toString()">
+			AND a.isBegin = #{queryBean.tabsFlag}
+		</if>
+	</select>
+</mapper>

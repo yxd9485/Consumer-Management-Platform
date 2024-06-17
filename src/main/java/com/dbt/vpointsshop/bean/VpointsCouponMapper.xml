@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.VpointsCouponDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCouponBatch" id="batchMap">
+		<result property="batchKey" column="batchKey" />
+		<result property="batchName" column="batchName" />
+		<result property="batchCount" column="batchCount" />
+		<result property="batchTable" column="batchTable" />
+		<result property="companyKey" column="companyKey" />
+		<result property="companyName" column="companyName" />
+	</resultMap>
+	
+
+	<select id="getBatchList" parameterType="Map" resultMap="batchMap">
+		select t.batch_key as batchKey,t.batch_name as batchName,
+		t.batch_count as batchCount,t.batch_table as batchTable
+		 from vpoints_coupon_batch t
+		where t.delete_flag=0
+
+			<if test="bean.batchName != null and bean.batchName != ''">
+				and t.batch_name like '%${bean.batchName}%'
+			</if>
+			<if test="bean.batchKey != null and bean.batchKey != ''">
+				and t.batch_key  = #{bean.batchKey}
+			</if>
+
+        <choose>
+            <when test="param.orderCol == null and param.orderCol == '' and param.orderType == '' and param.orderType ==null">
+                ORDER BY  t.update_time desc
+            </when>
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType !='' and param.orderType !=null ">
+                ORDER BY ${param.orderCol} ${param.orderType}
+            </when>
+
+            <otherwise> ORDER BY t.update_time desc</otherwise>
+        </choose>
+		/*	order by t.update_time desc */ limit #{param.startCount}, #{param.pagePerCount}
+	</select>
+	<select id="getBatchCount" parameterType="Map" resultType="int">
+		select count(*) from  vpoints_coupon_batch t
+		where t.delete_flag=0
+			<if test="bean.batchName != null and bean.batchName != ''">
+				and t.batch_name like '%${bean.batchName}%'
+			</if>
+			<if test="bean.batchKey != null and bean.batchKey != ''">
+				and t.batch_key  = #{bean.batchKey}
+			</if>
+	</select>
+	<select id="getGoodsByBatch" parameterType="String" resultType="int">
+		select count(*) from vpoints_goods_info t where t.batch_key=#{batchKey}
+	</select>
+	<select id="getTalbeByBatch" parameterType="String" resultType="String">
+		select batch_table from vpoints_coupon_batch  where batch_key=#{batchKey}
+	</select>
+	<select id="getCouponByBatch" parameterType="Map" resultType="int">
+		select count(*) from ${batchTable} where batch_key=#{batchKey} and coupon_status=1
+	</select>
+	<delete id="delBatchByKey" parameterType="String">
+		delete from vpoints_coupon_batch where batch_key=#{batchKey}
+	</delete>
+	<delete id="delCouponByBatch" parameterType="Map">
+		delete from ${batchTable} where batch_key=#{batchKey}
+	</delete>
+	<insert id="saveBatch" parameterType="com.dbt.vpointsshop.bean.VpointsCouponBatch">
+	insert into vpoints_coupon_batch(
+		batch_key,company_key,batch_name,batch_count,create_user,create_time,update_time,delete_flag
+	)values(
+		#{batchKey},#{companyKey},#{batchName},#{batchCount},#{createUser},#{createTime},#{updateTime},#{deleteFlag}
+	)
+	</insert>
+	<insert id="saveCoupon" parameterType="Map">
+		insert into ${batchTable} (
+			batch_key,coupon_vcode,create_time,update_time
+		)values
+		<foreach collection="couponList" item="itm" separator=",">
+		(#{itm.batchKey},#{itm.couponVcode},#{itm.createTime},#{itm.updateTime})
+		</foreach>
+	</insert>
+	<update id="updateBatch" parameterType="com.dbt.vpointsshop.bean.VpointsCouponBatch">
+		update vpoints_coupon_batch
+		<set>
+			batch_name=#{batchName},
+			batch_count=#{batchCount},
+			company_key=#{companyKey},
+			update_time=#{updateTime}
+		</set>
+		where batch_key=#{batchKey}
+	</update>
+	
+
+	<update id="updateReceiveStatisticsNum" parameterType="String">
+		UPDATE
+			vpoints_coupon_receive_statistics
+		<set>
+            day_num = case when date(NOW()) != date(last_receive_time) then 1 else day_num + 1 end,
+            week_num = case when week(NOW(), 1) != week(last_receive_time, 1) then 1 else week_num + 1 end,
+            month_num = case when DATE_FORMAT(last_receive_time, '%Y%m' ) != DATE_FORMAT( CURDATE( ) , '%Y%m' ) then 1 else month_num + 1 end,
+            total_num = IFNULL(total_num, 0) + 1,
+            last_receive_time = now()
+        </set>
+		WHERE
+			info_key = #{infoKey}
+	</update>
+	
+	<select id="queryByCouponStatistics" parameterType="Map" resultType="com.dbt.vpointsshop.bean.VpointsCouponReceiveStatistics">
+	   select
+	       info_key as 'infoKey'
+	   from 
+	       vpoints_coupon_receive_statistics
+	   where 
+	       user_key = #{userKey}
+	       and coupon_key = #{couponKey}
+	</select>
+	
+	
+	<insert id="addReceiveStatistics" parameterType="com.dbt.vpointsshop.bean.VpointsCouponReceiveStatistics">
+	   insert into vpoints_coupon_receive_statistics (
+	       info_key,
+	       user_key,
+	       coupon_key,
+	       day_num,
+	       week_num,
+	       month_num,
+	       total_num,
+	       last_receive_time
+	   ) values (
+	       #{infoKey},
+	       #{userKey},
+	       #{couponKey},
+	       #{dayNum},
+	       #{weekNum},
+	       #{monthNum},
+	       #{totalNum},
+	       #{lastReceiveTime}
+	   )
+	</insert>
+</mapper>

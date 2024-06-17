@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.framework.base.dao.ICommonDao">
+	
+	<!-- 查询指定表数据总条数 -->
+	<select id="getCount" parameterType="Map" resultType="int">
+		SELECT COUNT(1) FROM ${tableName}
+		WHERE ${bussionNoCol} LIKE '${bussionNoPrefix}%' 
+	</select>
+	
+	<!-- 检验业务名称是否重复 -->
+	<select id="queryCountForName" parameterType="Map" resultType="int">
+		SELECT COUNT(1) FROM ${tableName} WHERE ${nameCol} = #{bussionName}
+		AND DELETE_FLAG = '0'
+		<if test="infoKey != null and infoKey != ''">
+			AND ${infoKeyCol} != #{infoKey}
+		</if>
+	</select>
+</mapper>

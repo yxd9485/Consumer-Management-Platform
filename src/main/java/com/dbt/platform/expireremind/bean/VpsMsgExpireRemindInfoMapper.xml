@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.expireremind.dao.IVpsMsgExpireRemindInfoDao" >
+  <resultMap id="BaseResultMap" type="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+    <id column="INFO_KEY" property="infoKey"  />
+    <result column="VCODE_ACTIVITY_KEY" property="vcodeActivityKey"  />
+    <result column="ACTIVITY_TYPE" property="activityType"  />
+    <result column="ACTIVITY_NAME" property="activityName"  />
+    <result column="ACTIVITY_NO" property="activityNo"  />
+    <result column="ACTIVITY_END_DATE" property="activityEndDate"  />
+    <result column="ACTIVITY_START_DATE" property="activityStartDate"  />
+    <result column="MSG_TYPE" property="msgType"  />
+    <result column="MSG_CONTENT" property="msgContent"  />
+    <result column="READ_FLAG" property="readFlag"  />
+    <result column="TOP_FLAG" property="topFlag"  />
+    <result column="DELETE_FLAG" property="deleteFlag"  />
+    <result column="CREATE_TIME" property="createTime"  />
+    <result column="UPDATE_TIME" property="updateTime"  />
+
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INFO_KEY, VCODE_ACTIVITY_KEY, ACTIVITY_TYPE,ACTIVITY_NAME,ACTIVITY_NO,ACTIVITY_END_DATE,ACTIVITY_START_DATE, MSG_TYPE, MSG_CONTENT, READ_FLAG, TOP_FLAG,
+    DELETE_FLAG, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from vps_msg_expire_remind_info
+    where INFO_KEY = #{infoKey}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from vps_msg_expire_remind_info
+    where INFO_KEY = #{infoKey}
+  </delete>
+  <insert id="insert" parameterType="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+    insert into vps_msg_expire_remind_info (INFO_KEY, VCODE_ACTIVITY_KEY, ACTIVITY_TYPE,  ACTIVITY_NAME,ACTIVITY_NO,ACTIVITY_END_DATE,ACTIVITY_START_DATE,
+      MSG_TYPE, MSG_CONTENT, READ_FLAG,
+      TOP_FLAG, DELETE_FLAG, CREATE_TIME,
+      UPDATE_TIME)
+    values (uuid(), #{vcodeActivityKey}, #{activityType}, #{activityName}, 
+    #{activityNo},#{activityEndDate},#{activityStartDate},
+      #{msgType}, #{msgContent}, #{readFlag},
+      #{topFlag},'0', now(),
+      now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+      insert  into vps_msg_expire_remind_info(  
+        INFO_KEY ,
+        VCODE_ACTIVITY_KEY,
+        ACTIVITY_TYPE,     
+        MSG_TYPE,
+        MSG_CONTENT,
+        READ_FLAG,
+        TOP_FLAG,
+        DELETE_FLAG,
+        CREATE_TIME,
+        UPDATE_TIME)value(
+            uuid(),
+        #{vcodeActivityKey},
+        #{activityType},
+        #{msgType},
+        #{msgContent},
+        #{readFlag},
+        #{topFlag},
+        '0',
+        now(),
+        now()
+    )
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+    update vps_msg_expire_remind_info
+    <set >
+     <!-- <if test="vcodeActivityKey != null" >
+        VCODE_ACTIVITY_KEY = #{vcodeActivityKey},
+      </if>
+      <if test="activityType != null" >
+        ACTIVITY_TYPE = #{activityType},
+      </if>
+      <if test="msgType != null" >
+        MSG_TYPE = #{msgType},
+      </if>-->
+      <if test="msgContent != null" >
+        MSG_CONTENT = #{msgContent},
+      </if>
+        <!--  <if test="readFlag != null" >
+            READ_FLAG = #{readFlag},
+          </if>
+          <if test="topFlag != null" >
+            TOP_FLAG = #{topFlag},
+          </if>
+          <if test="deleteFlag != null" >
+            DELETE_FLAG = #{deleteFlag},
+          </if>
+          <if test="createTime != null" >
+            CREATE_TIME = #{createTime},
+          </if>-->
+     
+        UPDATE_TIME = NOW()
+     
+    </set>
+    where INFO_KEY = #{infoKey}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+    update vps_msg_expire_remind_info
+    set 
+     
+      MSG_CONTENT = #{msgContent},
+     /*
+      VCODE_ACTIVITY_KEY = #{vcodeActivityKey},
+      ACTIVITY_TYPE = #{activityType},
+      MSG_TYPE = #{msgType}, 
+      READ_FLAG = #{readFlag},
+      TOP_FLAG = #{topFlag},
+      DELETE_FLAG = #{deleteFlag},
+      CREATE_TIME = #{createTime},*/
+      UPDATE_TIME = NOW()
+    where INFO_KEY = #{infoKey}
+  </update>
+
+
+  <select id="selectByActivityParamer" resultMap="BaseResultMap" parameterType="Map" >
+    select
+    INFO_KEY, VCODE_ACTIVITY_KEY, ACTIVITY_TYPE,ACTIVITY_NAME,ACTIVITY_NO,
+    ACTIVITY_START_DATE ,ACTIVITY_END_DATE, MSG_TYPE, MSG_CONTENT, READ_FLAG, TOP_FLAG,
+    DELETE_FLAG,
+    CREATE_TIME,
+      DATE_FORMAT(UPDATE_TIME, '%Y-%m-%d %k:%i:%s') as UPDATE_TIME
+    from vps_msg_expire_remind_info
+    where
+    1=1
+      and DELETE_FLAG ='0'
+    <if test="vcodeActivityKey != null" >
+    and VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+  </if>
+    <if test="activityType != null" >
+    and  ACTIVITY_TYPE = #{activityType}
+    </if>
+    <if test="msgType != null" >
+     and  MSG_TYPE = #{msgType}
+    </if>
+    order  by UPDATE_TIME desc
+    limit 10;
+  </select>
+  <select id="selectByActivityParamerCondition" resultMap="BaseResultMap" parameterType="Map" >
+    select
+    INFO_KEY, VCODE_ACTIVITY_KEY, ACTIVITY_TYPE,ACTIVITY_NAME,ACTIVITY_NO,
+    ACTIVITY_START_DATE ,ACTIVITY_END_DATE, MSG_TYPE, MSG_CONTENT, READ_FLAG, TOP_FLAG,
+    DELETE_FLAG,
+    CREATE_TIME,
+    DATE_FORMAT(UPDATE_TIME, '%Y-%m-%d %k:%i:%s') as UPDATE_TIME
+    from vps_msg_expire_remind_info
+    where
+    1=1
+      and DELETE_FLAG ='0'
+    <if test="remindInfo.vcodeActivityKey != null and remindInfo.vcodeActivityKey != ''" >
+      and VCODE_ACTIVITY_KEY like '%${remindInfo.vcodeActivityKey}%'
+    </if>
+      <if test="remindInfo.activityNo != null and remindInfo.activityNo != ''" >
+          and ACTIVITY_NO like '%${remindInfo.activityNo}%'
+      </if>
+      <if test="remindInfo.activityName != null and remindInfo.activityName != ''" >
+          and ACTIVITY_NAME like '%${remindInfo.activityName}%'
+      </if>
+    <if test="remindInfo.activityType != null and remindInfo.activityType != ''" >
+      and  ACTIVITY_TYPE = #{remindInfo.activityType}
+    </if>
+
+    <if test="remindInfo.msgType != null and remindInfo.msgType !='' " >
+      and  MSG_TYPE = #{remindInfo.msgType}
+    </if>
+  <!--  <if test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != '' and remindInfo.activityEndDate !=null and remindInfo.activityEndDate !=''" >
+      and  ACTIVITY_START_DATE > #{remindInfo.activityStartDate}AND ACTIVITY_END_DATE <![CDATA[ < ]]>  #{remindInfo.activityEndDate}
+    </if>-->
+      <choose>
+          <when test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != '' and  remindInfo.activityEndDate != null and remindInfo.activityEndDate != ''">
+              AND !(ACTIVITY_START_DATE > #{remindInfo.activityStartDate} and #{remindInfo.activityEndDate} > ACTIVITY_END_DATE)
+          </when>
+          <when test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != ''">
+              AND #{remindInfo.activityStartDate} between ACTIVITY_START_DATE and ACTIVITY_END_DATE
+          </when>
+          <when test="remindInfo.activityEndDate != null and remindInfo.activityEndDate != ''">
+              AND #{remindInfo.activityEndDate} between ACTIVITY_START_DATE and ACTIVITY_END_DATE
+          </when>
+      </choose>
+     
+    <choose>
+      <when test="pageInfo.orderCol == null and pageInfo.orderCol == '' and pageInfo.orderType == '' and pageInfo.orderType ==null">
+        ORDER BY TOP_FLAG desc , UPDATE_TIME DESC
+      </when>
+      <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''and pageInfo.orderCol !='CREATE_TIME' ">
+        ORDER BY TOP_FLAG desc , ${pageInfo.orderCol} ${pageInfo.orderType}
+      </when>
+      <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol =='CREATE_TIME' ">
+        ORDER BY  ACTIVITY_START_DATE ${pageInfo.orderType},ACTIVITY_END_DATE ${pageInfo.orderType}
+      </when>
+      <otherwise>order by TOP_FLAG desc, UPDATE_TIME desc</otherwise>
+    </choose>
+
+    limit #{pageInfo.startCount} , #{pageInfo.pagePerCount}
+  </select>
+
+  <select id="selectByTypeAndActivityId" resultMap="BaseResultMap" parameterType="com.dbt.platform.expireremind.bean.VpsMsgExpireRemindInfo" >
+    select
+   <include refid="Base_Column_List"/>
+
+    from vps_msg_expire_remind_info
+
+    where
+    1=1
+      and DELETE_FLAG ='0'
+    <if test="vcodeActivityKey != null" >
+      and VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+    </if>
+    <if test="activityType != null" >
+      and  ACTIVITY_TYPE = #{activityType}
+    </if>
+    <if test="msgType != null" >
+      and  MSG_TYPE = #{msgType}
+    </if>
+      limit 1
+  </select>
+
+  <select id="selectMsgExpireRemindTotalCondition" resultType="int" parameterType="Map">
+
+    select count(1) from vps_msg_expire_remind_info where  DELETE_FLAG ='0'
+      <if test="remindInfo.vcodeActivityKey != null and remindInfo.vcodeActivityKey != ''" >
+          and VCODE_ACTIVITY_KEY = #{remindInfo.vcodeActivityKey}
+      </if>
+      <if test="remindInfo.activityName != null and remindInfo.activityName != ''" >
+          and ACTIVITY_NAME = #{remindInfo.activityName}
+      </if>
+      <if test="remindInfo.activityType != null and remindInfo.activityType != ''" >
+          and  ACTIVITY_TYPE = #{remindInfo.activityType}
+      </if>
+
+      <if test="remindInfo.msgType != null and remindInfo.msgType !='' " >
+          and  MSG_TYPE = #{remindInfo.msgType}
+      </if>
+     <!-- <if test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != '' and remindInfo.activityEndDate !=null and remindInfo.activityEndDate !=''" >
+          and  ACTIVITY_START_DATE > #{remindInfo.activityStartDate}AND ACTIVITY_END_DATE <![CDATA[ < ]]>  #{remindInfo.activityEndDate}
+      </if>-->
+      <choose>
+          <when test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != '' and  remindInfo.activityEndDate != null and remindInfo.activityEndDate != ''">
+              AND !(ACTIVITY_START_DATE > #{remindInfo.activityStartDate} and #{remindInfo.activityEndDate} > ACTIVITY_END_DATE)
+          </when>
+          <when test="remindInfo.activityStartDate != null and remindInfo.activityStartDate != ''">
+              AND #{remindInfo.activityStartDate} between ACTIVITY_START_DATE and ACTIVITY_END_DATE
+          </when>
+          <when test="remindInfo.activityEndDate != null and remindInfo.activityEndDate != ''">
+              AND #{remindInfo.activityEndDate} between ACTIVITY_START_DATE and ACTIVITY_END_DATE
+          </when>
+      </choose>
+  </select>
+
+
+    <select id="selectMsgExpireRemindTotal" resultType="int" >
+
+        select count(1) from vps_msg_expire_remind_info where  DELETE_FLAG ='0'
+
+
+    </select>
+    <select id="findIdsByTime" resultType="java.lang.String">
+        
+       SELECT INFO_KEY FROM `vps_msg_expire_remind_info` where  DATEDIFF(DATE(now()),UPDATE_TIME)>=30 and DELETE_FLAG ='0';
+       
+    </select>
+
+    <update id="updateDelByInfoKey" parameterType="Map">
+        update
+        vps_msg_expire_remind_info
+        <set>
+            DELETE_FLAG = #{deleteFlag}
+        </set>
+        where INFO_KEY in 
+        <foreach collection="list" item="key" index="index"  open="(" separator="," close=")">
+         #{key}
+         </foreach>
+    </update>
+    
+    <delete id="delByInfoKey" parameterType="Map">
+        delete from 
+        vps_msg_expire_remind_info
+        where INFO_KEY in
+        <foreach collection="list" item="key" index="index"  open="(" separator="," close=")">
+            #{key}
+        </foreach>
+    </delete>
+    
+
+
+    <update id="updateStatusForRead" parameterType="Map">
+      update
+    vps_msg_expire_remind_info
+    <set>
+
+      READ_FLAG = #{status}
+
+    </set>
+    where INFO_KEY in  <foreach collection="lists" item="key" index="index"  open="(" separator="," close=")">
+    #{key}
+  </foreach>
+  </update>
+
+  <update id="stickMsg" parameterType="Map">
+       update
+         vps_msg_expire_remind_info
+         <set>
+           TOP_FLAG=#{topFlag}
+         </set>
+    where INFO_KEY =#{key}
+
+  </update>
+
+</mapper>

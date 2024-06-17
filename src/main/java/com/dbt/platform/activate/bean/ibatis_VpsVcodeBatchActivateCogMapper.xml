@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activate.dao.IVpsVcodeBatchActivateCogDao">
+
+	<resultMap type="com.dbt.platform.activate.bean.VpsVcodeBatchActivateCog" id="vpsVcodeBatchActivateCogResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="openid" column="OPENID"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="phoneNum" column="PHONE_NUM"/>
+		<result property="factoryName" column="FACTORY_NAME"/>
+		<result property="serverName" column="SERVER_NAME"/>
+		<result property="userPrivilege" column="USER_PRIVILEGE"/>
+		<result property="userStatus" column="USER_STATUS"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.activate.bean.VpsVcodeBatchActivateCog">
+		insert into vps_vcode_batch_activate_cog (
+			INFO_KEY,
+			OPENID,
+			USER_NAME,
+			PHONE_NUM,
+			FACTORY_NAME,
+			SERVER_NAME,
+			USER_PRIVILEGE,
+			USER_STATUS,
+			DELETE_FLAG,
+			CREATE_USER,
+			CREATE_TIME,
+			UPDATE_USER,
+			UPDATE_TIME
+		) values (
+			#{infoKey},
+			#{openid},
+			#{userName},
+			#{phoneNum},
+			#{factoryName},
+			#{serverName},
+			#{userPrivilege},
+			#{userStatus},
+			#{deleteFlag},
+			#{createUser},
+			#{createTime},
+			#{updateUser},
+			#{updateTime}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.activate.bean.VpsVcodeBatchActivateCog">
+		update vps_vcode_batch_activate_cog
+		<set>
+			<if test="userName != null and userName != '' ">
+				user_name = #{userName},
+			</if>
+			<if test="factoryName != null and factoryName != '' ">
+				factory_name = #{factoryName},
+			</if>
+			<if test="serverName != null and serverName != '' ">
+				server_name = #{serverName},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != '' ">
+				delete_flag = #{deleteFlag},
+			</if>
+			<if test="updateUser != null and updateUser != '' ">
+				update_user = #{updateUser},
+			</if>
+			<if test="updateTime != null and updateTime != '' ">
+				update_time = #{updateTime},
+			</if>
+		</set>
+		where info_key = #{infoKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="vpsVcodeBatchActivateCogResultMap">
+		select 
+			*
+		from 
+			vps_vcode_batch_activate_cog
+		where 
+			info_key = #{id}
+	</select>
+	
+	<select id="findByOpenid" parameterType="String" resultMap="vpsVcodeBatchActivateCogResultMap">
+		select 
+			*
+		from 
+			vps_vcode_batch_activate_cog
+		where 
+			delete_flag != '1'
+			and openid = #{openid}
+		order by create_time asc
+		limit 1
+	</select>
+	
+	<select id="findActivateCog" parameterType="Map" resultMap="vpsVcodeBatchActivateCogResultMap">
+		SELECT 
+			OPENID,
+			USER_NAME,
+			PHONE_NUM,
+			FACTORY_NAME,
+			GROUP_CONCAT(SERVER_NAME) AS SERVER_NAME
+		FROM 
+			VPS_VCODE_BATCH_ACTIVATE_COG
+		WHERE 
+			 OPENID = #{openid}
+		<if test="queryFlag == '2'.toString() ">
+			AND USER_PRIVILEGE != '0'
+			AND USER_STATUS = '2'
+		</if>
+		GROUP BY OPENID	
+		LIMIT 1
+	</select>
+	
+	<select id="queryForList" parameterType="Map" resultMap="vpsVcodeBatchActivateCogResultMap">
+		select 
+			*
+		from 
+			vps_vcode_batch_activate_cog
+		where 
+			delete_flag != '1'
+			<if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+				and phone_num = #{queryBean.phoneNum}
+			</if>
+			<if test="queryBean.userName != null and queryBean.userName != ''">
+				and user_name like '%${queryBean.userName}%'
+			</if>
+ 		order by FACTORY_NAME, create_time desc 
+ 		limit #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForListCount" parameterType="Map" resultType="int">
+		select 
+			count(*)
+		from 
+			vps_vcode_batch_activate_cog
+		where 
+			delete_flag != '1'
+			<if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+				and phone_num = #{queryBean.phoneNum}
+			</if>
+			<if test="queryBean.userName != null and queryBean.userName != ''">
+				and user_name like '%${queryBean.userName}%'
+			</if>
+	</select>
+	
+	<select id="findByOpenidOrPhoneNum" parameterType="Map" resultMap="vpsVcodeBatchActivateCogResultMap">
+		select 
+			*
+		from 
+			vps_vcode_batch_activate_cog
+		where 
+			delete_flag != '1'
+			and (
+				openid = #{openid}
+				or
+				phone_num = #{phoneNum}
+			)
+		order by create_time asc
+		limit 1
+	</select>
+
+</mapper>

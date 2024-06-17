@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.permantissa.dao.IVpsVcodePerMantissaCogDao">
+
+	<resultMap type="com.dbt.platform.permantissa.bean.VpsVcodePerMantissaCog" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="perMantissaNo" column="PERMANTISSA_NO"/>
+		<result property="perMantissaName" column="PERMANTISSA_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="cycleDay" column="CYCLE_DAY"/>
+		<result property="cycleMantissa" column="CYCLE_MANTISSA"/>
+        <result property="prizeExpireType" column="PRIZE_EXPIRE_TYPE"/>
+        <result property="prizeExpireDate" column="PRIZE_EXPIRE_DATE"/>
+        <result property="prizeValidDay" column="PRIZE_VALID_DAY"/>
+		<result property="skuKey" column="SKU_KEY"/>
+		<result property="skuName" column="SKU_NAME"/>
+  		<result property="restrictTimeType" column="RESTRICT_TIME_TYPE"/>
+  		<result property="restrictVpoints" column="RESTRICT_VPOINTS"/>
+		<result property="restrictMoney" column="RESTRICT_MONEY"/>
+		<result property="restrictBottle" column="RESTRICT_BOTTLE"/>
+  		<result property="status" column="STATUS"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.permantissa.bean.VpsVcodePerMantissaCog">
+		INSERT INTO vps_vcode_permantissa_cog(
+			INFO_KEY,
+			COMPANY_KEY,
+			PERMANTISSA_NO,
+			PERMANTISSA_NAME,
+			START_DATE,
+			END_DATE,
+			CYCLE_DAY,
+			CYCLE_MANTISSA,
+            PRIZE_EXPIRE_TYPE,
+            PRIZE_EXPIRE_DATE,
+            PRIZE_VALID_DAY,
+			SKU_KEY,
+			SKU_NAME,
+			RESTRICT_TIME_TYPE,
+			RESTRICT_VPOINTS,
+			RESTRICT_MONEY,
+			RESTRICT_BOTTLE,
+			STATUS,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		)
+		VALUES (
+			#{infoKey},
+			#{companyKey},
+			#{perMantissaNo},
+			#{perMantissaName},
+			#{startDate},
+			#{endDate},
+			#{cycleDay},
+			#{cycleMantissa},
+            #{prizeExpireType},
+            #{prizeExpireDate},
+            #{prizeValidDay},
+			#{skuKey},
+			#{skuName},
+			#{restrictTimeType},
+			#{restrictVpoints},
+			#{restrictMoney},
+			#{restrictBottle},
+			#{status},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.permantissa.bean.VpsVcodePerMantissaCog">
+        update 
+            vps_vcode_permantissa_cog 
+        set
+			PERMANTISSA_NAME = #{perMantissaName},
+			START_DATE = #{startDate},
+			END_DATE = #{endDate},
+			CYCLE_DAY = #{cycleDay},
+			CYCLE_MANTISSA = #{cycleMantissa},
+			PRIZE_EXPIRE_TYPE = #{prizeExpireType},
+			PRIZE_EXPIRE_DATE = #{prizeExpireDate},
+			PRIZE_VALID_DAY = #{prizeValidDay},
+			SKU_KEY = #{skuKey},
+			SKU_NAME = #{skuName},
+			RESTRICT_TIME_TYPE = #{restrictTimeType},
+			RESTRICT_VPOINTS = #{restrictVpoints},
+			RESTRICT_MONEY = #{restrictMoney},
+			RESTRICT_BOTTLE = #{restrictBottle},
+			STATUS = #{status},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE 
+            INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="queryForList" resultMap="baseResult" parameterType="Map">
+		SELECT * FROM (
+			SELECT
+				*,
+				CASE 
+					WHEN CURDATE() >= start_date AND CURDATE() <![CDATA[<=]]> end_date THEN '1'
+					WHEN CURDATE() > end_date THEN '2' 
+					ELSE '0'
+				END AS isBegin
+			FROM
+				vps_vcode_permantissa_cog 
+			WHERE
+				DELETE_FLAG = '0'
+			<if test="queryBean.perMantissaNo != null and queryBean.perMantissaNo != ''">
+			    and PERMANTISSA_NO like '%${queryBean.perMantissaNo}%'
+			</if>
+			<if test="queryBean.perMantissaName != null and queryBean.perMantissaName != ''">
+			    and (PERMANTISSA_NAME like '%${queryBean.perMantissaName}%' or SKU_NAME like '%${queryBean.perMantissaName}%')
+			</if>
+			<if test="queryBean.status != null and queryBean.status != ''">
+			    and status = #{queryBean.status}
+			</if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT COUNT(1) FROM (
+			SELECT
+                *,
+                CASE 
+                    WHEN CURDATE() >= start_date AND CURDATE() <![CDATA[<=]]> end_date THEN '1'
+                    WHEN CURDATE() > end_date THEN '2' 
+                    ELSE '0'
+                END AS isBegin
+            FROM
+                vps_vcode_permantissa_cog 
+            WHERE
+                DELETE_FLAG = '0'
+            <if test="queryBean.perMantissaNo != null and queryBean.perMantissaNo != ''">
+                and PERMANTISSA_NO like '%${queryBean.perMantissaNo}%'
+            </if>
+            <if test="queryBean.perMantissaName != null and queryBean.perMantissaName != ''">
+                and (PERMANTISSA_NAME like '%${queryBean.perMantissaName}%' or SKU_NAME like '%${queryBean.perMantissaName}%')
+            </if>
+            <if test="queryBean.status != null and queryBean.status != ''">
+                and status = #{queryBean.status}
+            </if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findById" parameterType="String" resultMap="baseResult">
+		SELECT 
+            *,
+			CASE 
+                WHEN CURDATE() >= start_date AND CURDATE() <![CDATA[<=]]> end_date THEN '1'
+                WHEN CURDATE() > end_date THEN '2' 
+                ELSE '0'
+            END AS isBegin
+		FROM 
+            vps_vcode_permantissa_cog 
+		WHERE 
+            INFO_KEY = #{id}
+	</select>
+	
+	<delete id="deleteById" parameterType="Map">
+        UPDATE 
+            vps_vcode_permantissa_cog
+        SET
+			DELETE_FLAG = '1',
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		WHERE
+            INFO_KEY = #{infoKey}
+	</delete>
+	
+<!-- 	获取指定日期内SKU参与的有效活动集合 -->
+	<select id="queryByDateForSku" parameterType="Map" resultMap="baseResult">
+        select 
+            *
+        from 
+            vps_vcode_permantissa_cog
+        where
+            delete_flag = '0' 
+            and status = '1'
+            and end_date >= curdate()
+            and !(start_date > #{endDate} or #{startDate} > end_date)
+            <if test="skuLst != null and skuLst.size() > 0">
+                <foreach collection="skuLst" open="and (" separator=" or " close=")" item="skuKey">
+                    sku_key like '%${skuKey}%'
+                </foreach>
+            </if>
+            <if test="infoKey != null and infoKey != ''">
+                and info_key != #{infoKey}
+            </if>
+	</select>
+</mapper>

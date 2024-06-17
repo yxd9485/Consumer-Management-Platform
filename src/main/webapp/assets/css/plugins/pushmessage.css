@@ -1,0 +1,119 @@
+.withContent tr td:nth-child(3) span {
+	color: red;
+}
+
+.withContent2 tr td:nth-child(3) span {
+	color: red;
+}
+
+.flow_header h5 label {
+	margin-left: 16px;
+}
+
+.flow_header h5 span {
+	font-family: "Arial";
+	font-size: 12px;
+}
+
+.wide-content {
+	max-height: 198px;
+}
+
+.searchArea table {
+	width: 65%';
+	margin: 0 auto;
+}
+
+.search_left,.search_right {
+	float: left;
+	width: 50%;
+	padding: 2%;
+	height: 50%;
+}
+
+.search_board {
+	width: 100%;
+}
+
+.search_board tr td {
+	margin: 6px;
+	padding: 6px;
+}
+
+.search_board tr td:nth-child(1) {
+	text-align: right;
+}
+
+.flow_header,.flow_content {
+	width: 100%;
+	float: left;
+}
+
+.flow_header h5 {
+	margin-top: 0px;
+	padding: 0 0 0 9px;
+	background: #ececec;
+	line-height: 30px;
+	font-weight: bold !important;
+	border-bottom: 1px solid #ccc;
+}
+
+.flow_header h5 label {
+	margin-left: 16px;
+}
+
+.flow_header h5 span {
+	font-family: "Arial";
+	font-size: 12px;
+}
+
+.flow_table {
+	width: 100%;
+	margin: 0 auto;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+.flow_table tr th {
+	text-align: center;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	padding: 5px;
+	background-color: #eee;
+}
+
+.flow_table tr td {
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	text-align: center;
+	padding: 5px;
+}
+
+.bolder-class {
+	font-weight: bold;
+}
+
+.flow_content .formular {
+	float: left;
+}
+
+.flow_content .wide-pack {
+	width: 100%;
+}
+
+.wide-content {
+	margin: 0 auto;
+	width: 98%;
+	max-height: 207px;
+	overflow-y: scroll;
+}
+
+.content select,.content label {
+	float: left;
+}
+
+.content label,.content article {
+	height: 24px;
+	line-height: 24px;
+	padding-top: 4px;
+}

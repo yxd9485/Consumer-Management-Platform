@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activityui.dao.IVpsAuthDao">
+
+	<resultMap type="com.dbt.platform.activityui.bean.VpsAuthInfo" id="baseResultMap">
+		<result property="templateKey" column="template_key"/>
+  		<result property="authKey" column="auth_key"/>
+  		<result property="isDefault" column="is_default"/>
+  		<result property="authType" column="auth_type"/>
+  		<result property="authPage" column="auth_page"/>
+  		<result property="authCondition" column="auth_condition"/>
+  		<result property="authStatus" column="auth_status"/>
+  		<result property="templateProperty" column="template_property"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createUser" column="create_user"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateUser" column="update_user"/>
+  		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+
+	<insert id="addAuthInfo" parameterType="com.dbt.platform.activityui.bean.VpsAuthInfo" >
+		INSERT INTO vps_vcode_auth_info(
+		template_key,
+		auth_key,
+		is_default,
+		auth_type,
+		auth_page,
+		auth_condition,
+		auth_status,
+  		template_property,
+  		delete_flag,
+  		create_time,
+  		create_user,
+  		update_time,
+  		update_user
+		)
+		VALUES
+		<foreach collection="authList" item="auth" separator=",">
+			( #{auth.templateKey},
+			#{auth.authKey},
+			#{auth.isDefault},
+			#{auth.authType},
+			#{auth.authPage},
+			#{auth.authCondition},
+			#{auth.authStatus},
+			#{auth.templateProperty},
+			0,
+			#{auth.createTime},
+			#{auth.createUser},
+			#{auth.updateTime},
+			#{auth.updateUser}
+			)
+		</foreach>
+
+	</insert>
+
+		<select id="getAuthInfo" parameterType="Map" resultMap="baseResultMap">
+         select * from vps_vcode_auth_info
+         where template_key=#{templateKey}
+		</select>
+	<update id="updateAuth" parameterType="Map">
+		<foreach collection="authList" item="auth" separator=";">
+			UPDATE vps_vcode_auth_info
+			<set>
+				<if test="isDefault != null and isDefault != ''">
+					is_default = #{isDefault},
+				</if>
+				<if test="templateName != null and templateName != ''">
+					template_name = #{templateName},
+				</if>
+				<if test="auth_page != null and auth_page != ''">
+					auth_page = #{authPage},
+				</if>
+				<if test="auth_condition != null and auth_condition != ''">
+					auth_condition = #{authCondition},
+				</if>
+				<if test="auth_status != null and auth_status != ''">
+					auth_status = #{authStatus},
+				</if>
+				<if test="templateProperty != null and templateProperty != ''">
+					template_property = #{templateProperty},
+				</if>
+			</set>
+			where template_key=#{templateKey} and auth_type = #{auth.authType},
+		</foreach>
+	</update>
+<!--	-->
+<!--	&lt;!&ndash; 列表 &ndash;&gt;-->
+<!--	<select id="queryForLst" parameterType="Map" resultMap="allTemplateResultMap">-->
+<!--		select-->
+<!--		 	t.*-->
+<!--		from -->
+<!--		 	vps_vcode_template_ui_info t-->
+<!--		where -->
+<!--		    t.delete_flag = '0'-->
+<!--		<if test="queryBean.templateName != '' and queryBean.templateName != null ">-->
+<!--			AND t.template_name like '%${queryBean.templateName}%'-->
+<!--		</if>-->
+<!--        <choose>-->
+<!--            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">-->
+<!--                AND t.start_date #{queryBean.startDate} and #{queryBean.endDate}-->
+<!--            </when>-->
+<!--            <when test="queryBean.startDate != null and queryBean.startDate != ''">-->
+<!--                AND t.start_date >= #{queryBean.startDate}-->
+<!--            </when>-->
+<!--            <when test="queryBean.endDate != null and queryBean.endDate != ''">-->
+<!--                AND t.start_date <![CDATA[<=]]> #{queryBean.startDate}-->
+<!--            </when>-->
+<!--        </choose>-->
+<!--        <choose>-->
+<!--          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'qr.create_time'">-->
+<!--              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, t.CREATE_TIME DESC-->
+<!--          </when>-->
+<!--          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">-->
+<!--              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}-->
+<!--          </when>-->
+<!--          <otherwise>ORDER BY t.CREATE_TIME DESC</otherwise>-->
+<!--        </choose>-->
+<!--        -->
+<!--        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}-->
+<!--	</select>-->
+<!--	-->
+<!--	&lt;!&ndash; 用户列表count &ndash;&gt;-->
+<!--	<select id="queryForCount" parameterType="Map" resultType="Integer">-->
+<!--		select-->
+<!--		 	count(1)-->
+<!--		from -->
+<!--		 	vps_vcode_template_ui_info t-->
+<!--		where -->
+<!--		    t.delete_flag = '0'-->
+<!--        <if test="queryBean.templateName != '' and queryBean.templateName != null ">-->
+<!--			AND t.template_name like '%${queryBean.templateName}%'-->
+<!--		</if>-->
+<!--        <choose>-->
+<!--            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">-->
+<!--                AND t.start_date #{queryBean.startDate} and #{queryBean.endDate}-->
+<!--            </when>-->
+<!--            <when test="queryBean.startDate != null and queryBean.startDate != ''">-->
+<!--                AND t.start_date >= #{queryBean.startDate}-->
+<!--            </when>-->
+<!--            <when test="queryBean.endDate != null and queryBean.endDate != ''">-->
+<!--                AND t.start_date <![CDATA[<=]]> #{queryBean.startDate}-->
+<!--            </when>-->
+<!--        </choose>-->
+<!--	</select>-->
+	
+</mapper>

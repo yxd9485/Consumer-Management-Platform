@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVpsVcodePrizeRecordDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VpsVcodePrizeRecord" id="vpsVcodePrizeRecordResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+        <result property="rebateRuleKey" column="rebate_rule_key" />
+        <result property="vpointsCogKey" column="vpoints_cog_key" />
+  		<result property="userKey" column="USER_KEY"/>
+  		<result property="grandPrizeType" column="GRAND_PRIZE_TYPE"/>
+  		<result property="prizeName" column="PRIZE_NAME"/>
+  		<result property="prizeImg" column="PRIZE_IMG"/>
+  		<result property="earnTime" column="EARN_TIME"/>
+  		<result property="earnMoney" column="EARN_MONEY"/>
+  		<result property="skuKey" column="SKU_KEY"/>
+  		<result property="prizeVcode" column="PRIZE_VCODE"/>
+  		<result property="province" column="PROVINCE"/>
+  		<result property="city" column="CITY"/>
+  		<result property="county" column="COUNTY"/>
+  		<result property="openid" column="OPENID"/>
+  		<result property="userName" column="USER_NAME"/>
+  		<result property="idCard" column="ID_CARD"/>
+  		<result property="phoneNum" column="PHONE_NUM"/>
+  		<result property="address" column="ADDRESS"/>
+  		<result property="useStatus" column="USE_STATUS"/>
+  		<result property="useTime" column="USE_TIME"/>
+  		<result property="expireTime" column="EXPIRE_TIME"/>
+  		<result property="exchangeDate" column="EXCHANGE_DATE"/>
+  		<result property="exchangeChannel" column="EXCHANGE_CHANNEL"/>
+  		<result property="goodsId" column="GOODS_ID"/>
+  		<result property="exchangeId" column="EXCHANGE_ID"/>
+  		<result property="checkStatus" column="CHECK_STATUS"/>
+  		<result property="checkOpenid" column="CHECK_OPENID"/>
+  		<result property="checkTime" column="CHECK_TIME"/>
+  		<result property="checkRemarks" column="CHECK_REMARKS"/>
+  		<result property="prizePayMoney" column="PRIZE_PAY_MONEY"/>
+  		<result property="prizeDiscount" column="PRIZE_DISCOUNT"/>
+  		<result property="goodsName" column="goods_name"/>
+  		<result property="goodsShortName" column="goods_short_name"/>
+  		<result property="goodsMoney" column="goods_money"/>
+	</resultMap>
+
+  	
+
+	<select id="getPrizeCount" parameterType="Map" resultType="int">
+        select 
+          count(1)
+        from 
+            vps_vcode_prize_record
+        where 
+            GRAND_PRIZE_TYPE = #{prizeType} or GRAND_PRIZE_TYPE = #{prizeTypeToLowerCase}
+	</select>
+
+</mapper>

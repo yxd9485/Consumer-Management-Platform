@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.framework.datadic.dao.ISysDicCategoryInfoDao">
+
+	<resultMap type="com.dbt.framework.datadic.bean.SysDicCategoryInfo" id="sysDicCategoryInfoResultMap">
+		<result property="categoryKey" column="CATEGORY_KEY"/>
+  		<result property="categoryName" column="CATEGORY_NAME"/>
+  		<result property="categoryCode" column="CATEGORY_CODE"/>
+  		<result property="dicType" column="DIC_TYPE"/>
+  		<result property="invoker" column="INVOKER"/>
+  		<result property="categoryExplain" column="CATEGORY_EXPLAIN"/>
+  		<result property="sequenceNum" column="SEQUENCE_NUM"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+  		<result property="createUser" column="CREATE_USER"/>
+  		<result property="updateTime" column="UPDATE_TIME"/>
+  		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+
+	<!-- 获取分页列表 -->
+	<select id="findPageList" parameterType="Map" resultMap="sysDicCategoryInfoResultMap">
+		SELECT
+		    a.CATEGORY_KEY,
+		    a.CATEGORY_NAME,
+		    a.CATEGORY_CODE,
+		    a.DIC_TYPE,
+		    a.INVOKER,
+		    a.CATEGORY_EXPLAIN,
+		    a.SEQUENCE_NUM,
+		    a.DELETE_FLAG,
+		    a.CREATE_TIME,
+		    a.CREATE_USER,
+		    a.UPDATE_TIME,
+		    a.UPDATE_USER
+		FROM
+		    VPS_SYS_DICCATEGORY_INFO a
+		WHERE
+		    a.DELETE_FLAG = '0'
+		    <if test="category.categoryName != null and category.categoryName != '' ">
+		    	AND a.CATEGORY_NAME LIKE '%${category.categoryName}%'
+		    </if>
+		    <if test="category.dicType != null and category.dicType != '' ">
+		    	AND a.DIC_TYPE = #{category.dicType}
+		    </if>
+		    <if test="category.invoker != null and category.invoker != '' ">
+		    	AND a.INVOKER = #{category.invoker}
+		    </if>
+
+        <choose>
+
+            <when test="param.orderCol != null and param.orderCol != '' and param.orderType != null and param.orderType != ''">
+                ORDER BY   ${param.orderCol} ${param.orderType}
+            </when>
+            <otherwise>		ORDER BY CONVERT(a.CATEGORY_NAME USING gbk) COLLATE gbk_chinese_ci ASC </otherwise>
+        </choose>
+
+		LIMIT ${param.startCount}, ${param.pagePerCount}
+
+
+
+	</select>
+
+	<!-- 获取数据总数 -->
+	<select id="countAll" parameterType="Map" resultType="int">
+		SELECT
+		    count(0)
+		FROM
+		    VPS_SYS_DICCATEGORY_INFO a
+		WHERE
+		    a.DELETE_FLAG = '0'
+		    <if test="category.categoryName != null and category.categoryName != '' ">
+		    	AND a.CATEGORY_NAME LIKE '%${category.categoryName}%'
+		    </if>
+		    <if test="category.dicType != null and category.dicType != '' ">
+		    	AND a.DIC_TYPE = #{category.dicType}
+		    </if>
+		    <if test="category.invoker != null and category.invoker != '' ">
+		    	AND a.INVOKER = #{category.invoker}
+		    </if>
+	</select>
+
+	<!-- 获取所有数据 -->
+	<select id="findAll" parameterType="Map" resultMap="sysDicCategoryInfoResultMap">
+		SELECT
+		    a.CATEGORY_KEY,
+		    a.CATEGORY_NAME,
+		    a.CATEGORY_CODE,
+		    a.DIC_TYPE,
+		    a.INVOKER,
+		    a.CATEGORY_EXPLAIN,
+		    a.SEQUENCE_NUM,
+		    a.DELETE_FLAG,
+		    a.CREATE_TIME,
+		    a.CREATE_USER,
+		    a.UPDATE_TIME,
+		    a.UPDATE_USER
+		FROM
+		    VPS_SYS_DICCATEGORY_INFO a
+		WHERE
+			a.DELETE_FLAG = '0'
+        <choose>
+
+            <when test="param !=null and param.orderCol != null and param.orderCol != '' and param.orderType != null and param.orderType != ''">
+                ORDER BY   ${param.orderCol} ${param.orderType}
+            </when>
+            <otherwise>			ORDER BY CONVERT(CATEGORY_NAME USING gbk) COLLATE gbk_chinese_ci ASC </otherwise>
+        </choose>
+		/*ORDER BY CONVERT(CATEGORY_NAME USING gbk) COLLATE gbk_chinese_ci ASC*/
+	</select>
+
+	<!-- 添加类型 -->
+	<insert id="insertCategory" parameterType="com.dbt.framework.datadic.bean.SysDicCategoryInfo">
+		INSERT INTO VPS_SYS_DICCATEGORY_INFO (
+			CATEGORY_KEY,
+			CATEGORY_NAME,
+			CATEGORY_CODE,
+			DIC_TYPE,
+			INVOKER,
+			CATEGORY_EXPLAIN,
+			SEQUENCE_NUM,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{categoryKey, jdbcType=VARCHAR},
+			#{categoryName, jdbcType=VARCHAR},
+			#{categoryCode, jdbcType=VARCHAR},
+			#{dicType, jdbcType=VARCHAR},
+			#{invoker, jdbcType=VARCHAR},
+			#{categoryExplain, jdbcType=INTEGER},
+			#{sequenceNum, jdbcType=VARCHAR},
+			#{createTime, jdbcType=VARCHAR},
+			#{createUser, jdbcType=VARCHAR},
+			#{updateTime, jdbcType=VARCHAR},
+			#{updateUser, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据id查找一条记录 -->
+	<select id="findById" parameterType="String" resultMap="sysDicCategoryInfoResultMap">
+		SELECT
+		    a.CATEGORY_KEY,
+		    a.CATEGORY_NAME,
+		    a.CATEGORY_CODE,
+		    a.DIC_TYPE,
+		    a.INVOKER,
+		    a.CATEGORY_EXPLAIN,
+		    a.SEQUENCE_NUM,
+		    a.DELETE_FLAG,
+		    a.CREATE_TIME,
+		    a.CREATE_USER,
+		    a.UPDATE_TIME,
+		    a.UPDATE_USER
+		FROM
+		    VPS_SYS_DICCATEGORY_INFO a
+		WHERE
+			a.CATEGORY_KEY=#{_parameter}
+	</select>
+
+	<!-- 更新类型 -->
+	<update id="updateCategory" parameterType="com.dbt.framework.datadic.bean.SysDicCategoryInfo">
+		UPDATE VPS_SYS_DICCATEGORY_INFO
+		<set>
+        	<if test="categoryName != null and categoryName != ''">
+        		CATEGORY_NAME = #{categoryName},
+        	</if>
+        	<if test="categoryCode != null and categoryCode != ''">
+        		CATEGORY_CODE = #{categoryCode},
+        	</if>
+        	<if test="dicType != null and dicType != ''">
+        		DIC_TYPE = #{dicType},
+        	</if>
+        	<if test="invoker != null and invoker != ''">
+        		INVOKER = #{invoker},
+        	</if>
+        	<if test="categoryExplain != null ">
+        		CATEGORY_EXPLAIN = #{categoryExplain},
+        	</if>
+        	<if test="sequenceNum != null and sequenceNum != ''">
+        		SEQUENCE_NUM = #{sequenceNum},
+        	</if>
+
+        	<if test="updateTime != null and updateTime != ''">
+        		UPDATE_TIME = #{updateTime},
+        	</if>
+        	<if test="updateUser != null and updateUser != ''">
+        		UPDATE_USER = #{updateUser},
+        	</if>
+       	</set>
+       	WHERE CATEGORY_KEY = #{categoryKey}
+	</update>
+
+	<update id="deleteCategoryById" parameterType="com.dbt.framework.datadic.bean.SysDicCategoryInfo">
+		UPDATE
+			VPS_SYS_DICCATEGORY_INFO
+		SET
+			DELETE_FLAG = '1',
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+       	WHERE
+       		CATEGORY_KEY = #{categoryKey}
+	</update>
+
+</mapper>

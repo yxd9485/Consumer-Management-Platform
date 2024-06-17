@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.org.dao.IOrganizationDao">
+    <resultMap type="com.dbt.platform.org.bean.OrganizationInfo" id="OrganizationResultMap">
+        <result property="infoKey" column="info_key"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="county" column="county"/>
+        <result property="bigRegionName" column="big_region_name"/>
+        <result property="secondaryName" column="secondary_name"/>
+        <result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+    
+    <select id="findById" parameterType="String" resultMap="OrganizationResultMap">
+        select * from vps_organization_log where info_key = #{id}
+    </select>
+    
+    <select id="queryListByMap" parameterType="Map" resultMap="OrganizationResultMap">
+        select * from vps_organization_log
+        where 1=1
+        <if test="province != null and province != ''">
+        and province = #{province}
+        </if>
+    </select>
+    
+    <!-- 查询大区 -->
+    <select id="queryBigRegionList" resultMap="OrganizationResultMap">
+    	SELECT * FROM vps_organization_info 
+		GROUP BY BIG_REGION_NAME
+		ORDER BY LENGTH(BIG_REGION_NAME), BIG_REGION_NAME
+    </select>
+    
+    <!-- 根据大区查询二级办 -->
+    <select id="queryListByBigRegionName" parameterType="Map" resultMap="OrganizationResultMap">
+    	SELECT * FROM vps_organization_info 
+		WHERE BIG_REGION_NAME = #{bigRegionName}
+		GROUP BY SECONDARY_NAME
+		ORDER BY LENGTH(SECONDARY_NAME), SECONDARY_NAME
+    </select>
+</mapper>

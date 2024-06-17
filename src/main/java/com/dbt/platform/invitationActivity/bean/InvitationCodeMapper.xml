@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.invitationActivity.dao.InvitationCodeDao">
+    <resultMap id="resultMap" type="com.dbt.platform.invitationActivity.bean.VpsVcodeInvitationCode">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="orderKey" column="ORDER_KEY"/>
+        <result property="orderName" column="ORDER_NAME"/>
+        <result property="codeContent" column="CODE_CONTENT"/>
+        <result property="codeNo" column="CODE_NO"/>
+        <result property="codeType" column="CODE_TYPE"/>
+        <result property="registrantKey" column="REGISTRANT_KEY"/>
+        <result property="registerTime" column="REGISTER_TIME"/>
+        <result property="registrantShopName" column="REGISTRANT_SHOP_NAME"/>
+        <result property="registrantName" column="REGISTRANT_NAME"/>
+        <result property="registrantPhoneNum" column="REGISTRANT_PHONE_NUM"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+
+    <select id="queryForList" parameterType="map" resultMap="resultMap">
+        SELECT * FROM (
+            SELECT
+                ic.*
+            FROM
+                VPS_VCODE_INVITATION_CODE ic
+            WHERE
+                ic.ACTIVITY_KEY = #{queryBean.activityKey}
+                AND ic.CODE_TYPE = #{queryBean.codeType}
+                AND ic.REGISTRANT_KEY IS NOT NULL
+                AND ic.DELETE_FLAG = '0'
+                <if test="queryBean.orderName != null and queryBean.orderName != ''">
+                    AND ic.ORDER_NAME like '%${queryBean.orderName}%'
+                </if>
+                <if test="queryBean.codeNo != null and queryBean.codeNo != ''">
+                    AND ic.CODE_NO like '%${queryBean.codeNo}%'
+                </if>
+                <if test="queryBean.registrantShopName != null and queryBean.registrantShopName != ''">
+                    AND ic.REGISTRANT_SHOP_NAME like '%${queryBean.registrantShopName}%'
+                </if>
+                <if test="queryBean.registrantName != null and queryBean.registrantName != ''">
+                    AND ic.REGISTRANT_NAME like '%${queryBean.registrantName}%'
+                </if>
+                <if test="queryBean.registrantPhoneNum != null and queryBean.registrantPhoneNum != ''">
+                    AND ic.REGISTRANT_PHONE_NUM like '%${queryBean.registrantPhoneNum}%'
+                </if>
+        ) a
+        WHERE 1=1
+            ORDER BY
+            <choose>
+                <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                    <![CDATA[a.${pageInfo.orderCol} ${pageInfo.orderType}]]>
+                </when>
+                <otherwise>
+                    a.REGISTER_TIME DESC
+                </otherwise>
+            </choose>
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            ACTIVITY_KEY = #{queryBean.activityKey}
+            AND CODE_TYPE = #{queryBean.codeType}
+            AND REGISTRANT_KEY IS NOT NULL
+            AND DELETE_FLAG = '0'
+            <if test="queryBean.orderName != null and queryBean.orderName != ''">
+                AND ORDER_NAME like '%${queryBean.orderName}%'
+            </if>
+            <if test="queryBean.codeNo != null and queryBean.codeNo != ''">
+                AND CODE_NO like '%${queryBean.codeNo}%'
+            </if>
+            <if test="queryBean.registrantShopName != null and queryBean.registrantShopName != ''">
+                AND REGISTRANT_SHOP_NAME like '%${queryBean.registrantShopName}%'
+            </if>
+            <if test="queryBean.registrantName != null and queryBean.registrantName != ''">
+                AND REGISTRANT_NAME like '%${queryBean.registrantName}%'
+            </if>
+            <if test="queryBean.registrantPhoneNum != null and queryBean.registrantPhoneNum != ''">
+                AND REGISTRANT_PHONE_NUM like '%${queryBean.registrantPhoneNum}%'
+            </if>
+    </select>
+
+    <!-- 邀请码入库 -->
+    <update id="writeQrcodeToData" parameterType="Map">
+        load data local infile #{tmpFilePath}
+        into table VPS_VCODE_INVITATION_CODE character set utf8 fields terminated by '+'
+            (INFO_KEY,ACTIVITY_KEY,ORDER_KEY,ORDER_NAME,CODE_CONTENT,CODE_NO,CODE_TYPE,DELETE_FLAG,CREATE_USER,CREATE_TIME,UPDATE_USER,UPDATE_TIME)
+    </update>
+
+    <!--下载注册码-->
+    <select id="uploadCode" parameterType="map" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            ACTIVITY_KEY = #{queryBean.activityKey}
+            AND CODE_TYPE = #{queryBean.codeType}
+            <if test="uploadCodeType == '0'.toString()">
+                AND REGISTRANT_KEY IS NOT NULL
+            </if>
+            <if test="uploadCodeType == '1'.toString()">
+                AND REGISTRANT_KEY IS NULL
+            </if>
+            AND DELETE_FLAG = '0'
+            <if test="queryBean.orderName != null and queryBean.orderName != ''">
+                AND ORDER_NAME like '%${queryBean.orderName}%'
+            </if>
+            <if test="queryBean.codeNo != null and queryBean.codeNo != ''">
+                AND CODE_NO like '%${queryBean.codeNo}%'
+            </if>
+            <if test="queryBean.registrantShopName != null and queryBean.registrantShopName != ''">
+                AND REGISTRANT_SHOP_NAME like '%${queryBean.registrantShopName}%'
+            </if>
+            <if test="queryBean.registrantName != null and queryBean.registrantName != ''">
+                AND REGISTRANT_NAME like '%${queryBean.registrantName}%'
+            </if>
+            <if test="queryBean.registrantPhoneNum != null and queryBean.registrantPhoneNum != ''">
+                AND REGISTRANT_PHONE_NUM like '%${queryBean.registrantPhoneNum}%'
+            </if>
+    </select>
+
+    <!--根据id查询注册码-->
+    <select id="findById" parameterType="String" resultMap="resultMap">
+        SELECT
+            *
+        FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            INFO_KEY = #{infoKey}
+    </select>
+
+    <!--根据订单主键删除邀请码-->
+    <delete id="removeCodeByOrderKey" parameterType="String">
+        DELETE FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            ORDER_KEY = #{orderKey}
+    </delete>
+
+    <!--根据活动主键删除邀请码-->
+    <delete id="removeCodeByActivityKey" parameterType="String">
+        DELETE FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            ACTIVITY_KEY = #{activityKey}
+    </delete>
+
+    <!--根据活动主键订单主键删除邀请码-->
+    <delete id="removeCodeByActivityKeyAndOrderKey" parameterType="String">
+        DELETE FROM
+            VPS_VCODE_INVITATION_CODE
+        WHERE
+            ACTIVITY_KEY = #{activityKey}
+            AND ORDER_KEY = #{orderKey}
+    </delete>
+
+    <!--根据活动主键以及邀请码编码前缀查询最大编码-->
+    <select id="queryMaxCode" parameterType="String" resultType="String">
+    	SELECT MAX(CODE_NO) FROM VPS_VCODE_INVITATION_CODE
+    	WHERE CODE_NO LIKE '${queryStr}%'
+    	AND ACTIVITY_KEY = #{activityKey}
+    </select>
+</mapper>

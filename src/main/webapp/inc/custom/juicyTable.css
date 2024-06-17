@@ -1,0 +1,114 @@
+.icon-circle-blank {
+	color: #34e59c;
+}
+
+.icon-circle {
+	color: #45a97f;
+}
+
+.icon-remove-circle {
+	color: #e8342b;
+	cursor: default;
+}
+
+.icon-caret-right, .icon-caret-down, .icon-circle-blank,
+.icon-circle, .icon-folder-close, .icon-folder-open {
+	cursor: pointer;
+}
+
+.juicy-table {
+	float: left;
+	width: 70%;
+	margin-bottom: 3em;
+}
+
+.juicy-table tr th {
+	text-align: center;
+	border: 1px solid #e6e6e6;
+	background-color: #efefef;
+	padding: 6px;
+}
+
+.juicy-table tr td {
+	border-left: 1px solid #e6e6e6;
+	border-bottom: 1px solid #e6e6e6;
+	padding: 4px;
+}
+
+.juicy-table tr td:nth-child(4) {
+	border-right: 1px solid #e6e6e6;
+}
+
+.juicy-table tr td:nth-child(1), .juicy-table tr td:nth-child(2) {
+	text-align: center;
+}
+
+.juicy-table tr td:nth-child(3)>span, .juicy-table tr td:nth-child(4)>span {
+	margin-left: 12px;
+}
+
+.blocks {
+	display: block;
+	width: 10px;
+	height: 10px;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+.berry {
+	color: #e00f45;
+	background-color: #e00f45;
+	border: 1px solid #e00f45;
+}
+
+.juicy {
+	color: #f08200;
+	background-color: #f08200;
+	border: 1px solid #f08200;
+}
+
+.wink {
+	color: #00f0e8;
+	background-color: #00f0e8;
+	border: 1px solid #00f0e8;
+}
+
+.grass {
+	color: #45a97f;
+	background-color: #45a97f;
+	border: 1px solid #45a97f;
+}
+
+.drop {
+	color: #21a9cf;
+	background-color: #21a9cf;
+	border: 1px solid #21a9cf;
+}
+
+.mashroom {
+	color: #7c00f0;
+	background-color: #7c00f0;
+	border: 1px solid #7c00f0;
+}
+
+.button-menu {
+	float: left;
+	margin-left: 1em;
+	width: 10%;
+	text-align: center;
+	border: 1px dashed #e6e6e6;
+	display: none;
+}
+.button-menu>a {
+	margin-bottom: 1em;
+	letter-spacing: 4px;
+}
+.button-menu>a:nth-child(1) {
+	margin-top: 1px;
+}
+.button-menu>a>i {
+	margin-right: 4px;
+}
+.highlight-line {
+	background-color: #f1f2f2;
+}

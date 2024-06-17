@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityRebateRuleCogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityRebateRuleCog" id="baseResultMap">
+		<result property="rebateRuleKey" column="REBATE_RULE_KEY"/>
+		<result property="rebateRuleName" column="REBATE_RULE_NAME"/>
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+		<result property="appointRebateRuleKey" column="APPOINT_REBATE_RULE_KEY"/>
+		<result property="moneyDanping" column="MONEY_DANPING"/>
+		<result property="ruleType" column="RULE_TYPE"/>
+        <result property="beginDate" column="BEGIN_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="beginTime" column="BEGIN_TIME"/>
+        <result property="endTime" column="END_TIME"/>
+        <result property="prizeCogType" column="PRIZE_COG_TYPE"/>
+		<result property="areaCode" column="AREACODE"/>
+		<result property="depRegionId" column="DEP_REGION_ID"/>
+		<result property="depProvinceId" column="DEP_PROVINCE_ID"/>
+		<result property="firstDealerKey" column="FIRST_DEALER_KEY"/>
+		<result property="bigRegionName" column="BIG_REGION_NAME"/>
+		<result property="secondaryName" column="SECONDARY_NAME"/>
+		<result property="hotAreaKey" column="HOTAREA_KEY"/>
+		<result property="eruptRuleInfo" column="ERUPT_RULE_INFO"/>
+		<result property="eruptRestrictTimeType" column="ERUPT_RESTRICT_TIME_TYPE"/>
+		<result property="popupMoney" column="POPUP_MONEY"/>
+        <result property="restrictVpoints" column="RESTRICT_VPOINTS"/>
+		<result property="restrictMoney" column="RESTRICT_MONEY"/>
+		<result property="restrictBottle" column="RESTRICT_BOTTLE"/>
+		<result property="restrictCount" column="RESTRICT_COUNT"/>
+		<result property="restrictTimeType" column="RESTRICT_TIME_TYPE"/>
+		<result property="isValid" column="IS_VALID"/>
+        <result property="firstScanPercent" column="FIRST_SCAN_PERCENT"/>
+        <result property="ruleTotalMoney" column="RULE_TOTAL_MONEY"/>
+        <result property="ruleTotalVpoints" column="RULE_TOTAL_VPOINTS"/>
+        <result property="ruleTotalPrize" column="RULE_TOTAL_PRIZE"/>
+		<result property="firstScanDanpingLimit" column="FIRST_SCAN_DANPING_LIMIT"/>
+		<result property="ruleNewUserLadder" column="RULE_NEW_USER_LADDER"/>
+		<result property="remarks" column="REMARKS"/>
+		<result property="allowanceaRebateType" column="ALLOWANCEA_REBATE_TYPE"/>
+		<result property="allowanceaMinMoney" column="ALLOWANCEA_MIN_MONEY"/>
+		<result property="allowanceaMaxMoney" column="ALLOWANCEA_MAX_MONEY"/>
+		<result property="allowanceaMinVpoints" column="ALLOWANCEA_MIN_VPOINTS"/>
+		<result property="allowanceaMaxVpoints" column="ALLOWANCEA_MAX_VPOINTS"/>
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="groupName" column="GROUP_NAME"/>
+		<result property="restrictFirstDayBottle" column="RESTRICT_FIRST_DAY_BOTTLE"/>
+		<result property="restrictFirstDayMoney" column="RESTRICT_FIRST_DAY_MONEY"/>
+		<result property="restrictFirstMonthBottle" column="RESTRICT_FIRST_MONTH_BOTTLE"/>
+		<result property="restrictFirstMonthMoney" column="RESTRICT_FIRST_MONTH_MONEY"/>
+		<result property="restrictFirstTotalBottle" column="RESTRICT_FIRST_TOTAL_BOTTLE"/>
+		<result property="restrictFirstTotalMoney" column="RESTRICT_FIRST_TOTAL_MONEY"/>
+		<result property="specialLabel" column="SPECIAL_LABEL"/>
+        <result property="redPacketRain" column="RED_PACKET_RAIN"/>
+		<result property="allowScanRole" column="ALLOW_SCAN_ROLE"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUser" column="create_user"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="updateUser" column="update_user"/>
+	</resultMap>
+	
+    <resultMap id="allRebateRuleCogResultMap" type="com.dbt.platform.activity.bean.VcodeActivityRebateRuleCog" extends="baseResultMap">
+<!--       <association property="vpointsCogLst" column="REBATE_RULE_KEY" -->
+<!--                select="com.dbt.platform.activity.dao.IVcodeActivityVpointsCogDao.queryVpointsCogByrebateRuleKey"></association>-->
+    </resultMap>
+	
+    <!-- 插入活动规则 -->
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityRebateRuleCog">
+	   INSERT INTO VPS_VCODE_ACTIVITY_REBATE_RULE_COG (
+            REBATE_RULE_KEY,
+            REBATE_RULE_NAME,
+            VCODE_ACTIVITY_KEY,
+            ACTIVITY_TYPE,
+            APPOINT_REBATE_RULE_KEY,
+            MONEY_DANPING,
+            AREACODE,
+            DEP_REGION_ID,
+            DEP_PROVINCE_ID,
+            FIRST_DEALER_KEY,
+            BIG_REGION_NAME,
+            SECONDARY_NAME,
+            RULE_TYPE,
+            BEGIN_DATE,
+            END_DATE,
+            BEGIN_TIME,
+            END_TIME,
+            PRIZE_COG_TYPE,
+            HOTAREA_KEY,
+            ERUPT_RULE_INFO,
+            ERUPT_RESTRICT_TIME_TYPE,
+            POPUP_MONEY,
+            RESTRICT_VPOINTS,
+			RESTRICT_MONEY,
+			RESTRICT_BOTTLE,
+			RESTRICT_COUNT,
+			RESTRICT_TIME_TYPE,
+			FIRST_SCAN_PERCENT,
+			RULE_TOTAL_MONEY,
+			RULE_TOTAL_VPOINTS,
+			RULE_TOTAL_PRIZE,
+			FIRST_SCAN_DANPING_LIMIT,
+			RULE_NEW_USER_LADDER,
+            REMARKS,
+            ALLOWANCEA_REBATE_TYPE,
+	        ALLOWANCEA_MIN_MONEY,
+	        ALLOWANCEA_MAX_MONEY,
+	        ALLOWANCEA_MIN_VPOINTS,
+			ALLOWANCEA_MAX_VPOINTS,
+            GROUP_ID,
+            GROUP_NAME,
+            RESTRICT_FIRST_DAY_BOTTLE,
+            RESTRICT_FIRST_DAY_MONEY,
+            RESTRICT_FIRST_MONTH_BOTTLE,
+            RESTRICT_FIRST_MONTH_MONEY,
+            RESTRICT_FIRST_TOTAL_BOTTLE,
+            RESTRICT_FIRST_TOTAL_MONEY,
+            RESTRICT_FIRST_TIME,
+            SPECIAL_LABEL,
+            RED_PACKET_RAIN,
+            <if test=" allowScanRole != null and allowScanRole != ''">
+            ALLOW_SCAN_ROLE,
+            </if>
+            DELETE_FLAG,
+            CREATE_TIME,
+            CREATE_USER,
+            UPDATE_TIME,
+            UPDATE_USER
+	   ) VALUES (
+	       #{rebateRuleKey},
+	       #{rebateRuleName},
+           #{vcodeActivityKey},
+           #{activityType},
+           #{appointRebateRuleKey},
+           #{moneyDanping},
+           #{areaCode},
+           #{depRegionId},
+           #{depProvinceId},
+           #{firstDealerKey},
+           #{bigRegionName},
+           #{secondaryName},
+           #{ruleType},
+           #{beginDate},
+           #{endDate},
+           #{beginTime},
+           #{endTime},
+           #{prizeCogType},
+           #{hotAreaKey},
+           #{eruptRuleInfo},
+           #{eruptRestrictTimeType},
+           #{popupMoney},
+           #{restrictVpoints},
+		   #{restrictMoney},
+		   #{restrictBottle},
+		   #{restrictCount},
+		   #{restrictTimeType},
+           #{firstScanPercent},
+           #{ruleTotalMoney},
+           #{ruleTotalVpoints},
+           #{ruleTotalPrize},
+           #{firstScanDanpingLimit},
+           #{ruleNewUserLadder},
+           #{remarks},
+           #{allowanceaRebateType},
+		   #{allowanceaMinMoney},
+		   #{allowanceaMaxMoney},
+		   #{allowanceaMinVpoints},
+		   #{allowanceaMaxVpoints},
+           #{groupId},
+           #{groupName},
+           #{restrictFirstDayBottle},
+           #{restrictFirstDayMoney},
+           #{restrictFirstMonthBottle},
+           #{restrictFirstMonthMoney},
+           #{restrictFirstTotalBottle},
+           #{restrictFirstTotalMoney},
+           #{restrictFirstTime},
+           #{specialLabel},
+        #{redPacketRain},
+        <if test=" allowScanRole != null and allowScanRole != ''">
+            #{allowScanRole},
+        </if>
+           #{deleteFlag},
+           #{createTime},
+           #{createUser},
+           #{updateTime},
+           #{updateUser}
+	   )
+	</insert>
+	
+    <!-- 根据规则主键删除活动规则 -->
+	<delete id="deleteByrebateRuleKey" parameterType="Map">
+	   UPDATE VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+	   SET DELETE_FLAG = '1',
+	       UPDATE_TIME = #{updateTime},
+	       UPDATE_USER = #{updateUser}
+	   WHERE REBATE_RULE_KEY = #{rebateRuleKey}
+	</delete>
+
+    <!-- 根据活动主键获取所有活动规则 -->
+	<select id="queryRebateRuleCogListByActivityKey" parameterType="Map" resultMap="allRebateRuleCogResultMap">
+		SELECT 
+            r.REBATE_RULE_KEY,
+            r.REBATE_RULE_NAME,
+            r.VCODE_ACTIVITY_KEY,
+            r.APPOINT_REBATE_RULE_KEY,
+            r.MONEY_DANPING,
+            r.RULE_TYPE,
+            r.BEGIN_DATE,
+            r.END_DATE,
+            r.BEGIN_TIME,
+            r.END_TIME,
+            r.HOTAREA_KEY,
+            r.ERUPT_RULE_INFO,
+            r.ERUPT_RESTRICT_TIME_TYPE,
+            r.POPUP_MONEY,
+            r.RESTRICT_VPOINTS,
+            r.RESTRICT_MONEY,
+			r.RESTRICT_BOTTLE,
+			r.RESTRICT_COUNT,
+			r.RESTRICT_TIME_TYPE,
+			r.IS_VALID,
+            r.AREACODE,
+            r.DEP_REGION_ID,
+            r.DEP_PROVINCE_ID,
+            r.FIRST_DEALER_KEY,
+            r.BIG_REGION_NAME,
+            r.SECONDARY_NAME,
+            r.RULE_TOTAL_MONEY,
+            r.RULE_TOTAL_VPOINTS,
+            r.RULE_TOTAL_PRIZE,
+            r.FIRST_SCAN_DANPING_LIMIT,
+            r.RULE_NEW_USER_LADDER,
+            r.REMARKS,
+            s.AREANAME areaName,
+            r.GROUP_NAME,
+            r.ALLOWANCEA_REBATE_TYPE,
+	        r.ALLOWANCEA_MIN_MONEY,
+	        r.ALLOWANCEA_MAX_MONEY,
+	        r.ALLOWANCEA_MIN_VPOINTS,
+			r.ALLOWANCEA_MAX_VPOINTS,
+			r.ALLOW_SCAN_ROLE,
+			CASE
+				WHEN ((r.RULE_TYPE = '1' OR r.RULE_TYPE = '2') AND (NOW() BETWEEN CONCAT(r.BEGIN_DATE,' ',r.BEGIN_TIME) AND CONCAT(r.END_DATE,' ',r.END_TIME))) OR r.RULE_TYPE = '4' THEN '1' 
+				WHEN r.RULE_TYPE = '3' AND (if(date_format(NOW(),'%w')=0,7,date_format(NOW(),'%w')) BETWEEN  r.BEGIN_DATE AND  r.END_DATE) AND (date_format(NOW(),'%H:%i:%s') BETWEEN r.BEGIN_TIME AND r.END_TIME) THEN '1'
+				WHEN ((r.RULE_TYPE = '1' OR r.RULE_TYPE = '2') AND NOW() > CONCAT(r.END_DATE,' ',r.END_TIME)) OR IS_VALID = '1' THEN '2' 
+				WHEN  r.RULE_TYPE = '5' THEN '1'
+				ELSE '0'
+			END AS ruleStatus,
+            case when IFNULL(r.HOTAREA_KEY, '') != '' then 1 else 0 end hotAreaFlag,
+            case when IFNULL(r.group_id, '') = '' then 2147483648
+                 when IFNULL(g.group_priority, '') = '' then 2147483647
+                 else g.group_priority end groupPriority,
+            r.special_label,
+            r.RED_PACKET_RAIN
+		FROM VPS_VCODE_ACTIVITY_REBATE_RULE_COG r
+        left join sys_area_m s on r.AREACODE = s.AREACODE
+        left join vps_crm_group g on r.group_id = g.GROUP_ID and g.DELETE_FLAG = '0'
+		WHERE r.DELETE_FLAG = '0'
+		  and r.VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+		  <if test="flag > 0">
+		      and (r.RESTRICT_VPOINTS > 0 OR r.RESTRICT_MONEY > 0.00 OR r.RESTRICT_BOTTLE > 0 OR r.RESTRICT_COUNT > 0)
+		      and r.APPOINT_REBATE_RULE_KEY IS NULL
+		      <if test="isValid == 0 or isValid == 1">
+		      	and IS_VALID = #{isValid}
+		      </if>
+		  </if>
+		  <if test="areaCode != null and areaCode != ''">
+		      and r.AREACODE = #{areaCode}
+		  </if>
+<!-- 		  有效及无效规则（只校验日期） -->
+		  <if test="tabsFlag != null">
+		      <choose>
+		          <when test="tabsFlag == 1">
+		              and !((r.rule_type = '1' or r.rule_type = '2') and CURDATE() > end_date)
+		          </when>
+		          <when test="tabsFlag == 2">
+		              and ((r.rule_type = '1' or r.rule_type = '2') and CURDATE() > end_date)
+		          </when>
+		      </choose>
+		  </if>
+		order by 
+			<!-- 蒙牛组织机构排序 -->
+			IFNULL(r.DEP_REGION_ID, ''), IFNULL(r.DEP_PROVINCE_ID, ''), IFNULL(r.FIRST_DEALER_KEY, ''),
+			<!-- 青啤组织机构排序 --> 
+			IFNULL(r.BIG_REGION_NAME, ''), IFNULL(r.SECONDARY_NAME, ''),
+			<!-- 基础排序 --> 
+			r.AREACODE, groupPriority, ruleStatus,r.IS_VALID, r.rule_type, hotAreaFlag desc, 
+			r.rule_new_user_ladder desc, r.create_time desc, r.begin_date, r.begin_time
+	</select>
+	
+	<!-- 查询已过期的规则 -->
+	<select id="queryOverdueRebateRuleCogList" parameterType="Map" resultMap="allRebateRuleCogResultMap">
+		SELECT 
+            r.REBATE_RULE_KEY,
+            r.REBATE_RULE_NAME,
+            r.VCODE_ACTIVITY_KEY,
+            r.APPOINT_REBATE_RULE_KEY,
+            r.MONEY_DANPING,
+            r.RULE_TYPE,
+            r.BEGIN_DATE,
+            r.END_DATE,
+            r.BEGIN_TIME,
+            r.END_TIME,
+            r.HOTAREA_KEY,
+            r.ERUPT_RULE_INFO,
+            r.ERUPT_RESTRICT_TIME_TYPE,
+            r.POPUP_MONEY,
+            r.RESTRICT_VPOINTS,
+            r.RESTRICT_MONEY,
+			r.RESTRICT_BOTTLE,
+			r.RESTRICT_COUNT,
+			r.RESTRICT_TIME_TYPE,
+			r.IS_VALID,
+            r.FIRST_SCAN_DANPING_LIMIT,
+            r.REMARKS,
+            r.AREACODE,
+            r.DEP_REGION_ID,
+            r.DEP_PROVINCE_ID,
+            r.FIRST_DEALER_KEY,
+            r.BIG_REGION_NAME,
+            r.SECONDARY_NAME,
+            s.AREANAME areaName,
+            r.ALLOWANCEA_REBATE_TYPE,
+	        r.ALLOWANCEA_MIN_MONEY,
+	        r.ALLOWANCEA_MAX_MONEY,
+	        r.ALLOWANCEA_MIN_VPOINTS,
+			r.ALLOWANCEA_MAX_VPOINTS,
+            r.ALLOW_SCAN_ROLE,
+            r.RED_PACKET_RAIN,
+			r.special_label
+		FROM VPS_VCODE_ACTIVITY_REBATE_RULE_COG r
+        left join sys_area_m s on r.AREACODE = s.AREACODE
+		WHERE r.DELETE_FLAG = '0'
+		  and r.VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+		  and r.RULE_TYPE in ('1','2')
+		  and CONCAT(r.END_DATE,' ',r.END_TIME) <![CDATA[<]]> NOW()
+		  <if test="areaCode != null and areaCode != ''">
+		      and r.AREACODE = #{areaCode}
+		  </if>
+		  <if test="depRegionId != null and depRegionId != ''">
+		      and r.DEP_REGION_ID = #{depRegionId}
+		  </if>
+		  <if test="depProvinceId != null and depProvinceId != ''">
+		      and r.DEP_PROVINCE_ID = #{depProvinceId}
+		  </if>
+		  <if test="firstDealerKey != null and firstDealerKey != ''">
+		      and r.FIRST_DEALER_KEY = #{firstDealerKey}
+		  </if>
+		  <if test="bigRegionName != null and bigRegionName != ''">
+		      and r.BIG_REGION_NAME = #{bigRegionName}
+		  </if>
+		  <if test="secondaryName != null and secondaryName != ''">
+		      and r.SECONDARY_NAME = #{secondaryName}
+		  </if>
+	</select>
+	
+    <!-- 根据活动规则主键获取记录 -->
+    <select id="findById" parameterType="String" resultMap="baseResultMap">
+        SELECT
+            r.*,
+            CONCAT(IF(IFNULL(r.DEP_REGION_ID, '') != '',r.DEP_REGION_ID,''),IF(IFNULL(r.DEP_PROVINCE_ID, '') != '',CONCAT(',','r.DEP_PROVINCE_ID'),''),IF(IFNULL(r.FIRST_DEALER_KEY, '') != '',CONCAT(',','r.FIRST_DEALER_KEY'),'')) as departmentIds,
+            CONCAT(IF(IFNULL(r.BIG_REGION_NAME, '') != '',r.BIG_REGION_NAME,''),IF(IFNULL(r.SECONDARY_NAME, '') != '',CONCAT(',','r.SECONDARY_NAME'),'')) as organizationIds,
+            v.VCODE_ACTIVITY_NAME vcodeActivityName,
+            v.ACTIVITY_VERSION activityVersion,
+            s.AREANAME areaName
+        from VPS_VCODE_ACTIVITY_REBATE_RULE_COG r
+        left join vps_vcode_activity_cog v on r.VCODE_ACTIVITY_KEY = v.VCODE_ACTIVITY_KEY
+        left join sys_area_m s on r.AREACODE = s.AREACODE
+        where r.DELETE_FLAG = '0'
+        and r.REBATE_RULE_KEY = #{id}
+        limit 1
+    </select>
+    
+    <!-- 根据规则父Id查询规则List -->
+    <select id="queryRebateRuleAreaListByParentId" parameterType="String" resultMap="baseResultMap">
+    	SELECT
+            r.*,
+            v.VCODE_ACTIVITY_NAME vcodeActivityName,
+            v.ACTIVITY_VERSION activityVersion,
+            s.AREANAME areaName
+        from VPS_VCODE_ACTIVITY_REBATE_RULE_COG r
+        left join vps_vcode_activity_cog v on r.VCODE_ACTIVITY_KEY = v.VCODE_ACTIVITY_KEY
+        left join sys_area_m s on r.AREACODE = s.AREACODE
+        where r.DELETE_FLAG = '0'
+        and r.APPOINT_REBATE_RULE_KEY = #{rebateRuleKey}
+    </select>
+	
+    <!-- 根据活动规则主键获取已导入过配置项的区域编码列表 -->
+    <select id="queryCityCodeByActivityKey" parameterType="String" resultType="String">
+        SELECT
+            AREACODE
+        from VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+        WHERE DELETE_FLAG = '0'
+          and VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+    </select>
+	
+    <!-- 查询有效记活动规则录列表 -->
+    <select id="getValidRebateRuleCogNumByActivityKey" parameterType="String" resultType="Integer">
+        SELECT
+            count(*)
+        from VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+        WHERE DELETE_FLAG = '0'
+          and VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+    </select>
+	
+    <!-- 查询活动下指定区域的规则 -->
+    <select id="queryByAreaCode" parameterType="Map" resultMap="baseResultMap">
+        SELECT
+            *
+        from VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+        WHERE DELETE_FLAG = '0'
+          and VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+          and AREACODE = #{areaCode}
+         <if test="ruleType !=null and ruleType != ''">
+            and RULE_TYPE = #{ruleType}
+         </if>
+    </select>
+    
+    <!-- 依据热区主键查询有效的相关规则 -->
+    <select id="queryValidByHotAreaKey" parameterType="Map" resultMap="baseResultMap">
+        SELECT 
+            *
+        FROM VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+        WHERE DELETE_FLAG = '0'
+        AND IS_VALID = '0'
+        AND HOTAREA_KEY = #{hotAreaKey}
+        AND RULE_TYPE in ('1', '2', '3')
+        AND (
+            <!-- 节假日和时间段 -->
+            #{nowTime} >= BEGIN_DATE AND #{nowTime} <![CDATA[<=]]> END_DATE
+            )
+        ORDER BY RULE_TYPE 
+    </select>
+    
+    <!-- 更新活动规则 -->
+    <update id="updateRebateRuleCog" parameterType="com.dbt.platform.activity.bean.VcodeActivityRebateRuleCog">
+        update VPS_VCODE_ACTIVITY_REBATE_RULE_COG
+        <set>
+            IS_VALID = #{isValid},
+            <if test="appointRebateRuleKey !=null and appointRebateRuleKey != ''">
+            	APPOINT_REBATE_RULE_KEY = #{appointRebateRuleKey},
+            </if>
+            <if test="appointRebateRuleKey ==null or appointRebateRuleKey == ''">
+            	APPOINT_REBATE_RULE_KEY = NULL,
+            </if>
+            <if test="restrictVpoints >= 0">
+                RESTRICT_VPOINTS = #{restrictVpoints},
+            </if>
+        	<if test="restrictMoney >= 0">
+                RESTRICT_MONEY = #{restrictMoney},
+            </if>
+            <if test="restrictBottle >= 0">
+                RESTRICT_BOTTLE = #{restrictBottle},
+            </if>
+            <if test="restrictCount >= 0">
+                RESTRICT_COUNT = #{restrictCount},
+            </if>
+            <if test="restrictTimeType != null and restrictTimeType != ''.toString() ">
+                RESTRICT_TIME_TYPE = #{restrictTimeType},
+            </if>
+            <if test="beginDate != null and beginDate != '' ">
+                BEGIN_DATE = #{beginDate},
+            </if>
+            <if test="endDate != null and endDate != '' ">
+                END_DATE= #{endDate},
+            </if>
+            <if test="beginTime != null and beginTime != '' ">
+                BEGIN_TIME= #{beginTime},
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                END_TIME= #{endTime},
+            </if>
+            <if test="firstScanPercent != null">
+                FIRST_SCAN_PERCENT= #{firstScanPercent},
+            </if>
+            <if test="ruleTotalMoney != null">
+                RULE_TOTAL_MONEY= #{ruleTotalMoney},
+            </if>
+            <if test="groupId != null">
+                GROUP_ID= #{groupId},
+            </if>
+            <if test="groupName != null">
+                GROUP_NAME= #{groupName},
+            </if>
+            <if test="ruleTotalVpoints != null">
+                RULE_TOTAL_VPOINTS= #{ruleTotalVpoints},
+            </if>
+            <if test="ruleTotalPrize != null">
+                RULE_TOTAL_PRIZE= #{ruleTotalPrize},
+            </if>
+            <if test="remarks != null">
+                REMARKS= #{remarks},
+            </if>
+            <if test="allowScanRole != null and allowScanRole != ''">
+                ALLOW_SCAN_ROLE= #{allowScanRole},
+            </if>
+            <if test="restrictFirstDayBottle >= 0">
+                RESTRICT_FIRST_DAY_BOTTLE = #{restrictFirstDayBottle},
+            </if>
+            <if test="restrictFirstDayMoney >= 0">
+                RESTRICT_FIRST_DAY_MONEY = #{restrictFirstDayMoney},
+            </if>
+            <if test="restrictFirstMonthBottle >= 0">
+                RESTRICT_FIRST_MONTH_BOTTLE = #{restrictFirstMonthBottle},
+            </if>
+            <if test="restrictFirstMonthMoney >= 0">
+                RESTRICT_FIRST_MONTH_MONEY = #{restrictFirstMonthMoney},
+            </if>
+            <if test="restrictFirstTotalBottle >= 0">
+                RESTRICT_FIRST_TOTAL_BOTTLE = #{restrictFirstTotalBottle},
+            </if>
+            <if test="restrictFirstTotalMoney >= 0">
+                RESTRICT_FIRST_TOTAL_MONEY = #{restrictFirstTotalMoney},
+            </if>
+            FIRST_SCAN_DANPING_LIMIT= #{firstScanDanpingLimit},
+            RULE_NEW_USER_LADDER= #{ruleNewUserLadder},
+            ALLOWANCEA_REBATE_TYPE = #{allowanceaRebateType},
+			ALLOWANCEA_MIN_MONEY = #{allowanceaMinMoney},
+			ALLOWANCEA_MAX_MONEY = #{allowanceaMaxMoney},
+			ALLOWANCEA_MIN_VPOINTS = #{allowanceaMinVpoints},
+			ALLOWANCEA_MAX_VPOINTS = #{allowanceaMaxVpoints},
+            HOTAREA_KEY= #{hotAreaKey},
+            ERUPT_RULE_INFO= #{eruptRuleInfo},
+            ERUPT_RESTRICT_TIME_TYPE = #{eruptRestrictTimeType},
+            POPUP_MONEY= #{popupMoney},
+            MONEY_DANPING = #{moneyDanping},
+            RESTRICT_FIRST_TIME = null,
+            special_label = #{specialLabel},
+            RED_PACKET_RAIN = #{redPacketRain},
+            rebate_rule_name = #{rebateRuleName}
+        </set>
+        where REBATE_RULE_KEY = #{rebateRuleKey}
+    </update>
+    <select id="queryRuleExpireRemind" resultMap="baseResultMap" >
+        SELECT
+        vvar.ACTIVITY_TYPE,
+        vvar.VCODE_ACTIVITY_KEY,
+        count(0) as total
+        FROM
+        vps_vcode_activity_rebate_rule_cog  as vvar
+        WHERE
+        timestampdiff(
+        DAY,
+        vvar.BEGIN_DATE,
+        vvar.END_DATE
+        ) > 7
+        AND timestampdiff(
+        DAY,
+        date_format(now(), '%y-%m-%d'),
+        vvar.END_DATE
+        ) <![CDATA[<= ]]> 3
+        AND timestampdiff(
+        DAY,
+        date_format(now(), '%y-%m-%d'),
+        vvar.END_DATE
+        ) > 0
+        GROUP BY
+        vvar.VCODE_ACTIVITY_KEY,
+        vvar.ACTIVITY_TYPE;
+    </select>
+    
+    <select id="queryRedPacketRule" resultMap="baseResultMap">
+        select *   from  vps_vcode_activity_rebate_rule_cog vvar  where
+       vvar.IS_VALID="0" and  DELETE_FLAG ="0" and RULE_TYPE in ("3","4")
+       union all 
+        select *   from  vps_vcode_activity_rebate_rule_cog vvar  where
+       vvar.IS_VALID="0" and  DELETE_FLAG ="0" and RULE_TYPE in ("1","2")
+       and  DATE_FORMAT(NOW(),'%Y-%m-%d') BETWEEN BEGIN_DATE AND END_DATE
+    </select>
+    
+<!--     获取指定活动下的可继承规则 -->
+    <select id="queryAppointRebateRule" resultMap="baseResultMap">
+        select
+            *
+        from 
+            vps_vcode_activity_rebate_rule_cog
+        where 
+            delete_flag = '0' 
+            and rule_type in ('1', '2')
+            and (end_date >= curdate() 
+	            <if test="rebateRuleKey != null and rebateRuleKey != ''">
+	                or rebate_rule_key = #{rebateRuleKey}
+	            </if>
+            )
+            and appoint_rebate_rule_key IS NULL
+            and (RESTRICT_VPOINTS > 0 or RESTRICT_MONEY > 0 or RESTRICT_BOTTLE > 0 or RESTRICT_COUNT > 0)
+            <if test="vcodeActivityKey != null and vcodeActivityKey != ''">
+                and vcode_activity_key = #{vcodeActivityKey}
+            </if>
+        order by areacode, rule_type, begin_date, begin_time, create_time desc
+    </select>
+
+    <select id="findEruptRuleInfo" parameterType="Map" resultMap="baseResultMap">
+        SELECT *
+        FROM vps_vcode_activity_rebate_rule_cog
+        WHERE
+            vcode_activity_key = #{activityKey}
+            AND (RULE_TYPE = '1' OR RULE_TYPE = '2')
+            AND ERUPT_RULE_INFO IS NOT NULL
+            AND DELETE_FLAG = '0'
+            AND BEGIN_DATE <![CDATA[<=]]> #{endDate}
+            AND END_DATE <![CDATA[>=]]> #{startDate}
+            AND END_DATE <![CDATA[>=]]> CURDATE()
+    </select>
+</mapper>

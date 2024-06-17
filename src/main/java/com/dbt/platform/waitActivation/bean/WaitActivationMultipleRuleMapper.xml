@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.waitActivation.dao.WaitActivationMultipleRuleDao">
+    <resultMap id="resultMap" type="com.dbt.platform.waitActivation.bean.VpsWaitActivationMultipleRule">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="drawNum" column="DRAW_NUM"/>
+        <result property="money" column="MONEY"/>
+        <result property="putInNum" column="PUT_IN_NUM"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+    <insert id="createMultipleRule" parameterType="com.dbt.platform.waitActivation.bean.VpsWaitActivationMultipleRule">
+        INSERT INTO vps_wait_activation_multiple_rule
+            (INFO_KEY, ACTIVITY_KEY, DRAW_NUM, MONEY, PUT_IN_NUM, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER)
+        VALUES
+            (#{infoKey},#{activityKey},#{drawNum},#{money},#{putInNum},#{createTime},#{createUser},#{updateTime},#{updateUser})
+    </insert>
+
+    <update id="updateMultipleRule">
+        UPDATE
+            vps_wait_activation_multiple_rule
+        SET
+            <if test="activityKey != null and activityKey!=''">
+                ACTIVITY_KEY = #{activityKey},
+            </if>
+            <if test="drawNum != null and drawNum!=''">
+                DRAW_NUM = #{drawNum},
+            </if>
+            <if test="money != null and money!=''">
+                MONEY = #{money},
+            </if>
+            <if test="putInNum != null">
+                PUT_IN_NUM = #{putInNum},
+            </if>
+            <if test="deleteFlag != null and deleteFlag!=''">
+                DELETE_FLAG = #{deleteFlag},
+            </if>
+            UPDATE_TIME = #{updateTime},
+            UPDATE_USER = #{updateUser}
+        WHERE
+            INFO_KEY = #{infoKey}
+    </update>
+
+    <select id="findByInfoKey" resultMap="resultMap">
+        SELECT * FROM vps_wait_activation_multiple_rule WHERE INFO_KEY = #{infoKey}
+    </select>
+</mapper>

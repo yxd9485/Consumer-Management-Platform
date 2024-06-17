@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsSysTicketInfoDao">
+
+	<resultMap type="com.dbt.platform.ticket.bean.VpsSysTicketInfo" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="categoryKey" column="CATEGORY_KEY"/>
+		<result property="ticketNo" column="TICKET_NO"/>
+		<result property="ticketName" column="TICKET_NAME"/>
+		<result property="ticketMoney" column="TICKET_MONEY"/>
+		<result property="ticketType" column="TICKET_TYPE"/>
+		<result property="ticketDesc" column="TICKET_DESC"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+		<result property="ticketPicUrl" column="TICKET_PIC_URL"/>
+		<result property="ticketStatus" column="TICKET_STATUS"/>
+		<result property="expiredDay" column="EXPIRED_DAY"/>
+		<result property="endDate" column="END_DATE"/>
+        <result property="expiredDay" column="EXPIRED_DAY"/>
+        <result property="ticketUrl" column="TICKET_URL"/>
+        <result property="jumpFlag" column="JUMP_FLAG"/>
+        <result property="ticketCount" column="TICKET_COUNT"/>
+        <result property="releaseStartDate" column="RELEASE_START_DATE"/>
+        <result property="releaseEndDate" column="RELEASE_END_DATE"/>
+        <result property="fileName" column="FILE_NAME"/>
+		<result property="ticketUseCount" column="TICKET_USE_COUNT"/>
+		<result property="couponId" column="COUPON_ID"/>
+		<result property="couponGenre" column="COUPON_GENRE"/>
+		<result property="atLeast" column="AT_LEAST"/>
+		<result property="discount" column="DISCOUNT"/>
+		<result property="maxFetch" column="MAX_FETCH"/>
+		<result property="couponEffectType" column="COUPON_EFFECT_TYPE"/>
+		<result property="couponStartTime" column="COUPON_START_TIME"/>
+		<result property="couponEndTime" column="COUPON_END_TIME"/>
+		<result property="effectDay" column="EFFECT_DAY"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		INFO_KEY,
+        CATEGORY_KEY,
+        TICKET_NO,
+        TICKET_NAME,
+        TICKET_MONEY,
+        TICKET_TYPE,
+        TICKET_DESC,
+        DELETE_FLAG,
+        CREATE_TIME,
+        CREATE_USER,
+        UPDATE_TIME,
+        UPDATE_USER,
+        TICKET_PIC_URL,
+        TICKET_STATUS,
+        EXPIRED_DAY,
+        END_DATE,
+        EXPIRED_DAY,
+        TICKET_URL,
+        JUMP_FLAG,
+        TICKET_COUNT,
+        RELEASE_START_DATE,
+        RELEASE_END_DATE,
+        FILE_NAME,
+		TICKET_USE_COUNT,
+        COUPON_ID,
+        COUPON_GENRE,
+        AT_LEAST,
+        DISCOUNT,
+        MAX_FETCH,
+        COUPON_EFFECT_TYPE,
+        COUPON_START_TIME,
+        COUPON_END_TIME,
+        EFFECT_DAY
+	</sql>
+
+	
+	<select id="localList" resultMap="baseResult">
+		select
+			t.info_key,
+			t.category_key,
+			c.category_type as categoryType,
+			c.category_name as categoryName,
+			t.ticket_no,
+			t.ticket_name,
+			t.ticket_money,
+			t.ticket_type,
+			t.ticket_desc
+		from vps_sys_ticket_info t
+		inner join vps_sys_ticket_category_info c on t.category_key = c.category_key
+		inner join vps_vcode_ticket_info i on t.TICKET_NO = i.TICKET_NO
+		inner join vps_vcode_ticket_activity_cog a on i.ACTIVITY_KEY = a.ACTIVITY_KEY
+		where t.delete_flag = '0'
+		and CURDATE() >= a.START_DATE AND CURDATE() <![CDATA[<=]]> a.END_DATE
+		order by t.ticket_no
+	</select>
+
+
+	<select id="findById" parameterType="string" resultMap="baseResult">
+		select
+		<include refid="Base_Column_List"></include>
+		from vps_sys_ticket_info
+		where INFO_KEY = #{infoKey}
+	</select>
+
+	<!-- 	获取指定类型的最在编号 -->
+	<select id="queryListByParentId" resultMap="baseResult" parameterType="String" >
+		select
+			t.info_key,
+			t.category_key,
+			c.category_name as categoryName,
+			t.ticket_no,
+			t.ticket_name,
+		    t.TICKET_STATUS,
+			t.ticket_type,
+			t.ticket_desc,
+			t.delete_flag,
+			t.create_time,
+			t.create_user,
+			t.update_time,
+			t.update_user,
+			t.update_user,
+			t.EXPIRED_DAY,
+			t.TICKET_URL,
+			t.JUMP_FLAG,
+            t.TICKET_COUNT,
+            t.RELEASE_START_DATE,
+            t.RELEASE_END_DATE,
+            t.FILE_NAME,
+			t.TICKET_PIC_URL,
+			t.TICKET_STATUS,
+            t.END_DATE,
+			t.TICKET_USE_COUNT
+		from vps_sys_ticket_info t
+		inner join vps_sys_ticket_category_info c on t.category_key = c.category_key
+		where c.category_key = #{categoryKey}
+		and t.delete_flag = '0'
+		AND CURDATE() <![CDATA[<=]]> t.RELEASE_END_DATE
+		AND t.TICKET_STATUS = '1'
+		order by end_date desc,ticket_no
+	</select>
+
+	<!-- 	获取指定类型的最在编号 -->
+	<select id="queryDenominationList" resultMap="baseResult" parameterType="String" >
+		select
+			t.info_key,
+			t.category_key,
+			c.category_name as categoryName,
+			t.ticket_no,
+			t.ticket_name,
+			t.TICKET_MONEY,
+			t.TICKET_STATUS,
+			t.ticket_type,
+			t.ticket_desc,
+			t.delete_flag,
+			t.create_time,
+			t.create_user,
+			t.update_time,
+			t.update_user,
+			t.update_user,
+			t.EXPIRED_DAY,
+			t.TICKET_URL,
+			t.JUMP_FLAG,
+			t.TICKET_COUNT,
+			t.RELEASE_START_DATE,
+			t.RELEASE_END_DATE,
+			t.FILE_NAME,
+			t.TICKET_PIC_URL,
+			t.TICKET_STATUS,
+			t.END_DATE,
+			t.TICKET_USE_COUNT,
+		    t.COUPON_ID,
+		    t.COUPON_GENRE,
+		    t.AT_LEAST,
+		    t.DISCOUNT,
+		    t.MAX_FETCH,
+		    t.COUPON_EFFECT_TYPE,
+		    t.COUPON_START_TIME,
+		    t.COUPON_END_TIME,
+		    t.EFFECT_DAY
+		from vps_sys_ticket_info t
+				 inner join vps_sys_ticket_category_info c on t.category_key = c.category_key
+		where c.category_key = #{categoryKey}
+		  and t.delete_flag = '0'
+		order by end_date desc,ticket_no
+	</select>
+	
+	<select id="findByTicketNo" parameterType="String" resultMap="baseResult">
+		SELECT 
+			info_key,
+			category_key,
+			ticket_no,
+			ticket_name,
+			ticket_money,
+			ticket_type,
+			ticket_desc
+		FROM vps_sys_ticket_info 
+		WHERE ticket_no = #{ticketNo}
+		LIMIT 1
+	</select>
+
+	<select id="findTicketDenomination" parameterType="Map" resultMap="baseResult" >
+		select
+		<include refid="Base_Column_List"></include>
+		from vps_sys_ticket_info
+		where delete_flag = '0'
+		<if test="queryBean.ticketName != null and queryBean.ticketName != ''">
+			AND TICKET_NAME = #{queryBean.ticketName}
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND END_DATE <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' 23:59:59')
+		</if>
+		<if test="queryBean.categoryKey != null and queryBean.categoryKey != ''">
+			AND CATEGORY_KEY = #{queryBean.categoryKey}
+		</if>
+		order by UPDATE_TIME desc
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+
+	<select id="getTicketList" parameterType="com.dbt.platform.ticket.bean.VpsSysTicketInfo" resultMap="baseResult" >
+		select
+		<include refid="Base_Column_List"></include>
+		from vps_sys_ticket_info
+		where CATEGORY_KEY = #{categoryKey}
+		AND
+		ticket_type = #{ticketType}
+	</select>
+
+	<select id="countTicketActivityList" resultType="Integer" parameterType="Map">
+		select
+		count(0)
+		from vps_sys_ticket_info
+		where delete_flag = '0'
+		<if test="queryBean.ticketName != null and queryBean.ticketName != ''">
+			AND TICKET_NAME = #{queryBean.ticketName}
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND END_DATE <![CDATA[<=]]> CONCAT(#{queryBean.endDate},' 23:59:59')
+		</if>
+		<if test="queryBean.categoryKey != null and queryBean.categoryKey != ''">
+			AND CATEGORY_KEY = #{queryBean.categoryKey}
+		</if>
+	</select>
+
+	<insert id="writeTicketDenomination" parameterType="com.dbt.platform.ticket.bean.VpsSysTicketInfo">
+     INSERT INTO vps_sys_ticket_info (
+             INFO_KEY,
+			CATEGORY_KEY,
+			TICKET_NO,
+			TICKET_NAME,
+			TICKET_MONEY,
+			TICKET_TYPE,
+			TICKET_DESC,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER,
+			TICKET_PIC_URL,
+			TICKET_STATUS,
+			 END_DATE,
+			 EXPIRED_DAY,
+			 TICKET_URL,
+			 JUMP_FLAG,
+			 TICKET_COUNT,
+			 RELEASE_START_DATE,
+			 RELEASE_END_DATE,
+			 FILE_NAME,
+			 LIB_NAME
+			)VALUES(
+			#{infoKey},
+			#{categoryKey},
+			#{ticketNo},
+			#{ticketName},
+			#{ticketMoney},
+			#{ticketType},
+			#{ticketDesc},
+			0,
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser},
+			#{ticketPicUrl},
+			#{ticketStatus},
+			#{endDate},
+			#{expiredDay},
+			#{ticketUrl},
+			#{jumpFlag},
+			#{ticketCount},
+			#{releaseStartDate},
+			#{releaseEndDate},
+			#{fileName},
+			#{libName}
+			)
+	</insert>
+
+	<update id="delTicketDenomination" parameterType="map">
+		update vps_sys_ticket_info set DELETE_FLAG = '1'
+		where INFO_KEY = #{infoKey}
+	</update>
+
+	<select id="findTicketDenominationByKey"  resultMap="baseResult" >
+		select
+			t.INFO_KEY,
+			t.CATEGORY_KEY,
+			t.TICKET_NO,
+            t.TICKET_NAME,
+            t.TICKET_MONEY,
+            t.TICKET_TYPE,
+            t.TICKET_DESC,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER,
+            t.UPDATE_TIME,
+            t.UPDATE_USER,
+            t.TICKET_PIC_URL,
+            t.TICKET_STATUS,
+            t.EXPIRED_DAY,
+            t.END_DATE,
+            t.EXPIRED_DAY,
+            t.TICKET_URL,
+            t.JUMP_FLAG,
+            t.TICKET_COUNT,
+            t.RELEASE_START_DATE,
+            t.RELEASE_END_DATE,
+            t.FILE_NAME,
+            t.TICKET_USE_COUNT,
+			c.CATEGORY_TYPE as categoryType
+		from
+		vps_sys_ticket_info t
+		left join vps_sys_ticket_category_info c
+		on t.CATEGORY_KEY = c.CATEGORY_KEY
+		WHERE  INFO_KEY = #{infoKey}
+	</select>
+
+	<update id="updateTicketDenominationEdit" parameterType="Map">
+		UPDATE vps_sys_ticket_info
+		<set>
+			<if test="ticketName != null and ticketName != ''">
+				TICKET_NAME = #{ticketName},
+			</if>
+			<if test="categoryKey != null and categoryKey != ''">
+				CATEGORY_KEY = #{categoryKey},
+			</if>
+			<if test="ticketStatus != null and ticketStatus != ''">
+				TICKET_STATUS = #{ticketStatus},
+			</if>
+			<if test="ticketPicUrl != null and ticketPicUrl != ''">
+				TICKET_PIC_URL = #{ticketPicUrl},
+			</if>
+			<if test="ticketMoney != null and ticketMoney != ''">
+				TICKET_MONEY = #{ticketMoney},
+			</if>
+			<if test="releaseStartDate != null and releaseStartDate != ''">
+				RELEASE_START_DATE = #{releaseStartDate},
+			</if>
+			<if test="releaseEndDate != null and releaseEndDate != ''">
+				RELEASE_END_DATE = #{releaseEndDate},
+			</if>
+			<if test="ticketDesc != null and ticketDesc != ''">
+				TICKET_DESC = #{ticketDesc},
+			</if>
+			<if test="fileName != null and fileName != ''">
+				FILE_NAME = #{fileName},
+			</if>
+			<if test="ticketCount != null and ticketCount != ''">
+				TICKET_COUNT = #{ticketCount},
+			</if>
+            <if test="ticketUrl != null and ticketUrl != ''">
+                TICKET_URL = #{ticketUrl},
+            </if>
+			END_DATE = #{endDate},
+			EXPIRED_DAY = #{expiredDay},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE  INFO_KEY = #{infoKey}
+	</update>
+
+	<!-- 	获取指定类型的最在编号 -->
+	<select id="findByCategoryKey" resultMap="baseResult" parameterType="String" >
+		select
+			info_key,
+			category_key,
+			ticket_no,
+			ticket_name,
+			TICKET_STATUS,
+			ticket_type,
+			ticket_desc,
+			delete_flag,
+			create_time,
+			create_user,
+			update_time,
+			update_user,
+			update_user,
+			EXPIRED_DAY,
+			TICKET_URL,
+			JUMP_FLAG,
+			TICKET_COUNT,
+			RELEASE_START_DATE,
+			RELEASE_END_DATE,
+			FILE_NAME,
+			TICKET_PIC_URL,
+			TICKET_STATUS,
+			END_DATE,
+			TICKET_USE_COUNT
+		from vps_sys_ticket_info
+		where CATEGORY_KEY = #{categoryKey}
+		order by end_date desc,ticket_no
+	</select>
+
+    <select id="queryAllTicket" resultMap="baseResult">
+        select
+            t.info_key,
+            t.category_key,
+            c.category_type as categoryType,
+            c.category_name as categoryName,
+            t.ticket_no,
+            t.ticket_name,
+            t.ticket_money,
+            t.ticket_type,
+            t.ticket_desc
+        from vps_sys_ticket_info t
+                 inner join vps_sys_ticket_category_info c on t.category_key = c.category_key
+        where t.delete_flag = '0'
+          and CURDATE() >= t.RELEASE_START_DATE AND CURDATE() <![CDATA[<=]]> t.RELEASE_END_DATE
+        order by t.ticket_no
+    </select>
+</mapper>

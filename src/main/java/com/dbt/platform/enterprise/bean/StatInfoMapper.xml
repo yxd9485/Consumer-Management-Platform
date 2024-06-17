@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.enterprise.dao.IStatInfoDao">
+
+	<resultMap type="com.dbt.platform.enterprise.bean.StatInfo" id="resultStatInfo">
+		<result property="statInfoKey" column="STAT_INFO_KEY" />
+		<result property="statName" column="STAT_NAME" />
+		<result property="remark" column="REMARK" />
+		<result property="statType" column="STAT_TYPE" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+		<result property="projectServerName" column="PROJECT_SERVER_NAME" />
+	</resultMap>
+	<resultMap type="com.dbt.platform.enterprise.bean.StatInfo" id="resultStatInfoAll" extends="resultStatInfo">
+		<association property="skuList" column="STAT_INFO_KEY"
+					 select="com.dbt.platform.enterprise.dao.ISkuDao.queryForListByStatKey">
+		</association>
+	</resultMap>
+	<insert id="create" parameterType="com.dbt.platform.enterprise.bean.StatInfo">
+		INSERT INTO VPS_STATISTICS_INFO (
+			STAT_INFO_KEY,
+			STAT_NAME,
+			REMARK,
+			PROJECT_SERVER_NAME,
+			DELETE_FLAG,
+			CREATE_TIME,
+			STAT_TYPE,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER	
+		) VALUES (
+			#{statInfoKey},
+			#{statName},
+			#{remark},
+			#{projectServerName},
+			'0',
+			#{createTime},
+			#{statType},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.enterprise.bean.StatInfo">
+		UPDATE VPS_STATISTICS_INFO
+		<set>
+			<if test="statName != null and statName != '' ">
+				STAT_NAME = #{statName},
+			</if>
+			<if test="statType != null and statType != '' ">
+				STAT_TYPE = #{statType},
+			</if>
+			<if test="projectServerName != null and projectServerName != '' ">
+				PROJECT_SERVER_NAME = #{projectServerName},
+			</if>
+			<if test="remark != null and remark != '' ">
+				remark = #{remark},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE STAT_INFO_KEY = #{statInfoKey}
+	</update>
+	
+	<delete id="deleteById" parameterType="String">
+		DELETE FROM VPS_STATISTICS_INFO WHERE STAT_INFO_KEY = #{statInfoKey}
+	</delete>
+	
+	<select id="queryForLst" resultMap="resultStatInfoAll" parameterType="Map">
+		SELECT
+			t.*,
+			case when t.`PROJECT_SERVER_NAME` = 'quanbu' then '全部' else IFNULL(s.`server_name`, t.`PROJECT_SERVER_NAME`) end 'serverName'
+		FROM VPS_STATISTICS_INFO t
+		left join server_info s on t.PROJECT_SERVER_NAME = s.project_server_name
+		WHERE
+			t.DELETE_FLAG = 0
+		<if test="queryBean.projectServerName != null and queryBean.projectServerName != ''">
+		    and t.PROJECT_SERVER_NAME = #{queryBean.projectServerName}
+		</if>
+		<if test="queryBean.statName != null and queryBean.statName != ''">
+		    and t.stat_name like '%${queryBean.statName}%'
+		</if>
+		<choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, t.create_time DESC
+          </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY t.create_time DESC</otherwise>
+		</choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+		VPS_STATISTICS_INFO t
+		WHERE
+			t.DELETE_FLAG = 0
+        <if test="queryBean.projectServerName != null and queryBean.projectServerName != ''">
+            and t.PROJECT_SERVER_NAME = #{queryBean.projectServerName}
+        </if>
+		<if test="queryBean.statName != null and queryBean.statName != ''">
+			and t.stat_name like '%${queryBean.statName}%'
+		</if>
+	</select>
+	
+	<select id="findById" resultMap="resultStatInfo" parameterType="String">
+		SELECT
+			*
+		FROM
+			VPS_STATISTICS_INFO
+		WHERE
+			 STAT_INFO_KEY = #{statInfoKey}
+	</select>
+	
+</mapper>

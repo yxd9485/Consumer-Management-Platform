@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.mn.dao.IRankReportAllDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.mn.bean.RankReportAll">
+        <id column="infoKey" property="infoKey" />
+        <result column="activityKey" property="activityKey" />
+        <result column="userKey" property="userKey" />
+        <result column="scanCount" property="scanCount" />
+        <result column="rankNum" property="rankNum" />
+        <result column="scanSku" property="scanSku" />
+        <result column="lev2Name" property="lev2Name" />
+        <result column="lev3Name" property="lev3Name" />
+        <result column="lev4Name" property="lev4Name" />
+        <result column="lev5Name" property="lev5Name" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="county" property="county" />
+        <result column="nickName" property="nickName" />
+        <result column="phoneNum" property="phoneNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        infoKey, activityKey, userKey, scanCount, rankNum, scanSku, lev2Name, lev3Name, lev4Name, lev5Name, province, city, county, nickName, phoneNum
+    </sql>
+
+</mapper>

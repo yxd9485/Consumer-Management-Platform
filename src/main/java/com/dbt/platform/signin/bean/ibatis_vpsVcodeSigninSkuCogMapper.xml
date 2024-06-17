@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.signin.dao.IVpsVcodeSigninSkuCogDao">
+
+	<resultMap type="com.dbt.platform.signin.bean.VpsVcodeSigninSkuCog" id="VpsVcodeSigninSkuCogResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="skuKey" column="SKU_KEY"/>
+		<result property="signType" column="SIGN_TYPE"/>
+		<result property="signOperator" column="SIGN_OPERATOR"/>
+		<result property="signNum" column="SIGN_NUM"/>
+		<result property="continueFlag" column="CONTINUE_FLAG"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			ACTIVITY_KEY,
+			SKU_KEY,
+			SIGN_TYPE,
+			SIGN_OPERATOR,
+			SIGN_NUM,
+			CONTINUE_FLAG,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+	<!-- 批量插入 -->
+	<insert id="batchWrite" parameterType="Map">
+		INSERT INTO vps_vcode_signin_sku_cog (
+			INFO_KEY,
+			ACTIVITY_KEY,
+			SKU_KEY,
+			SIGN_TYPE,
+			SIGN_OPERATOR,
+			SIGN_NUM,
+			CONTINUE_FLAG,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES
+		<foreach collection="signinSkuCogLst" item="cogItem" separator=",">
+		(
+			#{cogItem.infoKey},
+			#{cogItem.activityKey},
+			#{cogItem.skuKey},
+			#{cogItem.signType},
+			#{cogItem.signOperator},
+			#{cogItem.signNum},
+			#{cogItem.continueFlag},
+			'0',
+			#{cogItem.createTime},
+			#{cogItem.createUser},
+			#{cogItem.updateTime},
+			#{cogItem.updateUser}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id="create" parameterType="com.dbt.platform.signin.bean.VpsVcodeSigninSkuCog">
+		INSERT INTO vps_vcode_signin_sku_cog (
+			INFO_KEY,
+			ACTIVITY_KEY,
+			SKU_KEY,
+			SIGN_TYPE,
+			SIGN_OPERATOR,
+			SIGN_NUM,
+			CONTINUE_FLAG,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{infoKey},
+			#{activityKey},
+			#{skuKey},
+			#{signType},
+			#{signOperator},
+			#{signNum},
+			#{continueFlag},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.signin.bean.VpsVcodeSigninSkuCog">
+		UPDATE
+			vps_vcode_signin_sku_cog
+		<set>
+			<if test="skuKey != null and skuKey != ''">
+				SKU_KEY = #{skuKey},
+			</if>
+			<if test="signType != null and signType != ''">
+				SIGN_TYPE = #{signType},
+			</if>
+			<if test="signOperator != null and signOperator != ''">
+				SIGN_OPERATOR = #{signOperator},
+			</if>
+			<if test="signNum != null and signNum != ''">
+				SIGN_NUM = #{signNum},
+			</if>
+			<if test="continueFlag != null and continueFlag != ''">
+				CONTINUE_FLAG = #{continueFlag},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != ''">
+				DELETE_FLAG = #{deleteFlag},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				UPDATE_TIME = #{updateTime},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				UPDATE_USER = #{updateUser}
+			</if>
+		</set>
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="VpsVcodeSigninSkuCogResultMap" >
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vps_vcode_signin_sku_cog 
+		WHERE
+			INFO_KEY = #{id}
+	</select>
+	
+	<select id="queryByActivitykey" parameterType="Map" resultMap="VpsVcodeSigninSkuCogResultMap" >
+		SELECT
+			<include refid="Base_Column_List"></include>
+		FROM
+			vps_vcode_signin_sku_cog 
+		WHERE
+			delete_flag != '1'
+			and activity_key = #{activityKey}
+		order by 
+			create_time ASC
+	</select>
+	
+	<delete id="deleteByActivitykey" parameterType="Map" >
+		update
+			vps_vcode_signin_sku_cog 
+		set
+			delete_flag = '1'
+		WHERE
+			activity_key = #{activityKey}
+	</delete>
+	
+</mapper>

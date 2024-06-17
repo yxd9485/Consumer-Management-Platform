@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.publish.dao.AdUpDao">
+
+    <resultMap type="com.dbt.platform.publish.bean.VpsAdUp" id="vpsAdUpResultMap">
+        <result property="adPubKey" column="ADPUB_KEY"/>
+        <result property="skuKey" column="SKU_KEY"/>
+        <result property="skuNm" column="SKU_NM"/>
+        <result property="title" column="TITLE"/>
+        <result property="stGmt" column="STGMT"/>
+        <result property="endGmt" column="ENDGMT"/>
+        <result property="modUser" column="MOD_USER"/>
+        <result property="modGmt" column="MOD_GMT"/>
+        <result property="picUrl" column="PIC_URL"/>
+        <result property="pubStat" column="PUB_STAT"/>
+        <result property="creGmt" column="CRE_GMT"/>
+        <result property="areaCode" column="AREACODE"/>
+        <result property="areaName" column="AREANAME"/>
+        <result property="areaType" column="AREA_TYPE"/>
+        <result property="crowdLimitType" column="CROWD_LIMIT_TYPE"/>
+        <result property="userGroupIds" column="USER_GROUP_IDS"/>
+        <result property="jumpTyp" column="JUMP_TYP"/>
+        <result property="appid" column="appid"/>
+        <result property="jumpUrl" column="JUMP_URL"/>
+        <result property="popNum" column="POPNUM"/>
+        <result property="isDel" column="IS_DEL"/>
+        <result property="picWidth" column="PIC_WIDTH"/>
+        <result property="picHeight" column="PIC_HEIGHT"/>
+        <result property="picX" column="PIC_X"/>
+        <result property="picY" column="PIC_Y"/>
+        <result property="closeTime" column="CLOSE_TIME"/>
+        <result property="adLoc" column="AD_LOC"/>
+        <result property="closeType" column="CLOSE_TYPE"/>
+        <result property="sequenceno" column="SEQUENCENO"/>
+        <result property="picJumpUrl" column="PIC_JUMP_URL"/>
+        <result property="repeateCodeShow" column="REPEATE_CODE_SHOW"/>
+        <result property="frontDelayed" column="FRONT_DELAYED"/>
+        <result property="popGroupName" column="pop_group_name"/>
+        <result property="popNumLimit" column="pop_num_limit"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <!-- 根据二维码查询 -->
+    <select id="queryForLst" parameterType="Map" resultMap="vpsAdUpResultMap">
+        SELECT
+        * ,
+        CASE
+        WHEN NOW() <![CDATA[<]]> concat(STGMT,' 00:00:00') then  '0'
+        WHEN NOW() > concat(ENDGMT,' 23:59:59') THEN '2'
+        ELSE '1'
+        END AS picStatus
+        FROM
+        VPS_AD_UP
+        WHERE
+        IS_DEL = '0'
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+            AND NOW() >= concat(STGMT,' 00:00:00') AND NOW() <![CDATA[<=]]> concat(ENDGMT,' 23:59:59')
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+            AND NOW() > concat(ENDGMT,' 23:59:59')
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "0"'>
+            AND NOW() <![CDATA[<]]> concat(STGMT,' 00:00:00')
+        </if>
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            AND (SKU_NM LIKE '%${queryBean.keyword}%' OR TITLE LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE
+            '%${queryBean.keyword}%')
+        </if>
+        <if test="queryBean.stGmt != null and queryBean.stGmt != ''">
+            AND STGMT >= CONCAT(#{queryBean.stGmt},' 00:00:00')
+        </if>
+        <if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+            AND ENDGMT <![CDATA[<=]]> CONCAT(#{queryBean.endGmt},' 23:59:59')
+        </if>
+        <if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+            AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+        </if>
+        <if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+            AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+        </if>
+        ORDER BY SEQUENCENO asc
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <!-- 查询符合条件的记录条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+        count(1)
+        from
+        VPS_AD_UP
+        WHERE
+        IS_DEL = '0'
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+            AND NOW() >= concat(STGMT,' 00:00:00') AND NOW() <![CDATA[<=]]> concat(ENDGMT,' 23:59:59')
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+            AND NOW() > concat(ENDGMT,' 23:59:59')
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "0"'>
+            AND NOW() <![CDATA[<]]> concat(STGMT,' 00:00:00')
+        </if>
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            AND (SKU_NM LIKE '%${queryBean.keyword}%' OR TITLE LIKE '%${queryBean.keyword}%' OR MOD_USER LIKE
+            '%${queryBean.keyword}%')
+        </if>
+        <if test="queryBean.stGmt != null and queryBean.stGmt != ''">
+            AND STGMT >= CONCAT(#{queryBean.stGmt},' 00:00:00')
+        </if>
+        <if test="queryBean.endGmt != null and queryBean.endGmt != ''">
+            AND ENDGMT <![CDATA[<=]]> CONCAT(#{queryBean.endGmt},' 23:59:59')
+        </if>
+        <if test="queryBean.modStGmt != null and queryBean.modStGmt != ''">
+            AND MOD_GMT >= CONCAT(#{queryBean.modStGmt}, ' 00:00:00')
+        </if>
+        <if test="queryBean.modEndGmt != null and queryBean.modEndGmt != ''">
+            AND MOD_GMT <![CDATA[<=]]> CONCAT(#{queryBean.modEndGmt}, ' 23:59:59')
+        </if>
+    </select>
+
+    <!-- 更新 -->
+    <update id="updateVpsAdUp" parameterType="com.dbt.platform.publish.bean.VpsAdUp">
+        UPDATE VPS_AD_UP
+        <set>
+        SKU_KEY=#{skuKey},
+        SKU_NM = #{skuNm},
+        TITLE = #{title},
+        STGMT = #{stGmt},
+        ENDGMT = #{endGmt},
+        MOD_USER = #{modUser},
+        SEQUENCENO = #{sequenceno},
+        MOD_GMT = #{modGmt},
+        PUB_STAT = #{pubStat},
+        AREACODE = #{areaCode},
+        AREANAME = #{areaName},
+        AREA_TYPE = #{areaType},
+        crowd_limit_type = #{crowdLimitType},
+        user_group_ids = #{userGroupIds},
+        JUMP_TYP = #{jumpTyp},
+        appid = #{appid},
+        JUMP_URL = #{jumpUrl},
+        POPNUM = #{popNum},
+        CLOSE_TIME = #{closeTime},
+        AD_LOC = #{adLoc},
+        CLOSE_TYPE = #{closeType},
+        PIC_JUMP_URL = #{picJumpUrl},
+        REPEATE_CODE_SHOW = #{repeateCodeShow},
+        FRONT_DELAYED = #{frontDelayed},
+        pop_group_name = #{popGroupName},
+        pop_Num_Limit = #{popNumLimit},
+            begin_time = #{beginTime},
+        end_time = #{endTime},
+
+        <if test="picWidth != null and picWidth != ''">
+            pic_width = #{picWidth},
+        </if>
+        <if test="picHeight != null and picHeight != ''">
+            pic_height = #{picHeight},
+        </if>
+        <if test="picX != null and picX != ''">
+            pic_x = #{picX},
+        </if>
+        <if test="picY != null and picY != ''">
+            pic_y = #{picY},
+        </if>
+        <if test="picUrl != null and picUrl != ''">
+            pic_url = #{picUrl},
+        </if>
+        </set>
+        WHERE ADPUB_KEY = #{adPubKey}
+    </update>
+    <insert id="addAdUp" parameterType="com.dbt.platform.publish.bean.VpsAdUp">
+		INSERT INTO VPS_AD_UP (
+  			 SKU_KEY,
+  			 SKU_NM,
+  			 TITLE,
+  			 STGMT, 
+  			 ENDGMT, 
+  			 MOD_USER,
+  			 SEQUENCENO,
+  			 MOD_GMT,
+  			 PIC_URL,
+  			 PUB_STAT,
+  			 CRE_GMT,
+  			 AREACODE,
+  			 AREANAME,
+  			 AREA_TYPE,
+             CROWD_LIMIT_TYPE,
+             USER_GROUP_IDS,
+  			 JUMP_TYP,
+  			 appid,
+  			 JUMP_URL,
+  			 POPNUM,
+  			 IS_DEL,
+  			 pic_width,
+			 pic_height,
+			 pic_x,
+			 pic_y,
+			 CLOSE_TIME,
+             AD_LOC,
+             CLOSE_TYPE,
+             PIC_JUMP_URL,
+             REPEATE_CODE_SHOW,
+             FRONT_DELAYED,
+            pop_group_name,
+            begin_time,
+            end_time,
+             pop_num_limit
+		) VALUES (
+  			 #{skuKey},
+  			 #{skuNm},
+  			 #{title},
+  			 #{stGmt}, 
+  			 #{endGmt}, 
+  			 #{modUser},
+  			 #{sequenceno},
+  			 #{modGmt},
+  			 #{picUrl},
+  			 #{pubStat},
+  			 #{creGmt},
+  			 #{areaCode},
+  			 #{areaName},
+  			 #{areaType},
+             #{crowdLimitType},
+             #{userGroupIds},
+  			 #{jumpTyp},
+  			 #{appid},
+  			 #{jumpUrl},
+  			 #{popNum},
+  			 0,
+  			  #{picWidth},
+			 #{picHeight},
+			 #{picX},
+			 #{picY},
+			 #{closeTime},
+			 #{adLoc},
+			 #{closeType},
+			 #{picJumpUrl},
+			 #{repeateCodeShow},
+			 #{frontDelayed},
+             #{popGroupName},
+             #{beginTime},
+             #{endTime},
+			 #{popNumLimit}
+		) 
+	</insert>
+    <delete id="deleteById" parameterType="Map">
+	   delete from VPS_AD_UP
+	   where ADPUB_KEY = #{adPubKey}
+	</delete>
+
+    <select id="findById" parameterType="Map" resultMap="vpsAdUpResultMap">
+        select
+        *
+        from
+        VPS_AD_UP
+        WHERE ADPUB_KEY = #{adPubKey}
+    </select>
+    <select id="quAllAdUp" parameterType="Map" resultMap="vpsAdUpResultMap">
+        select
+        *
+        from
+        VPS_AD_UP where PUB_STAT = '1' ORDER BY SEQUENCENO ASC
+    </select>
+</mapper>

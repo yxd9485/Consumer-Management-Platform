@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.cityrank.dao.IVpsVcodeMonthCityRankHistoryDao">
+
+	<resultMap type="com.dbt.platform.cityrank.bean.VpsVcodeMonthCityRankHistory" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="cityName" column="CITY_NAME"/>
+		<result property="rankMonth" column="RANK_MONTH"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="rankNum" column="RANK_NUM"/>
+		<result property="scanNum" column="SCAN_NUM"/>
+		<result property="nickName" column="NICK_NAME"/>
+		<result property="headImgUrl" column="HEADIMG_URL"/>
+	</resultMap>
+	
+	<!-- 批量插入 -->
+    <insert id="batchWrite" parameterType="Map">
+        INSERT INTO vps_vcode_month_cityrank_history (
+            INFO_KEY,
+            CITY_NAME,
+            RANK_MONTH,
+            USER_KEY,
+            RANK_NUM,
+            SCAN_NUM,
+            NICK_NAME,
+            HEADIMG_URL
+        ) VALUES
+        <foreach collection="rankMonthLst" item="item" separator=",">
+        (
+            UUID(),
+            #{item.cityName},
+            #{item.rankMonth},
+            #{item.userKey},
+            #{item.rankNum},
+            #{item.scanNum},
+            #{item.nickName},
+            #{item.headImgUrl}
+        )
+        </foreach>
+    </insert>
+</mapper>

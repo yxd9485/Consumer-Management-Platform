@@ -1,0 +1,40 @@
+---main库执行
+CREATE TABLE `vps_statistics_info` (
+  `STAT_INFO_KEY` varchar(36) NOT NULL COMMENT '主键',
+  `STAT_NAME` varchar(50) DEFAULT NULL COMMENT '名称',
+  `STAT_TYPE` varchar(1) DEFAULT NULL COMMENT '分组类型',
+  `REMARK` varchar(255) NOT NULL COMMENT '备注',
+  `PROJECT_SERVER_NAME` varchar(255) DEFAULT NULL COMMENT '省区标识',
+  `DELETE_FLAG` varchar(1) DEFAULT NULL COMMENT '删除标识 0 ：否； 1：是',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `CREATE_USER` varchar(36) DEFAULT NULL COMMENT '创建人',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '修改时间',
+  `UPDATE_USER` varchar(36) DEFAULT NULL COMMENT '修改人',
+  PRIMARY KEY (`STAT_INFO_KEY`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='省区sku统计信息关联表';
+
+
+CREATE TABLE `vps_statistics_sku_info` (
+  `INFO_KEY` varchar(36) NOT NULL,
+  `SKU_KEY` varchar(36) DEFAULT NULL,
+  `STAT_INFO_KEY` varchar(36) DEFAULT NULL COMMENT 'spu主键',
+  `SKU_NAME` varchar(128) DEFAULT NULL COMMENT '产品名称',
+  `SERVER_NAME` varchar(255) DEFAULT NULL COMMENT '省区名称',
+  `PROJECT_SERVER_NAME` varchar(128) DEFAULT NULL COMMENT '省区标识',
+  `CREATE_TIME` datetime DEFAULT NULL,
+  `CREATE_USER` varchar(36) DEFAULT NULL,
+  `UPDATE_TIME` datetime DEFAULT NULL,
+  `UPDATE_USER` varchar(36) DEFAULT NULL,
+  PRIMARY KEY (`INFO_KEY`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='省区SKU信息表';
+--统计分组得模块
+INSERT INTO `sys_function`(`FUNCTION_KEY`, `FUNCTION_NAME`, `PARENT_KEY`, `LINK_URL`, `FUNCTION_DESC`, `FUNCTION_LEVEL`, `MENU_ICON`, `FUNCTION_CODE`, `FUNCTION_STATUS`, `FUNCTION_TYPE`, `SEQUENCE_NUM`, `DELETE_FLAG`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`) VALUES ('807000', '统计分组设置', '800000', 'stat/showStatInfoList.do', '统计分组设置', '2', NULL, NULL, '1', '0', 90, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO sys_role_function_relation values (UUID(), '0', '807000');
+INSERT INTO `vps_sys_datadic_m`(`DATADIC_KEY`, `CATEGORY_KEY`, `DATA_ID`, `DATA_VALUE`, `DATA_ALIAS`, `DATA_EXPLAIN`, `SEQUENCE_NUM`, `DELETE_FLAG`, `VERSION`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`) VALUES ('d94f0161-b809-472d-950d-35347f3d5300', '74d21e8e-eded-42bc-9961-aea9321565ee', 'unIncluded_server', '', '不需要查询的服务', '格式 ：sichuan,shanghai', 1, '0', 1, '2021-04-13 15:38:32', '3', '2021-04-13 15:47:43', '3');
+
+--各个数据库执行
+ALTER TABLE `vps_sku_info`
+ADD COLUMN `CHANNEL` varchar(20) DEFAULT NULL COMMENT '所属渠道' AFTER `SKU_YEAR`;
+--数据字典 增加sku渠道
+INSERT INTO `vps_sys_datadic_m`(`DATADIC_KEY`, `CATEGORY_KEY`, `DATA_ID`, `DATA_VALUE`, `DATA_ALIAS`, `DATA_EXPLAIN`, `SEQUENCE_NUM`, `DELETE_FLAG`, `VERSION`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`) VALUES ('79ccd12f-6465-43ff-b753-e6d0b8de0a3a', 'af09b4fa-4c97-11ea-b627-6e6d36e3ad65', 'sku_channel', '', 'SKU渠道类型', '格式：渠道名称:终端编码,....', 1, '0', 1, '2021-04-06 17:29:01', '24004', NULL, NULL);
+

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.bottlecap.dao.BottleCapDao">
+
+    <resultMap id="resultMap" type="com.dbt.platform.bottlecap.bean.VpsVcodeBottlecapActivityCogInfo">
+        <result property="activityKey" column="ACTIVITY_KEY"/>
+        <result property="activityName" column="ACTIVITY_NAME"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="activitySku" column="ACTIVITY_SKU"/>
+        <result property="bannerPic" column="BANNER_PIC"/>
+        <result property="roleDescribe" column="ROLE_DESCRIBE"/>
+        <result property="remarks" column="REMARKS"/>
+        <result property="regionCog" column="REGION_COG"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+
+    <insert id="create" parameterType="com.dbt.platform.bottlecap.bean.VpsVcodeBottlecapActivityCogInfo">
+        insert into vps_vcode_bottlecap_activity_cog(ACTIVITY_KEY,
+                                                     ACTIVITY_NAME,
+                                                     START_DATE,
+                                                     END_DATE,
+                                                     ACTIVITY_SKU,
+                                                     BANNER_PIC,
+                                                     ROLE_DESCRIBE,
+                                                     REMARKS,
+                                                     ACTIVITY_TYPE,
+                                                     DELETE_FLAG,
+                                                     CREATE_TIME,
+                                                     CREATE_USER,
+                                                     UPDATE_TIME,
+                                                     UPDATE_USER)
+        values (
+                #{activityKey},
+                #{activityName},
+                #{startDate},
+                #{endDate},
+                #{activitySku},
+                #{bannerPic},
+                #{roleDescribe},
+                #{remarks},
+                #{activityType},
+                '0',
+                now(),
+                #{createUser},
+                now(),
+                #{updateUser}
+                )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.bottlecap.bean.VpsVcodeBottlecapActivityCogInfo">
+        update
+        vps_vcode_bottlecap_activity_cog
+        <set>
+            <if test="activityName != null and activityName != ''">
+                ACTIVITY_NAME = #{activityName},
+            </if>
+            <if test="startDate != null and startDate != ''">
+                START_DATE = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                END_DATE = #{endDate},
+            </if>
+            <if test="activitySku != null and activitySku != ''">
+                ACTIVITY_SKU = #{activitySku},
+            </if>
+            <if test="bannerPic != null and bannerPic != ''">
+                BANNER_PIC = #{bannerPic},
+            </if>
+            <if test="roleDescribe != null and roleDescribe != ''">
+                ROLE_DESCRIBE = #{roleDescribe},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                REMARKS = #{remarks},
+            </if>
+            <if test="activityType != null and activityType != ''">
+                ACTIVITY_TYPE = #{activityType},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                UPDATE_USER = #{updateUser},
+            </if>
+            UPDATE_TIME = now(),
+        </set>
+        where
+        ACTIVITY_KEY = #{activityKey}
+    </update>
+
+    <select id="queryForList" resultMap="resultMap" parameterType="map">
+        select * ,
+        CASE
+        WHEN curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE THEN '1'
+        WHEN curdate() &gt; END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin
+        from vps_vcode_bottlecap_activity_cog
+        where DELETE_FLAG = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != '' ">
+            AND ACTIVITY_NAME like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityType != null and queryBean.activityType != '' ">
+            AND ACTIVITY_TYPE = #{queryBean.activityType}
+        </if>
+        <if test="queryBean.isBegin != null and queryBean.isBegin != '' ">
+            <choose>
+                <when test="queryBean.isBegin == 1">
+                    and curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <when test="queryBean.isBegin == 2">
+                    and curdate() &gt; END_DATE
+                </when>
+                <otherwise>
+                    and curdate() &lt; START_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != '' ">
+            AND CREATE_TIME &gt;= CONCAT(#{queryBean.startDate},' 00:00:00')
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != '' ">
+            AND CREATE_TIME &lt;= CONCAT(#{queryBean.endDate},' 23:59:59')
+        </if>
+        order by CREATE_TIME desc
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <select id="queryForListCount" parameterType="map" resultType="int">
+        select count(*)
+        from vps_vcode_bottlecap_activity_cog
+        where DELETE_FLAG = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != '' ">
+            AND ACTIVITY_NAME like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityType != null and queryBean.activityType != '' ">
+            AND ACTIVITY_TYPE = #{queryBean.activityType}
+        </if>
+        <if test="queryBean.isBegin != null and queryBean.isBegin != '' ">
+            <choose>
+                <when test="queryBean.isBegin == 1">
+                    and curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <when test="queryBean.isBegin == 2">
+                    and curdate() &gt; END_DATE
+                </when>
+                <otherwise>
+                    and curdate() &lt; START_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != '' ">
+            AND CREATE_TIME &gt;= CONCAT(#{queryBean.startDate},' 00:00:00')
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != '' ">
+            AND CREATE_TIME &lt;= CONCAT(#{queryBean.endDate},' 23:59:59')
+        </if>
+    </select>
+
+    <update id="delBottleCapActivity" parameterType="map">
+        update vps_vcode_bottlecap_activity_cog
+        <set>
+            UPDATE_USER = #{updateUser},
+            UPDATE_TIME = now(),
+            DELETE_FLAG = '1'
+        </set>
+        where ACTIVITY_KEY = #{activityKey}
+    </update>
+
+    <select id="queryOverlapActivity" parameterType="map" resultType="int">
+        select count(*)
+        from vps_vcode_bottlecap_activity_cog
+        where
+        DELETE_FLAG = '0' and
+        ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+        (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+        (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        <if test="activityKey != null and activityKey != ''">
+            and ACTIVITY_KEY != #{activityKey}
+        </if>
+    </select>
+
+    <select id="queryActivityCogByKey" parameterType="string" resultMap="resultMap">
+        select *,
+               CASE
+                   WHEN curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE THEN '1'
+                   WHEN curdate() &gt; END_DATE THEN '2'
+                   ELSE '0'
+                   END AS isBegin
+        from vps_vcode_bottlecap_activity_cog
+        where ACTIVITY_KEY = #{activityKey}
+    </select>
+
+    <select id="queryBottlecapActivityByAreaType"
+            parameterType="com.dbt.platform.bottlecap.bean.VpsVcodeBottlecapActivityCogInfo" resultMap="resultMap">
+        select * from vps_vcode_bottlecap_activity_cog
+        where
+        COMPANY_KEY = #{companyKey} and
+        ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+        (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+        (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        <if test="activityKey != null and activityKey != ''">
+            and ACTIVITY_KEY != #{activityKey}
+        </if>
+        and BOTTLECAP_AREA_TYPE = #{bottleCapAreaType}
+        and DELETE_FLAG = '0'
+    </select>
+
+</mapper>

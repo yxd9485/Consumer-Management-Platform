@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsExchangeActivityCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsExchangeActivityCogEntity">
+        <id column="info_key" property="infoKey" />
+        <result column="info_name" property="infoName" />
+        <result column="info_no" property="infoNo" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="consumer_buy_limit" property="consumerBuyLimit" />
+        <result column="activity_goods_id" property="activityGoodsId" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="isBegin" property="isBegin" />
+        <result column="goods_id" property="goodsId" />
+        <result column="goods_name" property="goodsName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        info_key, info_name, info_no, start_date,activity_goods_id,
+        end_date, consumer_buy_limit, create_time, create_user, update_time,
+        update_user, delete_flag
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsExchangeActivityCogEntity">
+        insert into vpoints_goods_exchange_activity_cog (
+                   info_key,
+                  info_name,
+                  info_no,
+                  start_date,
+                  end_date,
+                  consumer_buy_limit,
+                   activity_goods_id,
+                  create_time,
+                  create_user,
+                  update_time,
+                  update_user,
+                  delete_flag
+        ) values (
+                #{infoKey},
+                #{infoName},
+                #{infoNo},
+                #{startDate},
+                #{endDate},
+                #{consumerBuyLimit},
+                #{activityGoodsId},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser},
+                #{deleteFlag}
+        )
+    </insert>
+
+    <update id="updateById" >
+        update  vpoints_goods_exchange_activity_cog set
+        <if test="et.infoName!=null and et.infoName != ''">
+             info_name =  #{et.infoName},
+        </if>
+        <if test="et.startDate!=null">
+             start_date = #{et.startDate},
+        </if>
+        <if test="et.endDate!=null">
+             end_date = #{et.endDate},
+        </if>
+        <if test="et.consumerBuyLimit!=null and et.consumerBuyLimit != ''">
+             consumer_buy_limit = #{et.consumerBuyLimit},
+        </if>
+        <if test="et.activityGoodsId!=null and et.activityGoodsId != ''">
+             activity_goods_id = #{et.activityGoodsId},
+        </if>
+        <if test="et.createTime!=null">
+             create_time = #{et.createTime},
+        </if>
+        <if test="et.createUser!=null and et.createUser != ''">
+             create_user = #{et.createUser},
+        </if>
+
+        <if test=" et.deleteFlag!=null and et.deleteFlag != ''">
+             delete_flag = #{et.deleteFlag},
+        </if>
+
+        <if test=" et.updateUser!=null and et.updateUser != ''">
+             update_user = #{et.updateUser},
+        </if>
+         update_time = now()
+        where info_key=#{et.infoKey}
+    </update>
+
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        select * from (
+        select <include refid="Base_Column_List"></include>
+        ,CASE
+        WHEN DATE(NOW()) >= cog.START_DATE AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE  THEN '1'
+        WHEN DATE(NOW()) > cog.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin
+        from vpoints_goods_exchange_activity_cog cog where delete_flag = '0'
+
+        <if test="ew.infoName != null and ew.infoName != '' ">
+            and info_name like concat('%',#{ew.infoName},'%')
+        </if>
+        <choose>
+            <when test="ew.startDate != null and ew.endDate != null">
+                AND !(start_date > #{ew.endDate} or #{ew.startDate} > end_date)
+            </when>
+            <when test="ew.startDate!=null ">
+                and #{ew.startDate} between start_date and end_date
+            </when>
+            <when test="ew.endDate!=null ">
+                and #{ew.endDate} between start_date and end_date
+            </when>
+        </choose>
+
+        order by isBegin,info_no desc
+        ) activity
+        <where>
+            <if test="ew.isBegin!='' and ew.isBegin != null">
+                activity.isBegin = #{ew.isBegin}
+            </if>
+        </where>
+    </select>
+    <select id="findByInfoKey" parameterType="string" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+
+        from vpoints_goods_exchange_activity_cog cog where info_key=#{infoKey}
+    </select>
+    <select id="getCurrentActivity" resultMap="BaseResultMap">
+         select * from (select activity.*,relation.goods_id,relation.exchange_price,CASE
+        WHEN DATE(NOW()) >= activity.START_DATE AND DATE(NOW()) &lt;= activity.END_DATE  THEN '1'
+        WHEN DATE(NOW()) > activity.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin  from vpoints_goods_exchange_activity_cog activity
+        left join vpoints_goods_exchange_relation_cog relation
+        on relation.exchange_activity_info_key = activity.info_Key
+        where delete_flag = '0' ) cog  where cog.isBegin = '1'
+    </select>
+    <select id="checkGoodsActivity" parameterType="com.dbt.vpointsshop.dto.VpointsGoodsExchangeActivityCogVO" resultMap="BaseResultMap">
+       SELECT * from(select activity.*,goods.goods_name,
+        CASE
+        WHEN DATE(NOW()) >= activity.START_DATE AND DATE(NOW()) &lt;= activity.END_DATE  THEN '1'
+        WHEN DATE(NOW()) > activity.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin
+        from vpoints_goods_exchange_activity_cog activity
+        left join vpoints_goods_info goods on goods.goods_id = activity.activity_goods_id
+        where activity.delete_flag = '0' ) cog where (cog.isBegin = '1' or cog.isBegin = '0' ) AND (
+        #{startDate} between cog.start_date and cog.end_date
+         or #{endDate} between cog.start_date and cog.end_date
+        )
+         <foreach collection="goodsIdList" item="Id" open="and (" close=" )" separator="or">
+             cog.activity_goods_id  = #{Id}
+        </foreach>
+         <if test="infoKey != null and infoKey != ''">
+            and cog.info_key != #{infoKey}
+        </if>
+    </select>
+
+
+</mapper>

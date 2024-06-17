@@ -1,0 +1,322 @@
+.pisces_left {
+	width: 40%;
+	float: left;
+	height: auto;
+	border: 1px solid #ccc;
+	border-right: none;
+	padding: 0 !important;
+}
+
+.pisces_right {
+	width: 60%;
+	float: left;
+	height: auto;
+	border: 1px solid #ccc;
+	padding: 0 !important;
+}
+
+.flow_header,.flow_content {
+	width: 100%;
+	float: left;
+}
+
+.flow_header h5 {
+	margin-top: 0px;
+	padding: 0 0 0 9px;
+	background: #ececec;
+	line-height: 30px;
+	font-weight: bold !important;
+	border-bottom: 1px solid #ccc;
+}
+
+.flow_header h5 label {
+	margin-left: 16px;
+}
+
+.flow_header h5 span {
+	font-family: "Arial";
+	font-size: 12px;
+}
+
+.flow_table {
+	width: 100%;
+	margin: 0 auto;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+.flow_table tr th {
+	text-align: center;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	padding: 5px;
+	background-color: #eee;
+}
+
+.flow_table tr td {
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	text-align: center;
+	padding: 5px;
+}
+
+.blank-place {
+	margin: 0 6px;
+}
+
+.minus-foo {
+	color: red;
+	cursor: pointer;
+}
+
+.diable-foo {
+	cursor: default;
+}
+
+.plus-foo {
+	color: green;
+	cursor: pointer;
+}
+
+.approval_table {
+	width: 98%;
+	margin: 0 auto;
+	margin-bottom: 1em;
+}
+
+.approval_table .at_left {
+	width: 20%;
+	text-align: right;
+}
+
+.approval_table .at_right {
+	width: 80%;
+}
+
+.approval_table tr td {
+	padding: 5px;
+}
+
+.approval_table .at_title {
+	font-weight: bold;
+}
+
+.approval_table textarea {
+	width: 98%;
+}
+
+.radio-text {
+	margin: 0 5px;
+}
+
+.button_content {
+	text-align: center;
+}
+
+.with_inner {
+	margin: 0 auto;
+	width: 98%;
+	height: auto;
+	max-height: 263px;
+	margin-top: -1px;
+	overflow-y: scroll;
+}
+
+.without_inner {
+	margin: 0 auto;
+	width: 98%;
+	height: auto;
+	max-height: 372px;
+	margin-top: -4px;
+	overflow-y: scroll;
+}
+
+.wisper {
+	margin: 0 auto !important;
+	width: 98%;
+	height: 34px;
+	overflow-y: scroll;
+}
+
+.receipt_shown {
+	margin: 0 auto;
+	width: 98%;
+	height: 562px;
+	overflow: scroll;
+	margin-bottom: 1em;
+}
+
+.receipt_info {
+	width: 98%;
+	height: 562px;
+	margin: 0 auto;
+	margin-bottom: 1em;
+}
+
+.fixedImg {
+	width: 100%;
+	margin: 0 auto;
+}
+
+.high_power {
+	color: red;
+	font-weight: bold;
+}
+
+.evil_table {
+	border-color: #ccc;
+}
+
+.check_power {
+	font-weight: bold;
+}
+
+.hit_title {
+	width: 100%;
+	height: 40px;
+}
+
+.hit_title .form-control {
+	width: 36%;
+	float: left;
+}
+
+.hit_title label {
+	float: left;
+	line-height: 30px;
+	margin-left: 1em;
+	margin-right: 8px;
+}
+
+.hit_title label span {
+	font-weight: normal;
+	margin-left: 5px;
+}
+
+.monoGoods, .addLine {
+	float: right;
+	margin-right: 10px;
+	height: 30px;
+	line-height: 30px;
+}
+
+.monoGoods:hover, .addLine:hover {
+	text-decoration: none;
+	color: red;
+	cursor: pointer;
+}
+
+.monoClear, .removeLine {
+	font-weight: bold;
+}
+
+.monoClear:hover, .removeLine:hover {
+	cursor: pointer;
+	color: red;
+}
+
+.hit_body {
+	width: 100%;
+	height: 427px;
+}
+
+.hit_bottom {
+	width: 100%;
+	text-align: center;
+}
+
+.meg-counts {
+	font-style: normal;
+	font-weight: bold;
+	margin: 0 8px;
+}
+
+.bolder-class{
+	font-weight: bold;
+	background-color: #5eaf5e;
+}
+
+.flow_content .formular {
+	float: left;
+}
+
+.flow_content .wide-pack {
+	width: 100%;
+}
+
+.formular {
+	width: 100%;
+}
+.formular p {
+	width: 50%;
+	float: left;
+}
+
+.formular p .show_title {
+	float: left;
+	width: 33%;
+	text-align: right;
+	margin-top: 5px;
+}
+
+.formular p .show_title span {
+	margin-left: -5px;
+	margin-right: 5px;
+}
+
+.formular p input {
+	float: left;
+	margin-left: 5px;
+}
+
+.wide-title {
+	margin: 0 auto;
+	width: 98%;
+	height: auto;
+	max-height: 263px;
+	overflow-y: scroll;
+}
+.wide-content {
+	margin: 0 auto;
+	width: 98%;
+	max-height: 207px;
+	overflow-y: scroll;
+}
+
+.reb-total {
+	float: right;
+	height: 28px;
+	line-height: 28px;
+	margin-right: 16px;
+}
+
+.reb-total span {
+	color: red;
+}
+
+.content select, .content label {
+	float: left;
+}
+.content label, .content article {
+	height: 24px;
+	line-height: 24px;
+	padding-top: 4px;
+}
+.content label {
+	margin-left: 24px;
+}
+.restContent {
+	
+}
+.restContent article {
+	text-align: right;
+	margin-right: 8px;
+}
+
+.restContent article span {
+	color: red;
+	margin: 0 4px;
+}
+
+.restContent article label, .restContent article span, .restContent article b {
+} 

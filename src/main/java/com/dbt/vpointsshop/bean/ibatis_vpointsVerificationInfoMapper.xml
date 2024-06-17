@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsVerificationInfoDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsVerificationInfo" id="baseResultMap">
+		<result property="verificationId" column="VERIFICATION_ID" />
+		<result property="goodsTypeNum" column="GOODS_TYPE_NUM" />
+		<result property="goodsNum" column="GOODS_NUM" />
+		<result property="totalVpoints" column="TOTAL_VPOINTS" />
+		<result property="totalMoney" column="TOTAL_MONEY" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+        <result property="status" column="STATUS" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.vpointsshop.bean.VpointsVerificationInfo">
+		INSERT INTO vpoints_verification_info (
+	        VERIFICATION_ID,
+	        GOODS_TYPE_NUM,
+	        GOODS_NUM,
+	        TOTAL_VPOINTS,
+	        TOTAL_MONEY,
+	        START_DATE,
+	        END_DATE,
+	        STATUS,
+	        DELETE_FLAG,
+	        CREATE_TIME,
+	        CREATE_USER,
+	        UPDATE_TIME,
+	        UPDATE_USER
+		) VALUES (
+			#{verificationId},
+			#{goodsTypeNum},
+			#{goodsNum},
+            #{totalVpoints},
+            #{totalMoney},
+			#{startDate},
+			#{endDate},
+			#{status},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+<!-- 	更新核销状态 -->
+	<update id="updateVerificationStatus" parameterType="Map">
+	   update 
+	       vpoints_verification_info
+	   set
+	       status = #{status},
+	       update_user = #{optUserKey},
+	       update_time = NOW()
+	   where
+	       verification_id = #{verificationId}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="baseResultMap">
+	   select 
+	       *
+	   from
+	       vpoints_verification_info
+	   where 
+	       verification_id = #{id}
+	</select>
+	
+	<select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			*
+		FROM
+			vpoints_verification_info
+		WHERE
+			DELETE_FLAG = '0'
+		<if test="queryBean.verificationId != null and queryBean.verificationId != ''">
+		    and VERIFICATION_ID like '%${queryBean.verificationId}%'
+		</if>
+		<choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND #{queryBean.startDate} between start_date and end_date 
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} between start_date and end_date 
+            </when>
+        </choose>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and status = #{queryBean.status}
+        </if>
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, CREATE_TIME DESC
+		  </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY CREATE_TIME DESC</otherwise>
+		</choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+            vpoints_verification_info
+        WHERE
+            DELETE_FLAG = '0'
+        <if test="queryBean.verificationId != null and queryBean.verificationId != ''">
+            and VERIFICATION_ID like '%${queryBean.verificationId}%'
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND #{queryBean.startDate} between start_date and end_date 
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} between start_date and end_date 
+            </when>
+        </choose>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and status = #{queryBean.status}
+        </if>
+	</select>
+	
+<!-- 	获取指定状态的核销记录 -->
+	<select id="queryByStatus" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			*
+		FROM
+			vpoints_verification_info
+		WHERE
+            delete_flag = '0'
+            <foreach collection="statusLst" item="status" open=" and status in (" close=")" separator=",">
+                #{status}
+            </foreach>
+	</select>
+	
+	<!-- 查询预览核销数据 -->
+	<select id="findPreviewForVerificationInfo" parameterType="Map" resultMap="baseResultMap">
+		select 
+			min(e.EXPRESS_SEND_TIME) as START_DATE,
+			sum(e.exchange_vpoints) as TOTAL_VPOINTS,
+			sum(e.exchange_num * g.daicai_money) as TOTAL_MONEY
+			from vpoints_exchange_log e
+			INNER JOIN vpoints_goods_info g on e.goods_id = g.goods_id
+			LEFT JOIN vpoints_brand_info b on g.brand_id = b.brand_id
+		where 
+               e.exchange_type = '1'
+            and e.exchange_status = '0'
+            and IFNULL(e.group_buying_status, '0') = '0'
+            and IFNULL(e.verification_id, '') = ''
+            and IFNULL(e.express_send_time, '') != ''
+            and DATE(e.express_send_time) <![CDATA[<=]]> #{verificationEndDate}
+            and b.brand_id in
+            <foreach collection="brandKeys" item="brankKey" open="(" separator="," close=")">
+            	#{brankKey}
+            </foreach>
+	</select>
+</mapper>

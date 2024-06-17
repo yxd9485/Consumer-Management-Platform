@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.benediction.dao.IVpsVcodeBenedictionExpandRuleDao">
+
+	<resultMap type="com.dbt.platform.benediction.bean.VpsVcodeBenedictionExpandRule" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="expandRuleNo" column="EXPAND_RULE_NO"/>
+		<result property="expandRuleName" column="EXPAND_RULE_NAME"/>
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+		<result property="beginDate" column="BEGIN_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="expandDanping" column="EXPAND_DANPING"/>
+		<result property="expandNum" column="EXPAND_NUM"/>
+        <result property="expandMinMoney" column="EXPAND_MIN_MONEY"/>
+        <result property="expandMaxMoney" column="EXPAND_MAX_MONEY"/>
+        <result property="expireType" column="EXPIRE_TYPE"/>
+		<result property="expireDate" column="EXPIRE_DATE"/>
+		<result property="expireDay" column="EXPIRE_DAY"/>
+  		<result property="deleteFlag" column="DELETE_FLAG"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.dbt.platform.benediction.bean.VpsVcodeBenedictionExpandRule">
+		INSERT INTO vps_vcode_benediction_expand_rule(
+			INFO_KEY,
+			EXPAND_RULE_NO,
+			EXPAND_RULE_NAME,
+			VCODE_ACTIVITY_KEY,
+			BEGIN_DATE,
+			END_DATE,
+			EXPAND_DANPING,
+			EXPAND_NUM,
+            EXPAND_MIN_MONEY,
+            EXPAND_MAX_MONEY,
+            EXPIRE_TYPE,
+			EXPIRE_DATE,
+			EXPIRE_DAY,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		)
+		VALUES (
+			#{infoKey},
+			#{expandRuleNo},
+			#{expandRuleName},
+			#{vcodeActivityKey},
+			#{beginDate},
+			#{endDate},
+			#{expandDanping},
+			#{expandNum},
+            #{expandMinMoney},
+            #{expandMaxMoney},
+            #{expireType},
+			#{expireDate},
+			#{expireDay},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.benediction.bean.VpsVcodeBenedictionExpandRule">
+        update 
+            vps_vcode_benediction_expand_rule 
+        set
+			EXPAND_RULE_NAME = #{expandRuleName},
+			VCODE_ACTIVITY_KEY = #{vcodeActivityKey},
+			BEGIN_DATE = #{beginDate},
+			END_DATE = #{endDate},
+			EXPAND_DANPING = #{expandDanping},
+			EXPAND_NUM = #{expandNum},
+			EXPAND_MIN_MONEY = #{expandMinMoney},
+			EXPAND_MAX_MONEY = #{expandMaxMoney},
+			EXPIRE_TYPE = #{expireType},
+			EXPIRE_DATE = #{expireDate},
+			EXPIRE_DAY = #{expireDay},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE 
+            INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="queryForList" resultMap="baseResult" parameterType="Map">
+		SELECT * FROM (
+			SELECT
+				r.*,
+				CASE 
+					WHEN CURDATE() >= r.begin_date AND CURDATE() <![CDATA[<=]]> r.end_date THEN '1'
+					WHEN CURDATE() > r.end_date THEN '2' 
+					ELSE '0'
+				END AS isBegin,
+				c.vcode_activity_name vcodeActivityName
+			FROM
+				vps_vcode_benediction_expand_rule r
+		    inner join vps_vcode_activity_cog c on r.vcode_activity_key = c.vcode_activity_key
+			WHERE
+				r.DELETE_FLAG = '0'
+			<if test="queryBean.expandRuleNo != null and queryBean.expandRuleNo != ''">
+			    and r.expand_rule_no like '%${queryBean.expandRuleNo}%'
+			</if>
+			<if test="queryBean.expandRuleName != null and queryBean.expandRuleName != ''">
+			    and r.expand_rule_name like concat('%', #{queryBean.expandRuleName}, '%')
+			</if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+		 ORDER BY 
+		<choose>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>a.isBegin, a.CREATE_TIME DESC</otherwise>
+		</choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT COUNT(1) FROM (
+			SELECT
+                *,
+                CASE 
+                    WHEN CURDATE() >= begin_date AND CURDATE() <![CDATA[<=]]> end_date THEN '1'
+                    WHEN CURDATE() > end_date THEN '2' 
+                    ELSE '0'
+                END AS isBegin
+            FROM
+                vps_vcode_benediction_expand_rule 
+            WHERE
+                DELETE_FLAG = '0'
+            <if test="queryBean.expandRuleNo != null and queryBean.expandRuleNo != ''">
+                and expand_rule_no like '%${queryBean.expandRuleNo}%'
+            </if>
+            <if test="queryBean.expandRuleName != null and queryBean.expandRuleName != ''">
+                and expand_rule_name like concat('%', #{queryBean.expandRuleName}, '%')
+            </if>
+		) a
+		WHERE 1=1
+		<choose>
+			<when test="queryBean.isBegin != null and queryBean.isBegin != ''">
+				and a.isBegin = #{queryBean.isBegin}
+			</when>
+			<when test="queryBean.tabsFlag == '1'.toString()">
+				and a.isBegin in ('0','1')
+			</when>
+			<otherwise>
+				and a.isBegin in ('2')
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findById" parameterType="String" resultMap="baseResult">
+		SELECT 
+            *,
+			CASE 
+                WHEN CURDATE() >= begin_date AND CURDATE() <![CDATA[<=]]> end_date THEN '1'
+                WHEN CURDATE() > end_date THEN '2' 
+                ELSE '0'
+            END AS isBegin
+		FROM 
+            vps_vcode_benediction_expand_rule 
+		WHERE 
+            INFO_KEY = #{id}
+	</select>
+	
+	<delete id="deleteById" parameterType="Map">
+        UPDATE 
+            vps_vcode_benediction_expand_rule
+        SET
+			DELETE_FLAG = '1',
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		WHERE
+            INFO_KEY = #{infoKey}
+	</delete>
+	
+<!-- 	查询与当前配置有交集的规则-->
+	<select id="queryByDateForActivity" parameterType="Map" resultMap="baseResult">
+        select 
+            *
+        from 
+            vps_vcode_benediction_expand_rule
+        where
+            delete_flag = '0' 
+            and end_date >= curdate()
+            and !(begin_date > #{endDate} or #{beginDate} > end_date)
+            and vcode_activity_key = #{vcodeActivityKey}
+            <if test="infoKey != null and infoKey != ''">
+                and info_key != #{infoKey}
+            </if>
+	</select>
+</mapper>

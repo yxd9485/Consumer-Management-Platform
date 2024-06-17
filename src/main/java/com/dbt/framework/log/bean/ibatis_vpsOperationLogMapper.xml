@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.framework.log.dao.VpsOperationLogDao">
+
+	<resultMap type="com.dbt.framework.log.bean.VpsOperationLog" id="vpsOperationLogResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+  		<result property="menuFlag" column="MENU_FLAG"/>
+  		<result property="operationType" column="OPERATION_TYPE"/>
+  		<result property="operationContent" column="OPERATION_CONTENT"/>
+  		<result property="operationDescription" column="OPERATION_DESCRIPTION"/>
+  		<result property="loginName" column="LOGIN_NAME"/>
+  		<result property="phoneNumber" column="PHONE_NUMBER"/>
+  		<result property="createTime" column="CREATE_TIME"/>
+	</resultMap>
+
+	<!-- 保存日志 -->
+	<insert id="saveLog" parameterType="com.dbt.framework.log.bean.VpsOperationLog">
+		INSERT INTO vps_operation_log(
+			INFO_KEY,
+			MENU_FLAG,
+			OPERATION_TYPE,
+			OPERATION_CONTENT,
+			OPERATION_DESCRIPTION,
+			LOGIN_NAME,
+			PHONE_NUMBER,
+			CREATE_TIME
+		)
+		VALUES(
+			UUID(),
+			#{menuFlag},
+			#{operationType},
+			#{operationContent},
+			#{operationDescription},
+			#{loginName},
+			#{phoneNumber},
+			NOW()
+		)
+	</insert>
+
+	<!-- 查询日志List -->
+	<select id="queryVpsOperationLogList" parameterType="Map" resultMap="vpsOperationLogResultMap">
+		SELECT
+			INFO_KEY,
+			MENU_FLAG,
+			OPERATION_TYPE,
+			OPERATION_CONTENT,
+			OPERATION_DESCRIPTION,
+			LOGIN_NAME,
+			PHONE_NUMBER,
+			CREATE_TIME
+		FROM
+			vps_operation_log
+		WHERE
+			1 = 1
+		<if test="queryBean.menuFlag != null and queryBean.menuFlag != ''">
+			AND MENU_FLAG = #{queryBean.menuFlag}
+		</if>
+		<if test="queryBean.operationType != null and queryBean.operationType != ''">
+			AND OPERATION_TYPE = #{queryBean.operationType}
+		</if>
+        <if test="queryBean.phoneNumber != null and queryBean.phoneNumber != ''">
+            AND PHONE_NUMBER  like '%${queryBean.phoneNumber}%'
+        </if>
+		<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			AND CREATE_TIME >= CONCAT(#{queryBean.startDate}, ' 00:00:00')
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND CREATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endDate}, ' 23:59:59')
+		</if>
+        <if test="queryBean.loginName != null and queryBean.loginName != ''">
+            AND LOGIN_NAME = #{queryBean.loginName}
+        </if>
+        <choose>
+            <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderType != null and pageInfo.orderType != ''">
+                ORDER BY   ${pageInfo.orderCol} ${pageInfo.orderType}
+            </when>
+            <otherwise>		ORDER BY CREATE_TIME DESC </otherwise>
+        </choose>
+	/*	ORDER BY CREATE_TIME DESC*/
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+
+
+
+	</select>
+
+	<!-- 查询日志count -->
+	<select id="queryVpsOperationLogCount" parameterType="Map" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_operation_log
+		WHERE
+			1 = 1
+		<if test="queryBean.menuFlag != null and queryBean.menuFlag != ''">
+			AND MENU_FLAG = #{queryBean.menuFlag}
+		</if>
+		<if test="queryBean.operationType != null and queryBean.operationType != ''">
+			AND OPERATION_TYPE = #{queryBean.operationType}
+		</if>
+		<if test="queryBean.startDate != null and queryBean.startDate != ''">
+			AND CREATE_TIME >= CONCAT(#{queryBean.startDate}, ' 00:00:00')
+		</if>
+		<if test="queryBean.endDate != null and queryBean.endDate != ''">
+			AND CREATE_TIME <![CDATA[<=]]> CONCAT(#{queryBean.endDate}, ' 23:59:59')
+		</if>
+	</select>
+</mapper>

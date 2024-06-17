@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.home.dao.IVpsHomeReportDao">
+	<!-- 4个统计数 -->
+	<resultMap type="com.dbt.platform.home.bean.ReportMainInfo" id="resultReportMap">
+		<result property="totalScans" column="totalScans" />
+		<result property="totalVpoints" column="totalVpoints" />
+		<result property="totalUsers" column="totalUsers" />
+		<result property="totalNewUsers" column="totalNewUsers" />
+		<result property="firstPercent" column="firstPercent" />
+		<result property="totalLuckys" column="totalLuckys" />
+		<result property="luckyPercent" column="luckyPercent" />
+		<result property="city" column="city" />
+		<result property="reportDate" column="reportDate" />
+	</resultMap>
+	<resultMap type="com.dbt.platform.home.bean.VpointsType" id="VpointsMap">
+		<result property="totalVpoints" column="total_vpoints" />
+		<result property="scanVpoints" column="scan_vpoints" />
+		<result property="signVpoints" column="sign_vpoints" />
+		<result property="otherVpoints" column="othervpoints" />
+		<result property="other1Vpoints" column="other1vpoints" />
+		<result property="other2Vpoints" column="other2vpoints" />
+	</resultMap>
+
+
+
+	<!-- 平均消耗积分 -->
+	<select id="getAvgVpoints" parameterType="String" resultType="String">
+        select avg(t.vpoints_value) from z_report_vpoints_new t
+        where t.report_date <![CDATA[ > ]]>#{param1} and t.report_date <![CDATA[ <= ]]>#{param2} and t.report_type=1 and t.vpoints_type='0'
+    </select>
+	
+<!-- 	累计消耗 -->
+	<select id="getTotalVpoints" parameterType="String" resultType="String">
+	    select  FORMAT(ifnull(vpoints_value,0),0)
+        FROM z_report_vpoints_new 
+        WHERE report_type = 0 AND report_date= #{queryDate} and vpoints_type=0
+	</select>
+
+	<select id="getReportByDayTypeMain" resultMap="resultReportMap" parameterType="Map">
+		select FORMAT(ifnull(t.scan_counts,0),0) as totalScans,FORMAT(ifnull(t.vpoints_counts,0),0) as totalVpoints,
+		FORMAT(ifnull(t.user_counts,0),0) as totalUsers,FORMAT(ifnull(t.new_user_counts,0),0) as totalNewUsers,
+		concat( left (IFNULL(sum(t.user_counts),0)/IFNULL(sum(t.scan_counts),0)*100,4),'%') as firstPercent, 
+		t.report_date as reportDate 
+		from z_report_main t where t.report_type=#{report_type} and t.report_date<![CDATA[ = ]]> #{queryDate}
+	</select>
+	<select id="getVpointsType" parameterType="String" resultMap="VpointsMap">
+	SELECT
+       format(t.total_vpoints,0) as total_vpoints,
+        format(t.scan_vpoints,0) as scan_vpoints,
+        format(t.sign_vpoints,0) as sign_vpoints,
+        format(t.othervpoints,0) as othervpoints,
+        format(t.other1vpoints,0) as other1vpoints,
+        format(t.other2vpoints,0) as other2vpoints
+	  FROM z_report_vpoints t
+	 where t.report_date<![CDATA[ = ]]>#{reportDate}
+	 and t.report_type = '0'
+	 limit 1
+	</select>
+</mapper>

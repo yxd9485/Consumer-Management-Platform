@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.VpointsGoodsGiftRelationDao">
+    <resultMap type="com.dbt.vpointsshop.bean.VpointsGoodsGiftRelation" id="giftRelation">
+        <result property="relationId" column="relation_id" />
+        <result property="giftId" column="gift_id" />
+        <result property="goodsId" column="goods_id" />
+        <result property="giftLimitType" column="gift_limit_type" />
+        <result property="giftLimitCondition" column="gift_limit_condition" />
+    </resultMap>
+
+    <insert id="addGiftAsGoods" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsGiftRelation">
+		insert into vpoints_goods_gift_relation (
+		relation_id,gift_id,goods_id,gift_limit_type,gift_limit_condition) values(
+		#{relationId},#{giftId},#{goodsId},#{giftLimitType},#{giftLimitCondition})
+	</insert>
+
+    <delete id="deleteByGiftKeys" parameterType="Map">
+	    delete from
+            vpoints_goods_gift_relation
+        WHERE
+            gift_id = #{giftId}
+	</delete>
+
+    <select id="findGoodsByGiftId"  parameterType="String" resultMap="giftRelation">
+			select goods_id from vpoints_goods_gift_relation where gift_id = #{giftId}
+	</select>
+
+</mapper>

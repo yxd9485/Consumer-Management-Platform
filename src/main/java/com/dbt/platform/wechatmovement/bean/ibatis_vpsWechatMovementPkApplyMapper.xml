@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatMovementPkApplyDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatMovementPkApply" id="resultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="periodsKey" column="PERIODS_KEY"/>
+		<result property="weekDay" column="WEEK_DAY"/>
+		<result property="payVpoints" column="PAY_VPOINTS"/>
+		<result property="stepNumber" column="STEP_NUMBER"/>
+		<result property="pkStatus" column="PK_STATUS"/>
+		<result property="earnVpoints" column="EARN_VPOINTS"/>
+		<result property="earnTime" column="EARN_TIME"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			PERIODS_KEY,
+			WEEK_DAY,
+			USER_KEY,
+			PAY_VPOINTS,
+			STEP_NUMBER,
+			PK_STATUS,
+			EARN_VPOINTS,
+			EARN_TIME,
+			CREATE_TIME,
+			UPDATE_TIME
+	</sql>
+    
+    <!-- 新增 -->
+    <insert id="create" parameterType="com.dbt.platform.wechatmovement.bean.VpsWechatMovementPkApply">
+    	INSERT INTO vps_wechat_movement_pk_apply_${tableIndex}(
+    		INFO_KEY,
+			PERIODS_KEY,
+			WEEK_DAY,
+			USER_KEY,
+			PAY_VPOINTS,
+			STEP_NUMBER,
+			PK_STATUS,
+			EARN_VPOINTS,
+			EARN_TIME,
+			CREATE_TIME
+    	) VALUES(
+    		UUID(),
+    		#{periodsKey},
+    		#{weekDay},
+    		#{userKey},
+    		#{payVpoints},
+    		0,
+    		'0',
+    		0,
+    		#{earnTime},
+	    	NOW()
+    	)
+    		
+    </insert>
+    
+   <update id="updateBatch" parameterType="Map">
+   		<foreach collection="applyList" item="item" separator=";">
+	   		update vps_wechat_movement_pk_apply_${tableIndex}
+	   		set 
+	   		pk_status = #{item.pkStatus},
+	   		earn_vpoints = #{item.earnVpoints},
+	   		earn_time = #{earnTime}
+	   		where periods_key = #{periodsKey}
+			and user_key = #{item.userKey}
+	   	</foreach>
+   </update>
+    
+    <!-- 根据期数和用户查询 -->
+    <select id="findWechatMovemen" parameterType="Map" resultMap="resultMap">
+		SELECT 
+			<include refid="Base_Column_List" />
+		 FROM 
+		 	vps_wechat_movement_pk_apply_${tableIndex}
+		 WHERE 
+		 	PERIODS_KEY = #{periodsKey}
+		 AND
+    		USER_KEY = #{userKey}
+    	LIMIT 1
+    </select>
+    
+    <!-- 根据期数查询 -->
+    <select id="queryWechatMovemenPkApply" parameterType="Map" resultMap="resultMap">
+		SELECT 
+			<include refid="Base_Column_List" />
+		 FROM 
+		 	vps_wechat_movement_pk_apply_${tableIndex}
+		 WHERE 
+		 	PERIODS_KEY = #{periodsKey}
+		 <if test="stepLimit != null and stepLimit != ''">
+		 	AND STEP_NUMBER >= #{stepLimit}
+		 </if>
+		 <if test="isTriumph == '1'.toString() or isTriumph == '0'.toString()">
+		 	AND IS_TRIUMPH = #{isTriumph}
+		 </if>
+    </select>
+    
+    <select id="findOneByPeriodsKey" parameterType="Map" resultMap="resultMap">
+    	SELECT 
+			<include refid="Base_Column_List" />
+		 FROM 
+		 	vps_wechat_movement_pk_apply_${tableIndex}
+		 WHERE 
+		 	PERIODS_KEY = #{periodsKey}
+		 LIMIT 1
+    </select>
+    
+</mapper>

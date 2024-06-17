@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeTeminalInfoDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VpsTerminalInfo" id="baseResult">
+		<result property="terminalKey" column="TERMINAL_KEY"/>
+		<result property="terminalName" column="TERMINAL_NAME"/>
+		<result property="terminalNo" column="TERMINAL_NO"/>
+  		<result property="imageUrl" column="IMAGE_URL"/>
+  		<result property="province" column="PROVINCE"/>
+  		<result property="city" column="CITY"/>
+  		<result property="county" column="COUNTY"/>
+  		<result property="phoneNum" column="PHONE_NUM"/>
+  		<result property="address" column="ADDRESS"/>
+  		<result property="longitude" column="LONGITUDE"/>
+  		<result property="latitude" column="LATITUDE"/>
+  		<result property="terminalCheckuserKey" column="TERMINAL_CHECKUSER_KEY"/>
+  		<result property="status" column="STATUS"/>
+  		<result property="areaCode" column="AREACODE"/> 		
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="createUser" column="create_user"/>
+  		<result property="updateTime" column="update_time"/>
+  		<result property="updateUser" column="update_user"/>
+	</resultMap>
+
+	<select id="queryForTeminalList" resultMap="baseResult" parameterType="Map">
+		SELECT
+			 *
+			 <if test="queryBean.sqStatus !=null and queryBean.sqStatus != ''">
+				,#{queryBean.sqStatus} as 'sqStatus' 
+			</if>
+			FROM vps_terminal_info a	
+		WHERE 
+			a.DELETE_FLAG = '0'
+			<if test="queryBean.areaCode != null and queryBean.areaCode != ''">
+        		AND	a.AREACODE like '${queryBean.areaCode}%'
+        	</if>
+			<if test="queryBean.terminalNo != null and queryBean.terminalNo != ''">
+            	AND a.TERMINAL_NO = #{queryBean.terminalNo}
+        	</if>
+			 <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+            	AND a.TERMINAL_name like '%${queryBean.terminalName}%' 
+       		 </if>
+			<if test="queryBean.sqStatus !=null and queryBean.sqStatus != ''">
+				<if test="queryBean.sqStatus == 1">
+					AND EXISTS 
+				</if>
+				<if test="queryBean.sqStatus == 2">
+					AND NOT EXISTS 
+				</if>
+				(select 1 
+					from 
+						vps_prize_terminal_relation  b 
+					where a.TERMINAL_KEY = b.TERMINAL_KEY 
+					and b.PRIZE_TYPE=#{queryBean.prizeType} and b.status = '0')
+			</if>
+	 		ORDER BY 
+			<choose>
+		  		<when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      		${pageInfo.orderCol} ${pageInfo.orderType}
+		  		</when>
+		  	<otherwise>a.CREATE_TIME DESC</otherwise>
+			</choose>
+        	LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}	
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT count(1)
+			FROM vps_terminal_info a	
+		WHERE 
+			a.DELETE_FLAG = '0'	
+			<if test="queryBean.areaCode != null and queryBean.areaCode != ''">
+        		AND	a.AREACODE like '${queryBean.areaCode}%'
+        	</if>
+			<if test="queryBean.terminalNo != null and queryBean.terminalNo != ''">
+            	AND a.TERMINAL_NO = #{queryBean.terminalNo}
+        	</if>
+			 <if test="queryBean.terminalName != null and queryBean.terminalName != ''">
+            	AND a.TERMINAL_name like '%${queryBean.terminalName}%' 
+       		 </if>
+			<if test="queryBean.sqStatus !=null and queryBean.sqStatus != ''">
+				<if test="queryBean.sqStatus == 1">
+					AND EXISTS 
+				</if>
+				<if test="queryBean.sqStatus == 2">
+					AND NOT EXISTS 
+				</if>
+				(select 1 
+					from 
+						vps_prize_terminal_relation  b 
+					where a.TERMINAL_KEY = b.TERMINAL_KEY 
+					and b.PRIZE_TYPE=#{queryBean.prizeType} and b.status = '0')
+			</if>
+	</select>
+	
+	<!-- 授权 -->
+	<insert id="createRlation" parameterType="com.dbt.platform.activity.bean.VpsPrizeTerminalRelation">
+		INSERT INTO vps_prize_terminal_relation VALUE (UUID(),#{prizeType},#{terminalKey},'0')
+	</insert>
+	<!-- 取消授权 -->
+	 <update id="deleteRlation" parameterType="com.dbt.platform.activity.bean.VpsPrizeTerminalRelation">
+	   update 
+           vps_prize_terminal_relation
+       set status = '1'
+       where
+           PRIZE_TYPE = #{prizeType}
+       and terminal_Key = #{terminalKey}
+	 </update>
+	 	
+	<!-- 批量授权 -->
+	<insert id="createRlationLst" parameterType="Map">
+		INSERT INTO vps_prize_terminal_relation VALUES
+		<foreach collection="relationKeyLst" item="key"  separator="," close=";">
+		<choose>
+			<when test="flag == true">				
+            	(UUID(),#{relationKey},#{key},'0')
+			</when>
+			<otherwise>
+            	(UUID(),#{key},#{relationKey},'0')       		
+			</otherwise>
+		</choose>
+		</foreach>	
+	</insert>
+	
+	<!-- 批量修改授权 -->
+	 <update id="deleteRlationLst" parameterType="Map">
+	  update
+           vps_prize_terminal_relation
+      set status = #{status}
+      WHERE
+      	<choose>
+      		<when test="flag == true">
+      			PRIZE_TYPE = #{relationKey}
+      			AND TERMINAL_KEY in
+      		</when>
+      		<otherwise>
+      			TERMINAL_KEY = #{relationKey}
+      			AND PRIZE_TYPE in
+      		</otherwise>
+      	</choose>
+       <foreach collection="relationKeyLst" item="key"  open="(" separator="," close=")">
+            #{key}
+       </foreach>
+	 </update>
+	 <!-- 停用或启用大奖 -->
+	 <update id="updateRlation" parameterType="com.dbt.platform.activity.bean.VpsPrizeTerminalRelation">
+	 	update vps_prize_terminal_relation set status = #{status} where TERMINAL_KEY = #{terminalKey}
+	 	and PRIZE_TYPE = #{prizeType}
+	 </update>
+	 
+	 <!-- 查询门店的大奖 -->
+	 <select id="findRlationByPrize" parameterType="String" resultType="String">
+	 	SELECT GROUP_CONCAT(PRIZE_TYPE) as 'prizeTyleLst'  FROM  vps_prize_terminal_relation   where TERMINAL_KEY = #{terminalKey} and status = '0'
+	 </select>
+	  
+	 
+	 
+	 <!-- 删除门店 -->
+	 <update  id="deleteById" parameterType="String">
+	 	update vps_terminal_info set DELETE_FLAG = '1' where TERMINAL_KEY = #{terminalKey}
+	 </update>
+	 
+	 <!-- 查询门店 -->
+	 <select id="findById" resultMap="baseResult" parameterType="String">
+	 		SELECT
+			 *,
+			CONCAT_WS(',',a.LONGITUDE,a.LATITUDE)  as 'coordinate'
+			FROM vps_terminal_info a	
+			WHERE a.DELETE_FLAG = '0'
+	 		AND a.TERMINAL_KEY =#{terminalKey}
+	 </select>
+	 
+	 
+	 <!-- 新增门店 -->
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VpsTerminalInfo">
+		INSERT INTO vps_terminal_info(
+		 	TERMINAL_KEY, 
+  			TERMINAL_NAME,
+  			TERMINAL_NO,
+  			IMAGE_URL,
+  			PROVINCE,
+  			CITY,
+  			COUNTY,
+  			PHONE_NUM,
+  			ADDRESS,
+  			LONGITUDE,
+  			LATITUDE,
+  			TERMINAL_CHECKUSER_KEY,
+  			AREACODE,
+  			STATUS,	
+  			DELETE_FLAG,
+  			CREATE_TIME,
+  			CREATE_USER,
+  			UPDATE_TIME,
+  			UPDATE_USER 
+		)
+		VALUES(
+		    #{terminalKey},			
+  			#{terminalName},			
+  			#{terminalNo},			
+  			#{imageUrl},			
+  			#{province},			
+  			#{city},			
+  			#{county},			
+  			#{phoneNum},			
+  			#{address},			
+  			#{longitude},
+  			#{latitude},
+  			#{terminalCheckuserKey},
+  			#{areaCode},
+  			'0',
+  			'0',
+  			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	
+	 <!-- 修改门店 -->
+	 <update id="update" parameterType="com.dbt.platform.activity.bean.VpsTerminalInfo">
+	 	UPDATE vps_terminal_info 
+		<set>
+			<if test="terminalName != null and terminalName != '' ">
+				TERMINAL_NAME = #{terminalName},
+			</if>
+			<if test="imageUrl != null and imageUrl != '' ">
+				IMAGE_URL = #{imageUrl},
+			</if>
+			<if test="province != null and province != '' ">
+				PROVINCE = #{province},
+			</if>
+			<if test="city != null and city != '' ">
+				CITY = #{city},
+			</if>
+			<if test="county != null and county != '' ">
+				COUNTY = #{county},
+			</if>
+			<if test="phoneNum != null and phoneNum != '' ">
+				PHONE_NUM = #{phoneNum},
+			</if>
+			<if test="address != null and address != '' ">
+				ADDRESS = #{address},
+			</if>
+			<if test="longitude != null and longitude != '' ">
+				LONGITUDE = #{longitude},
+			</if>
+			<if test="latitude != null and latitude != '' ">
+				LATITUDE = #{latitude},
+			</if>
+			<if test="status != null and status != '' ">
+				status = #{status},
+			</if>
+			<if test="areaCode != null and areaCode != '' ">
+				AREACODE = #{areaCode},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE TERMINAL_KEY = #{terminalKey}
+	 </update>
+	 
+	 
+	 <!--查询授权表已授权类型  -->
+	 <select id="findByPrizeType" parameterType="Map" resultType="com.dbt.platform.activity.bean.VpsPrizeTerminalRelation">
+	  SELECT
+	  	   status as 'status',
+	  	   PRIZE_TYPE as 'prizeType',
+	  	   TERMINAL_KEY as 'terminalKey'	
+           FROM 
+             vps_prize_terminal_relation
+      WHERE 
+      	  <choose>
+      	  	<when test="flag == true">
+      	   		TERMINAL_KEY = #{relationKey}  
+		   		AND	PRIZE_TYPE in
+      	  	</when>
+      	  	<otherwise>
+		   		PRIZE_TYPE = #{relationKey}
+      	  		AND TERMINAL_KEY in
+      	  	</otherwise>
+      	  </choose>
+       <foreach collection="addKeysLst" item="key"  open="(" separator="," close=")">
+            #{key}
+       </foreach>
+	 </select>
+	 
+	  <!-- 查询 -->
+	 <select id="countByRlation" parameterType="com.dbt.platform.activity.bean.VpsPrizeTerminalRelation" resultType="int">
+	 	select count(1) from vps_prize_terminal_relation  where PRIZE_TYPE = #{prizeType} and TERMINAL_KEY = #{terminalKey}
+	 </select>
+</mapper>

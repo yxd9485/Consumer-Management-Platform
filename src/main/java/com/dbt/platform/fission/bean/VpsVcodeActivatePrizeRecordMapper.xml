@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.fission.dao.IVpsVcodeActivatePrizeRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.fission.bean.VpsVcodeActivatePrizeRecordEntity">
+        <id column="record_key" property="recordKey" />
+        <result column="openid" property="openid" />
+        <result column="nick_name" property="nickName" />
+        <result column="win_qrcode_content" property="winQrcodeContent" />
+        <result column="win_sku_name" property="winSkuName" />
+        <result column="win_sku_key" property="winSkuKey" />
+        <result column="status" property="status" />
+        <result column="winning_amount" property="winningAmount" />
+        <result column="winning_point" property="winningPoint" />
+        <result column="share_user_key" property="shareUserKey" />
+        <result column="shareUserName" property="shareUserName" />
+        <result column="win_date" property="winDate" />
+        <result column="win_end_time" property="winEndTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="user_key" property="userKey" />
+        <result column="money_flag" property="moneyFlag" />
+        <result column="vcode_activity_key" property="vcodeActivityKey" />
+        <result column="activity_key" property="activityKey" />
+        <result column="reward_amount" property="rewardAmount" />
+        <result column="reward_point" property="rewardPoint" />
+        <result column="obtain_flag" property="obtainFlag" />
+        <result column="activate_record" property="activateRecord" />
+    </resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ShareResultMap" type="com.dbt.platform.fission.bean.VpsVcodeActivateShareRecord">
+        <id column="id" property="id" />
+        <result column="qrcode_content" property="qrcodeContent" />
+        <result column="rule_key" property="ruleKey" />
+        <result column="receive_time" property="receiveTime" />
+        <result column="share_user_key" property="shareUserKey" />
+        <result column="receive_num" property="receiveNum" />
+        <result column="activation_amount_total" property="activationAmountTotal" />
+        <result column="reward_amount_total" property="rewardAmountTotal" />
+        <result column="reward_point_total" property="rewardPointTotal" />
+        <result column="activation_user_key_list" property="activationUserKeyList" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_key, openid, nick_name, win_qrcode_content, win_sku_name, win_sku_key, status, winning_amount, winning_point, share_user_key, share_user_name, win_date, win_end_time, create_time, create_user, update_time, update_user
+    </sql>
+    <select id="getLimitConsumeAcount" resultMap="ShareResultMap">
+        select
+        sum(receive_num) receive_num,
+        sum(activation_amount_total) activation_amount_total,
+        IFNULL(sum(activation_point_total),0) activation_point_total,
+        sum(reward_amount_total) reward_amount_total,
+        sum(reward_point_total) reward_point_total
+        from vps_vcode_activate_share_record
+        where rule_key = #{ruleKey}
+    </select>
+
+    
+    <select id="selectPageVo" resultMap="BaseResultMap">
+        select rc.rule_name,ui.nick_name shareUserName ,pr.* from
+         (
+        <foreach collection="ew.packTables" item="tableIndex" separator="UNION ALL">
+            select * from vps_vcode_activate_prize_record_${tableIndex}
+        </foreach>
+        )
+         pr
+        left join vps_consumer_user_info ui on ui.user_key = pr.share_user_key
+        left join vps_vcode_activate_red_envelope_rule_cog rc on rc.activity_key= pr.activity_key
+
+        <where>
+        <if test="ew.userKey!=null and ew.userKey!=''">
+           and pr.user_key =#{ew.userKey}
+        </if>
+        <if test="ew.nickName!=null and ew.nickName!=''">
+            and pr.nick_name =#{ew.nickName}
+        </if>
+        <if test="ew.startDate!=null and ew.startDate!=''">
+            and str_to_date(date_format(pr.create_time,'%Y-%m-%d'),'%Y-%m-%d') >= str_to_date(#{ew.startDate},'%Y-%m-%d')
+        </if>
+        <if test="ew.endDate !=null and ew.endDate!=''">
+            and str_to_date(date_format(pr.create_time,'%Y-%m-%d'),'%Y-%m-%d') <![CDATA[ <= ]]> str_to_date(#{ew.endDate},'%Y-%m-%d')
+        </if>
+        <if test="ew.winQrcodeContent!=null and ew.winQrcodeContent!=''">
+            and pr.win_qrcode_content =#{ew.winQrcodeContent}
+        </if>
+        <if test="ew.moneyFlag!=null and ew.moneyFlag!=''">
+            and pr.money_flag =#{ew.moneyFlag}
+        </if>
+        <if test="ew.ruleName!=null and ew.ruleName!=''">
+            and rc.rule_name =#{ew.ruleName}
+        </if>
+        <if test="ew.activityKey!=null and ew.activityKey!=''">
+            and pr.activity_key =#{ew.activityKey}
+        </if>
+        <if test="ew.obtainFlag!=null and ew.obtainFlag!=''">
+            and pr.obtain_flag =#{ew.obtainFlag}
+        </if>
+    </where>
+    order by pr.create_time desc
+    </select>
+
+    <select id="findAllDataList"  resultMap="BaseResultMap">
+        select * from vps_vcode_activate_prize_record
+    </select>
+    <insert id="save" parameterType="com.dbt.platform.fission.bean.VpsVcodeActivatePrizeRecordEntity">
+INSERT INTO vps_vcode_activate_prize_record_4 (
+`record_key`,
+`openid`,
+`nick_name`,
+`win_qrcode_content`,
+`win_sku_name`,
+`win_sku_key`,
+`status`,
+`winning_amount`,
+`winning_point`,
+`reward_amount`,
+`reward_time`,
+`reward_point`,
+`share_user_key`,
+`share_user_name`,
+`win_date`,
+`win_end_time`,
+`create_time`,
+`create_user`,
+`update_time`,
+`update_user`,
+`user_key`,
+`money_flag`,
+`vcode_activity_key`,
+`activity_key`
+)
+VALUES
+	(
+	#{recordKey},
+	#{openid},
+	#{nickName},
+	#{winQrcodeContent},
+	#{winSkuName},
+	#{winSkuKey},
+	#{status},
+	#{winningAmount},
+	#{winningPoint},
+	#{rewardAmount},
+	#{rewardTime},
+	#{rewardPoint},
+	#{shareUserKey},
+	#{shareUserName},
+	#{winDate},
+	#{winEndTime},
+	#{createTime},
+	#{createUser},
+	#{updateTime},
+	#{updateUser},
+	#{userKey},
+	#{moneyFlag},
+	#{vcodeActivityKey},
+	#{activityKey}
+	)
+    </insert>
+</mapper>

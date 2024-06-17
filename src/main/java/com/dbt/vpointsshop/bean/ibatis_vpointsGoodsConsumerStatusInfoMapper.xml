@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsConsumerStatusInfoDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsGoodsConsumerStatusInfo" id="baseResultMap">
+		<result property="infoKey" column="info_key" />
+		<result property="goodsId" column="goods_id" />
+		<result property="userKey" column="user_key" />
+        <result property="collectFlag" column="collect_flag" />
+        <result property="arrivalNoticeFlag" column="arrival_notice_flag" />
+        <result property="secKillRemindFlag" column="sec_kill_remind_flag" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="appletOpenid" column="applet_openid" />
+		<result property="paOpenid" column="pa_openid" />
+		<result property="goodsShortName" column="goods_short_name" />
+		<result property="goodsStartTime" column="goods_start_time" />
+		<result property="realPay" column="real_pay" />
+		<result property="goodsNum" column="goods_num" />
+	</resultMap>
+	
+	<update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsConsumerStatusInfo">
+	   update 
+	       vpoints_goods_consumer_status_info
+	   <set>
+	       <if test="collectFlag != null and collectFlag != ''">
+	           collect_flag = #{collectFlag},
+	       </if>
+	       <if test="arrivalNoticeFlag != null and arrivalNoticeFlag != ''">
+	           arrival_notice_flag = #{arrivalNoticeFlag},
+	       </if>
+	       <if test="secKillRemindFlag != null and secKillRemindFlag != ''">
+	           sec_kill_remind_flag = #{secKillRemindFlag},
+	       </if>
+	       UPDATE_TIME = now()
+	   </set>
+	   where 
+	       info_key = #{infoKey}
+	</update>
+	
+	<select id="queryArrivalNoticeByGoodsId" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			r.*,
+			t.pa_openid,
+		    t.MEMBER_OPENID
+		FROM
+			vpoints_goods_consumer_status_info r
+			inner join vps_consumer_thirdaccount_info t on r.user_key = t.user_key
+		WHERE
+		    IFNULL(t.pa_openid, '') != ''
+		    and r.arrival_notice_flag = '1'
+			and r.goods_id = #{goodsId}
+	</select>
+	
+	<update id="updateArrivalNoticeFlag" parameterType="Map">
+		update 
+            vpoints_goods_consumer_status_info
+		set
+		    arrival_notice_flag = #{arrivalNoticeFlag} 
+		WHERE
+			goods_id = #{goodsId}
+	</update>
+	
+<!-- 	获取商城秒杀预约提醒记录 -->
+    <select id="querySecKillRemind" resultMap="baseResultMap" parameterType="Map">
+        SELECT
+            r.*,
+            t.pa_openid,
+            t.MEMBER_OPENID,
+            g.goods_short_name,
+            s.activity_begin_time as goods_start_time,
+            s.seckill_pay as real_pay,
+            s.seckill_periods_num as goods_num
+        FROM
+            vpoints_goods_consumer_status_info r
+            inner join vps_consumer_thirdaccount_info t on r.user_key = t.user_key
+            inner join vpoints_goods_info g on r.goods_id = g.goods_id and g.delete_flag != '1'
+            inner join vpoints_seckill_activity_view s ON r.goods_id = s.goods_id
+        WHERE
+            IFNULL(t.pa_openid, '') != ''
+            and r.sec_kill_remind_flag = '1'
+            and s.activity_begin_time between #{remindStartTime} and #{remindEndTime}
+    </select>
+    
+	<!-- 	获取商城秒杀活动提醒记录 -->
+    <select id="querySeckillActivityRemind" resultMap="baseResultMap" parameterType="Map">
+        SELECT 
+			r.*,
+			t.pa_openid,
+			g.goods_short_name,
+			g.goods_start_time,
+			g.real_pay,
+			g.goods_num
+		FROM vpoints_goods_consumer_status_info r
+		INNER JOIN vpoints_seckill_activity a on r.GOODS_ID = a.goods_id
+		INNER JOIN vps_consumer_thirdaccount_info t on r.user_key = t.user_key
+		INNER JOIN vpoints_goods_info g on r.goods_id = g.goods_id and g.delete_flag != '1'
+		WHERE 
+		IFNULL(t.pa_openid, '') != ''
+		and r.sec_kill_remind_flag = '1'
+		and a.is_stop = '0'
+		and (
+			(a.rule_type = '1' and #{remindTime} between CONCAT(a.BEGIN_DATE,' ',a.BEGIN_TIME) AND CONCAT(a.END_DATE,' ',a.END_TIME))
+			 or 
+			( a.rule_type = '2' and (if(date_format(#{remindTime},'%w')=0,7,date_format(NOW(),'%w')) BETWEEN  a.BEGIN_DATE AND  a.END_DATE) AND (date_format(#{remindTime},'%H:%i:%s') BETWEEN a.BEGIN_TIME AND a.END_TIME))
+		)
+    </select>
+    
+    
+	<!-- 	获取商城拼团活动提醒记录 -->
+    <select id="queryGroupActivityRemind" resultMap="baseResultMap" parameterType="Map">
+        SELECT 
+			r.*,
+			t.pa_openid,
+            t.MEMBER_OPENID,
+			g.goods_short_name,
+			g.goods_start_time,
+			g.real_pay,
+			g.goods_num
+		FROM vpoints_goods_consumer_status_info r
+		INNER JOIN vpoints_group_buying_activity a on r.GOODS_ID = a.goods_id
+		INNER JOIN vps_consumer_thirdaccount_info t on r.user_key = t.user_key
+		INNER JOIN vpoints_goods_info g on r.goods_id = g.goods_id and g.delete_flag != '1'
+		WHERE 
+		IFNULL(t.pa_openid, '') != ''
+		and r.sec_kill_remind_flag = '1'
+		and a.is_stop = '0'
+		and (
+			(a.rule_type = '1' and #{remindTime} between CONCAT(a.BEGIN_DATE,' ','00:00:00') AND CONCAT(a.END_DATE,' ','23:59:59'))
+			 or 
+			( a.rule_type = '2' and (if(date_format(#{remindTime},'%w')=0,7,date_format(NOW(),'%w')) BETWEEN  a.BEGIN_DATE AND  a.END_DATE))
+		)
+    </select>
+    
+    <update id="updateSecKillRemindFlagForSend" parameterType="List">
+        update 
+            vpoints_goods_consumer_status_info
+        set
+            sec_kill_remind_flag = '2' 
+        WHERE
+            info_key in (
+            <foreach collection="list" item="infoKey" separator=", ">
+                #{infoKey}
+            </foreach>
+            )
+    </update>
+</mapper>

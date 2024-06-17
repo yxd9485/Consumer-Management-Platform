@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsExchangeActivityRecordDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsExchangeActivityRecordEntity">
+        <id column="info_key" property="infoKey" />
+        <result column="goods_name" property="goodsName" />
+        <result column="exchange_id" property="exchangeId" />
+        <result column="goods_price" property="goodsPrice" />
+        <result column="exchange_goods_name" property="exchangeGoodsName" />
+        <result column="exchange_goods_price" property="exchangeGoodsPrice" />
+        <result column="exchange_order_id" property="exchangeOrderId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseVOResultMap" type="com.dbt.vpointsshop.dto.VpointsGoodsExchangeActivityRecordVO">
+        <id column="info_key" property="infoKey" />
+        <result column="goods_name" property="goodsName" />
+        <result column="exchange_id" property="exchangeId" />
+        <result column="goods_price" property="goodsPrice" />
+        <result column="exchange_goods_name" property="exchangeGoodsName" />
+        <result column="exchange_goods_price" property="exchangeGoodsPrice" />
+        <result column="exchange_order_id" property="exchangeOrderId" />
+        <!--活动商品订单-->
+        <association property="exchangeLog"  columnPrefix="exchangelog_" autoMapping="true" javaType="com.dbt.vpointsshop.bean.VpointsExchangeLog" ></association>
+        <!--活动换购商品订单-->
+        <association property="exchangeOrderLog" columnPrefix="exchangeorderlog_" autoMapping="true" javaType="com.dbt.vpointsshop.bean.VpointsExchangeLog" ></association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        info_key, goods_name, exchange_id, goods_price, exchange_goods_name, exchange_goods_price, exchange_order_id, create_time, update_time, create_user, update_user
+    </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsExchangeActivityRecordEntity">
+        insert into vpoints_goods_exchange_activity_record (
+                   info_key,
+                  goods_name,
+                  exchange_id,
+                  goods_price,
+                  exchange_goods_name,
+                  exchange_goods_price,
+                  exchange_order_id,
+                  create_time,
+                  update_time,
+                  create_user,
+                  update_user
+        ) values (
+                #{infoKey},
+                #{goodsName},
+                #{exchangeId},
+                #{goodsPrice},
+                #{exchangeGoodsName},
+                #{exchangeGoodsPrice},
+                #{exchangeOrderId},
+                #{createTime},
+                #{updateTime},
+                #{createUser},
+                #{updateUser},
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsExchangeActivityRecordEntity">
+        update  vpoints_goods_exchange_activity_record set
+                    <if test=" infoKey!=null">
+                         info_key =  #{infoKey},
+                    </if>
+                    <if test=" goodsName!=null">
+                         goods_name =   #{goodsName},
+                    </if>
+                    <if test=" exchangeId!=null">
+                         exchange_id =   #{exchangeId},
+                    </if>
+                    <if test=" goodsPrice!=null">
+                         goods_price =   #{goodsPrice},
+                    </if>
+                    <if test=" exchangeGoodsName!=null">
+                         exchange_goods_name =   #{exchangeGoodsName},
+                    </if>
+                    <if test=" exchangeGoodsPrice!=null">
+                         exchange_goods_price =   #{exchangeGoodsPrice},
+                    </if>
+                    <if test=" exchangeOrderId!=null">
+                         exchange_order_id =   #{exchangeOrderId},
+                    </if>
+                    <if test=" createTime!=null">
+                         create_time =   #{createTime},
+                    </if>
+                    <if test=" createUser!=null">
+                         create_user =   #{createUser},
+                    </if>
+                    <if test=" updateUser!=null">
+                         update_user =   #{updateUser},
+                    </if>
+
+                    <if test=" updateTime!=null">
+                        update_time =   #{updateTime}
+                    </if>
+                where info_key = #{infoKey}
+    </update>
+    <select id="selectDataPageVO" resultMap="BaseVOResultMap">
+        select record.*,
+        exchangeLog.exchange_id exchangelog_exchange_id,
+        exchangeLog.exchange_pay exchangelog_exchange_pay,
+        exchangeLog.exchange_activity_info_key exchangelog_exchange_activity_info_key,
+        exchangeLog.address exchangelog_address,
+        exchangeLog.exchange_num exchangelog_exchange_num,
+        exchangeLog.user_name exchangelog_user_name,
+        exchangeLog.phone_num exchangelog_phone_num,
+        exchangeLog.address exchangelog_address,
+        exchangeLog.exchange_time exchangelog_exchange_time,
+        exchangeLog.exchange_status exchangelog_exchange_status,
+        exchangeLog.order_type exchangelog_order_type,
+        exchangeLog.goods_return_audit exchangelog_goods_return_audit,
+        exchangeLog.express_status exchangelog_express_status,
+
+        exchangeOrderLog.exchange_id exchangeorderlog_exchange_id,
+        exchangeOrderLog.exchange_pay exchangeorderlog_exchange_pay,
+        exchangeOrderLog.exchange_activity_info_key exchangeorderlog_exchange_activity_info_key,
+        exchangeOrderLog.goods_return_audit exchangeorderlog_goods_return_audit,
+        exchangeOrderLog.exchange_status exchangeorderlog_exchange_status,
+        exchangeOrderLog.express_status exchangeorderlog_express_status
+        from vpoints_goods_exchange_activity_record record
+        left join vpoints_exchange_log exchangeLog on record.exchange_id = exchangeLog.exchange_id
+        left join vpoints_exchange_log exchangeOrderLog on record.exchange_order_id = exchangeOrderLog.exchange_id
+        where exchangeLog.exchange_activity_info_key = #{ew.infoKey}
+        <if test="ew.exchangeId != null and ew.exchangeId != ''">
+           and  (exchangeLog.exchange_id = #{ew.exchangeId} or exchangeOrderLog.exchange_id = #{ew.exchangeId} )
+        </if>
+        <if test="ew.goodsName != null and ew.goodsName != ''">
+           and  record.goods_name like concat('%',#{ew.goodsName},'%')
+        </if>
+        <if test="ew.startExchangePay != null">
+           and  (exchangeLog.exchange_pay +exchangeOrderLog.exchange_pay)  >= #{ew.startExchangePay}
+        </if>
+        <if test="ew.endExchangePay != null">
+           and  (exchangeLog.exchange_pay +exchangeOrderLog.exchange_pay)  &lt;= #{ew.endExchangePay}
+        </if>
+        <if test="ew.exchangeStartTime != null and ew.exchangeStartTime != ''">
+           and  exchangeLog.exchange_time  <![CDATA[ >= ]]>  #{ew.exchangeStartTime}
+        </if>
+        <if test="ew.exchangeEndTime != null and ew.exchangeEndTime != ''">
+           and  exchangeLog.exchange_time  <![CDATA[ <= ]]> #{ew.exchangeEndTime}
+        </if>
+        <if test="ew.exchangeGoodsName != null and ew.exchangeGoodsName != ''">
+           and  record.exchange_goods_name like concat('%',#{ew.exchangeGoodsName},'%')
+        </if>
+        order by record.create_time desc
+    </select>
+</mapper>

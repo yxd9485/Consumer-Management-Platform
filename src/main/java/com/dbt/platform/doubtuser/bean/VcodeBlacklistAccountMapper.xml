@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.doubtuser.dao.IVcodeBlacklistDao">
+	
+	<resultMap type="com.dbt.platform.doubtuser.bean.VcodeBlacklistAccount" id="resultBlacklistAccount">
+		<result property="blacklistKey" column="BLACKLIST_KEY" />
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY" />
+		<result property="ifBlacklist" column="IF_BLACK_LIST" />
+		<result property="blacklistType" column="BLACK_LIST_TYPE" />
+		<result property="blacklistValue" column="BLACK_LIST_VALUE" />
+		<result property="nickName" column="NICK_NAME" />
+		<result property="phoneNum" column="PHONE_NUMBER" />
+		<result property="joinTime" column="JOIN_TIME" />
+		<result property="doubtReason" column="DOUBT_REASON" />
+		<result property="doubtfulTimeLimitType" column="DOUBTFUL_TIME_LIMIT_TYPE" />
+		<result property="joinBlacklist" column="JOIN_BLACK_LIST" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+		
+		<result property="openid" column="OPENID" />
+	</resultMap>
+	
+<!-- 批量插入 -->
+	<insert id="batchCreate" parameterType="Map">
+		INSERT INTO vps_vcode_blacklist_account_info (
+			BLACKLIST_KEY,
+			VCODE_ACTIVITY_KEY,
+			IF_BLACK_LIST,
+			BLACK_LIST_TYPE,
+			BLACK_LIST_VALUE,
+			JOIN_TIME,
+			DOUBT_REASON,
+            DOUBTFUL_TIME_LIMIT_TYPE,
+			province,
+			city,
+			county,
+			JOIN_BLACK_LIST,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES
+		<foreach collection="doubtList" item="doubt" separator=",">
+		(
+			#{doubt.blacklistKey},
+			#{doubt.vcodeActivityKey},
+			#{doubt.ifBlacklist},
+			#{doubt.blacklistType},
+			#{doubt.blacklistValue},
+			NOW(),
+			#{doubt.doubtReason},
+			#{doubt.doubtfulTimeLimitType},
+			#{doubt.province},
+			#{doubt.city},
+			#{doubt.county},
+			'0',
+			'0',
+			#{doubt.createTime},
+			#{doubt.createUser},
+			#{doubt.updateTime},
+			#{doubt.updateUser}
+		)
+		</foreach>
+	</insert>
+	
+<!-- 可疑用户列表 -->
+    <select id="findDoubtUserList" resultMap="resultBlacklistAccount" parameterType="Map">
+        SELECT
+            b.*,
+            a.VCODE_ACTIVITY_NAME as vcodeActivityName,
+            t.OPENID,
+            c.NICK_NAME,
+            c.PHONE_NUMBER,
+            CONCAT(IFNULL(b.province, ''), '-', IFNULL(b.city, ''), '-', IFNULL(b.county, '')) address
+        FROM
+            vps_vcode_blacklist_account_info b 
+        INNER JOIN VPS_CONSUMER_USER_INFO c ON b.BLACK_LIST_VALUE = c.USER_KEY
+        INNER JOIN vps_consumer_thirdaccount_info t ON t.USER_KEY = c.USER_KEY
+        LEFT JOIN vps_vcode_activity_cog a on b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+        WHERE
+            b.JOIN_BLACK_LIST = '0'
+            AND b.DELETE_FLAG != '1'
+            AND c.DELETE_FLAG = '0'
+            <if test="queryBean.openid != null and queryBean.openid != ''">
+                 AND (t.OPENID = #{queryBean.openid} OR c.USER_KEY = #{queryBean.openid})
+            </if>
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND c.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.vcodeActivityName != null and queryBean.vcodeActivityName != ''">
+                 AND a.VCODE_ACTIVITY_NAME like '%${queryBean.vcodeActivityName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND c.PHONE_NUMBER like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.doubtReason != null and queryBean.doubtReason != ''">
+                 AND b.DOUBT_REASON = #{queryBean.doubtReason}
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    AND date(b.JOIN_TIME) between #{queryBean.startDate} and #{queryBean.endDate}
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    AND date(b.JOIN_TIME) >= #{queryBean.startDate}
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    AND #{queryBean.endDate} >= date(b.JOIN_TIME)
+                </when>
+            </choose>
+            <choose>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'b.create_time'">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, b.CREATE_TIME DESC
+              </when>
+              <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                  ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+              </when>
+              <otherwise>ORDER BY b.CREATE_TIME DESC</otherwise>
+            </choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+<!-- 可疑用户数量 -->
+    <select id="countDoubtUserList" resultType="Integer" parameterType="Map">
+        SELECT
+            COUNT(0)
+        FROM
+            vps_vcode_blacklist_account_info b 
+        INNER JOIN VPS_CONSUMER_USER_INFO c ON b.BLACK_LIST_VALUE = c.USER_KEY
+        INNER JOIN vps_consumer_thirdaccount_info t ON t.USER_KEY = c.USER_KEY
+        LEFT JOIN vps_vcode_activity_cog a on b.VCODE_ACTIVITY_KEY = a.VCODE_ACTIVITY_KEY
+        WHERE
+            b.JOIN_BLACK_LIST = '0'
+            AND b.DELETE_FLAG != '1'
+            AND c.DELETE_FLAG = '0'
+            <if test="queryBean.openid != null and queryBean.openid != ''">
+                 AND (t.OPENID = #{queryBean.openid} OR c.USER_KEY = #{queryBean.openid})
+            </if>
+            <if test="queryBean.nickName != null and queryBean.nickName != ''">
+                 AND c.NICK_NAME like '%${queryBean.nickName}%' 
+            </if>
+            <if test="queryBean.vcodeActivityName != null and queryBean.vcodeActivityName != ''">
+                 AND a.VCODE_ACTIVITY_NAME like '%${queryBean.vcodeActivityName}%' 
+            </if>
+            <if test="queryBean.phoneNum != null and queryBean.phoneNum != ''">
+                 AND c.PHONE_NUMBER like '%${queryBean.phoneNum}%' 
+            </if>
+            <if test="queryBean.doubtReason != null and queryBean.doubtReason != ''">
+                 AND b.DOUBT_REASON = #{queryBean.doubtReason}
+            </if>
+            <choose>
+                <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                    AND date(b.JOIN_TIME) between #{queryBean.startDate} and #{queryBean.endDate}
+                </when>
+                <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                    AND date(b.JOIN_TIME) >= #{queryBean.startDate}
+                </when>
+                <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                    AND #{queryBean.endDate} >= date(b.JOIN_TIME)
+                </when>
+            </choose>
+    </select>
+	
+<!-- 	依据可疑值查询相应数据 -->
+	<select id="findByBlackListValue" resultMap="resultBlacklistAccount" parameterType="Map">
+	   select 
+	       *
+	   from 
+	       vps_vcode_blacklist_account_info
+	   where
+	       BLACK_LIST_VALUE = #{blackListValue}
+	   limit 1
+	</select>
+	
+<!-- 物理删除可疑用户 -->
+	<delete id="deleteById" parameterType="String">
+	   delete from vps_vcode_blacklist_account_info
+	   where BLACKLIST_KEY = #{id}
+	</delete>
+<!-- 物理删除可疑用户 -->
+	<delete id="removeByUserKey" parameterType="String">
+	   delete from vps_vcode_blacklist_account_info
+	   where BLACK_LIST_VALUE = #{userKey}
+	</delete>
+	
+	<!-- 查询一个月之前的可疑用户 -->
+	<select id="findDoubtUserListByTime" resultMap="resultBlacklistAccount">
+		select 
+	       *
+	   from 
+	       vps_vcode_blacklist_account_info
+	   where
+	       CREATE_TIME <![CDATA[ <= ]]> DATE_SUB(NOW(),INTERVAL 1 MONTH)
+	   AND 
+	   	 DELETE_FLAG = '0'
+	</select>
+    <select id="findDoubtUserListBy" resultMap="resultBlacklistAccount">
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="0" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1'
+     and NOW() >date_add(JOIN_TIME,INTERVAL 3 DAY)
+    union all
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="1" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1'
+     and NOW() >date_add(JOIN_TIME,INTERVAL 7 DAY)
+    union all
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="2" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1'
+     and NOW() >date_add(JOIN_TIME,INTERVAL 15 DAY)
+    union all
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="3" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1'
+     and NOW() >date_add(JOIN_TIME,INTERVAL 30 DAY)
+    union all
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="4" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1' 
+    and WEEKOFYEAR(date_format(now(),'%Y-%m-%d')) != WEEKOFYEAR(date_format(JOIN_TIME,'%Y-%m-%d'))
+    union all
+    select BLACKLIST_KEY,BLACK_LIST_VALUE from vps_vcode_blacklist_account_info  where DOUBTFUL_TIME_LIMIT_TYPE ="5" AND JOIN_BLACK_LIST = '0' AND IF_BLACK_LIST='1'
+    and MONTH(NOW()) != MONTH(JOIN_TIME)
+        
+    </select>
+
+    <delete id="deleteByInfoKeys" parameterType="java.util.Set">
+        delete from
+        vps_vcode_blacklist_account_info
+        where BLACKLIST_KEY in
+        <foreach collection="set" item="key" index="index"  open="(" separator="," close=")">
+            #{key}
+        </foreach>
+    </delete>
+
+</mapper>

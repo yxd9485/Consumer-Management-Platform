@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.marquee.dao.MarqueeInfoDao">
+
+    <resultMap id="resultMap" type="com.dbt.platform.marquee.bean.MarqueeCogInfo">
+        <result property="infoKey" column="info_key"/>
+        <result property="marqueeName" column="marquee_name"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="status" column="status"/>
+        <result property="showNum" column="show_num"/>
+        <result property="showType" column="show_type"/>
+        <result property="prizeCog" column="prize_cog"/>
+        <result property="couponCog" column="coupon_cog"/>
+        <result property="vpointsCog" column="vpoints_cog"/>
+        <result property="moneyCog" column="money_cog"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="winType" column="win_type"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.dbt.platform.marquee.bean.MarqueeCogInfo">
+        insert into vps_marquee_cog (info_key,
+                                     marquee_name,
+                                     win_type,
+                                     start_date,
+                                     end_date,
+                                     status,
+                                     show_num,
+                                     show_type,
+                                     prize_cog,
+                                     coupon_cog,
+                                     vpoints_cog,
+                                     money_cog,
+                                     create_time,
+                                     create_user,
+                                     update_time,
+                                     update_user)
+        values (#{infoKey},
+                #{marqueeName},
+                #{winType},
+                #{startDate},
+                #{endDate},
+                #{status},
+                #{showNum},
+                #{showType},
+                #{prizeCog},
+                #{couponCog},
+                #{vpointsCog},
+                #{moneyCog},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser})
+    </insert>
+
+    <update id="update" parameterType="com.dbt.platform.marquee.bean.MarqueeCogInfo">
+        update vps_marquee_cog
+        <set>
+            marquee_name = #{marqueeName},
+            win_type = #{winType},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            status = #{status},
+            show_num = #{showNum},
+            show_type = #{showType},
+            prize_cog = #{prizeCog},
+            coupon_cog = #{couponCog},
+            vpoints_cog = #{vpointsCog},
+            money_cog = #{moneyCog},
+            update_time = #{updateTime},
+            update_user = #{updateUser},
+        </set>
+        where info_key = #{infoKey}
+    </update>
+
+    <select id="queryForLst" resultMap="resultMap" parameterType="Map">
+        select * from vps_marquee_cog
+        where delete_flag = '0'
+        <if test="queryBean.marqueeName != null and queryBean.marqueeName != ''">
+            and marquee_name like '%${queryBean.marqueeName}%'
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            AND date(start_date) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            AND date(end_date)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+        order by create_time desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select count(*) from vps_marquee_cog
+        where delete_flag = '0'
+        <if test="queryBean.marqueeName != null and queryBean.marqueeName != ''">
+            and marquee_name like '%${queryBean.marqueeName}%'
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            AND date(start_date) >= #{queryBean.startDate}
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            AND date(end_date)  <![CDATA[ <= ]]> #{queryBean.endDate}
+        </if>
+    </select>
+
+    <select id="findById" parameterType="string" resultMap="resultMap">
+        select *
+        from vps_marquee_cog
+        where info_key = #{id}
+    </select>
+
+    <select id="existMarquee" resultType="java.lang.Boolean">
+        select count(1) >= 1
+        from vps_marquee_cog
+        where delete_flag = '0'
+          and `status` = '0'
+          and ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+               (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+               (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        <if test="winType != null and winType != ''">
+            and win_type = #{winType}
+        </if>
+        <if test="infoKey != null and infoKey != ''">
+            and info_key != #{infoKey}
+        </if>
+    </select>
+
+    <update id="deleteById" parameterType="string">
+        update vps_marquee_cog
+        <set>
+            delete_flag='1',
+            update_time=now()
+        </set>
+        where info_key=#{infoKey}
+    </update>
+    <delete id="deleteMarqueeInfoByCogInfo">
+        delete from vps_marquee_info
+        where marquee_key=#{infoKey}
+        <if test="infoKeyList!=null and infoKeyList.size() > 0">
+            and info_key  not in (
+            <foreach collection="infoKeyList" separator="," item="item">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </delete>
+    <select id="queryNotDeleteMarqueeInfo" resultType="string">
+        select info_key from vps_marquee_info where marquee_key=#{infoKey} order by create_time desc limit #{limit}
+    </select>
+</mapper>

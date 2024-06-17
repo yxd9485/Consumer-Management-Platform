@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.anniversary.dao.VpsAnniversaryShareDao">
+
+    <resultMap id="vpsAnniversaryShareResultMap" type="com.dbt.platform.anniversary.bean.VpsAnniversaryShare">
+        <id property="shareKey" column="SHARE_KEY"/>
+        <result property="shareType" column="SHARE_TYPE"/>
+        <result property="shareTitle" column="SHARE_TITLE"/>
+        <result property="stgmt" column="STGMT" />
+        <result property="endgmt" column="ENDGMT" />
+        <result property="shareOrder" column="SHARE_ORDER"/>
+        <result property="jumpUrl" column="JUMP_URL"/>
+        <result property="videoChannelId" column="VIDEO_CHANNEL_ID"/>
+        <result property="videoId" column="VIDEO_ID"/>
+        <result property="picUrl" column="PIC_URL"/>
+        <result property="creGmt" column="CRE_GMT" />
+        <result property="creUser" column="CRE_USER"/>
+        <result property="modUser" column="MOD_USER"/>
+        <result property="modGmt" column="MOD_GMT" />
+    </resultMap>
+
+
+    <select id="queryAnniversaryShareList" resultMap="vpsAnniversaryShareResultMap">
+        SELECT
+            *
+        FROM
+            vps_anniversary_share
+        ORDER BY SHARE_ORDER
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryForLst" parameterType="Map" resultMap="vpsAnniversaryShareResultMap">
+        SELECT
+        * ,
+        CASE
+        WHEN CURRENT_DATE <![CDATA[<]]> STGMT  THEN '0'
+        WHEN CURRENT_DATE <![CDATA[>]]> ENDGMT THEN '2'
+        ELSE '1'
+        END AS picStatus
+        FROM
+        vps_anniversary_share
+        WHERE 1=1
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "0"'>
+            AND CURRENT_DATE <![CDATA[<]]> STGMT
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+            AND CURRENT_DATE <![CDATA[>=]]> STGMT and NOW() <![CDATA[<=]]> ENDGMT
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+            AND CURRENT_DATE <![CDATA[>]]> ENDGMT
+        </if>
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            AND  SHARE_TITLE LIKE '%${queryBean.keyword}%'
+        </if>
+        <if test="queryBean.stgmt != null and queryBean.stgmt != ''">
+            AND ENDGMT >= #{queryBean.stgmt}
+        </if>
+        <if test="queryBean.endgmt != null and queryBean.endgmt != ''">
+            AND STGMT <![CDATA[<=]]> #{queryBean.endgmt}
+        </if>
+        ORDER BY SHARE_ORDER ASC, MOD_GMT DESC
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+
+    <!-- 查询符合条件的记录条数 -->
+    <select id="queryForCount" resultType="int" parameterType="Map">
+        select
+        count(1)
+        FROM
+        vps_anniversary_share
+        WHERE 1=1
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "0"'>
+            AND CURRENT_DATE <![CDATA[<]]> STGMT
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "1"'>
+            AND CURRENT_DATE <![CDATA[>=]]> STGMT and NOW() <![CDATA[<=]]> ENDGMT
+        </if>
+        <if test='queryBean.picStatus != null and queryBean.picStatus != "" and queryBean.picStatus == "2"'>
+            AND CURRENT_DATE <![CDATA[>]]> ENDGMT
+        </if>
+        <if test="queryBean.keyword != null and queryBean.keyword != ''">
+            AND  SHARE_TITLE LIKE '%${queryBean.keyword}%'
+        </if>
+        <if test="queryBean.stgmt != null and queryBean.stgmt != ''">
+            AND ENDGMT >= #{queryBean.stgmt}
+        </if>
+        <if test="queryBean.endgmt != null and queryBean.endgmt != ''">
+            AND STGMT <![CDATA[<=]]> #{queryBean.endgmt}
+        </if>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO vps_anniversary_share (
+            SHARE_TYPE,
+            SHARE_TITLE,
+            STGMT,
+            ENDGMT,
+            SHARE_ORDER,
+            JUMP_URL,
+            VIDEO_CHANNEL_ID,
+            VIDEO_ID,
+            PIC_URL,
+            CRE_GMT,
+            CRE_USER,
+            MOD_USER,
+            MOD_GMT
+        ) VALUES (
+            #{shareType},
+            #{shareTitle},
+            #{stgmt},
+            #{endgmt},
+            #{shareOrder},
+            #{jumpUrl},
+            #{videoChannelId},
+            #{videoId},
+            #{picUrl},
+            #{creGmt},
+            #{creUser},
+            #{modUser},
+            #{modGmt}
+        )
+    </insert>
+
+    <delete id="deleteByKey" parameterType="string">
+
+        DELETE FROM
+        vps_anniversary_share
+        where SHARE_KEY = #{shareKey}
+    </delete>
+
+
+    <select id="queryByKey" parameterType="string" resultMap="vpsAnniversaryShareResultMap">
+
+        select * FROM
+        vps_anniversary_share
+        where SHARE_KEY = #{shareKey}
+    </select>
+
+    <update id="update">
+        UPDATE vps_anniversary_share
+        SET
+            SHARE_TYPE = #{shareType},
+            SHARE_TITLE = #{shareTitle},
+            STGMT = #{stgmt},
+            ENDGMT = #{endgmt},
+            SHARE_ORDER = #{shareOrder},
+            JUMP_URL = #{jumpUrl},
+            VIDEO_CHANNEL_ID = #{videoChannelId},
+            VIDEO_ID = #{videoId},
+            PIC_URL = #{picUrl},
+            MOD_USER = #{modUser},
+            MOD_GMT =  #{modGmt}
+        WHERE SHARE_KEY = #{shareKey}
+    </update>
+
+
+
+</mapper>

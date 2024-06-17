@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.codefactory.dao.IVpsVcodeWineryDao">
+	<!-- 查询信息List -->
+	<select id="queryForLst" resultType="com.dbt.platform.codefactory.bean.VpsWinery" parameterType="Map">
+	SELECT
+	    id as 'id',
+		winery_name as 'wineryName',
+		winery_short as 'wineryShort',
+		project_server_name as 'projectServerName',
+		project_server as 'projectServer'
+	FROM
+		vps_winery_factory
+	WHERE
+		DELETE_FLAG = '0'
+		<if test="queryBean != null">
+			<if test="queryBean.wineryName != null and queryBean.wineryName  != '' ">
+				AND winery_name LIKE '%${queryBean.wineryName}%'
+			</if>
+			<if test="queryBean.projectServer != null and queryBean.projectServer != ''">
+				AND project_server LIKE '%${queryBean.projectServer}%'
+			</if>		
+		</if>
+		<if test="pageInfo != null">
+			LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}		
+		</if>
+	</select>
+   
+   
+   	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+	    	count(1)
+		FROM
+			vps_winery_factory
+		WHERE
+			DELETE_FLAG = '0'
+		<if test="queryBean.wineryName != null and queryBean.wineryName  != '' ">
+			AND winery_name LIKE '%${queryBean.wineryName}%'
+		</if>
+		<if test="queryBean.projectServer != null and queryBean.projectServer != ''">
+			AND project_server LIKE '%${queryBean.projectServer}%'
+		</if>
+		</select>
+	
+		<select id="findById" resultType="com.dbt.platform.codefactory.bean.VpsWinery" parameterType="String">
+		SELECT
+	    	id as 'id',
+			winery_name as 'wineryName',
+			project_server_name as 'projectServerName',
+			winery_short as 'wineryShort',
+			project_server as 'projectServer'
+		FROM
+			vps_winery_factory
+		WHERE
+			DELETE_FLAG = '0'
+		AND id = #{id}
+		</select>
+	
+	<select id="checkShort" resultType="int" parameterType="com.dbt.platform.codefactory.bean.VpsWinery">
+		SELECT
+	    	count(1)
+		FROM
+			vps_winery_factory
+		WHERE
+			DELETE_FLAG = '0'
+		AND winery_short = #{wineryShort}
+		<if test="id != null and id != '' ">
+			AND id != #{id}
+		</if>
+	</select>
+	
+	
+	<insert id="create" parameterType="com.dbt.platform.codefactory.bean.VpsWinery">
+		INSERT INTO vps_winery_factory (
+			winery_name,
+			winery_short,
+            project_server_name,
+			project_server,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			TRIM(#{wineryName}),
+			TRIM(#{wineryShort}),
+            #{projectServerName},
+			#{projectServer},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.codefactory.bean.VpsWinery">
+		UPDATE vps_winery_factory
+		<set>
+			<if test="wineryName != null and wineryName != '' ">
+				winery_name = TRIM(#{wineryName}),
+			</if>
+			<if test="wineryShort != null and wineryShort != '' ">
+				winery_short = TRIM(#{wineryShort}),
+			</if>
+			<if test="projectServerName != null and projectServerName != '' ">
+				project_server_name = #{projectServerName},
+			</if>
+			<if test="projectServer != null and projectServer != '' ">
+				project_server = #{projectServer},
+			</if>
+			<if test="deleteFlag != null and deleteFlag != '' ">
+				delete_Flag = #{deleteFlag},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="findWineryByFactoryLst" resultType="com.dbt.platform.codefactory.bean.VpsWinery" parameterType="String">
+		SELECT
+			id as 'id',
+			winery_name as 'wineryName'
+		FROM
+			vps_winery_factory
+		WHERE
+			DELETE_FLAG = '0'
+			AND id in (${wineryName})
+	</select>
+   
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.sweep.dao.IVcodeRationRecordDao">
+
+	<resultMap type="com.dbt.platform.sweep.bean.VpsVcodeRationRecord" id="vpsVcodeRationRecordResultMap">
+		<result property="openid" column="OPENID"/>
+		<result property="infoKey" column="INFO_KEY"/>
+  		<result property="userKey" column="USER_KEY"/>
+  		<result property="earnTime" column="EARN_TIME"/>
+  		<result property="earnMoney" column="EARN_MONEY"/>
+        <result property="paymentNo" column="PAYMENT_NO"/>
+        <result property="partnerTradeNo" column="PARTNER_TRADE_NO"/>
+        <result property="extractStatus" column="EXTRACT_STATUS"/>
+        <result property="sendMessage" column="SEND_MESSAGE"/>
+        <result property="receiveMessage" column="RECEIVE_MESSAGE"/>
+        <result property="errCode" column="ERR_CODE"/>
+        <result property="errCodeDes" column="ERR_CODE_DES"/>
+        <result property="jobMessage" column="JOB_MESSAGE"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+			 OPENID,
+	         INFO_KEY, 
+  			 USER_KEY,
+  			 EARN_TIME,
+  			 EARN_MONEY,
+  			 PAYMENT_NO,
+  			 PARTNER_TRADE_NO,
+  			 EXTRACT_STATUS,
+  			 SEND_MESSAGE,
+  			 RECEIVE_MESSAGE,
+  			 ERR_CODE,
+  			 ERR_CODE_DES,
+  			 JOB_MESSAGE,
+  			 UPDATE_TIME
+  	</sql>
+    
+    <select id="queryList" parameterType="Map" resultMap="vpsVcodeRationRecordResultMap">
+        SELECT 
+             r.*,
+             u.NICK_NAME AS nickName
+        FROM 
+            VPS_VCODE_RATION_RECORD${tableIndex} r
+        LEFT JOIN VPS_CONSUMER_USER_INFO u on r.USER_KEY = u.USER_KEY
+        WHERE 1=1
+        <if test="rationRecord.paymentNo != null and rationRecord.paymentNo != '' ">
+        	AND r.PAYMENT_NO = #{rationRecord.paymentNo}
+        </if> 
+        AND r.EARN_TIME >= '${rationRecord.startDate} 00:00:00' and r.EARN_TIME <![CDATA[<=]]> '${rationRecord.startDate} 23:59:59'
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'r.earn_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, r.earn_time DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY r.earn_time DESC</otherwise>
+        </choose>
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+    </select>
+    
+    <select id="queryCount" parameterType="Map" resultType="Integer">
+        SELECT 
+             COUNT(1)
+        FROM 
+            VPS_VCODE_RATION_RECORD${tableIndex} r
+        WHERE 1=1
+        <if test="rationRecord.paymentNo != null and rationRecord.paymentNo != '' ">
+        	AND r.PAYMENT_NO = #{rationRecord.paymentNo}
+        </if> 
+        AND r.EARN_TIME >= '${rationRecord.startDate} 00:00:00' and r.EARN_TIME <![CDATA[<=]]> '${rationRecord.startDate} 23:59:59'
+    </select>
+    
+</mapper>

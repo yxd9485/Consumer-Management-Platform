@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.integral.dao.VipDailyDao">
+    <resultMap type="com.dbt.platform.integral.bean.VpsVipDailyTaskCog" id="baseResultMap">
+        <result property="infoKey" column="info_key"/>
+        <result property="taskType" column="task_type"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="vpointsCog" column="vpoints_cog"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+<insert id="createVipDailyTask" parameterType="com.dbt.platform.integral.bean.VpsVipDailyTaskCog">
+    insert into vps_vip_daily_task_cog (
+        info_key,
+        task_type,
+        start_date,
+        end_date,
+        vpoints_cog,
+        create_time,
+        create_user,
+        update_time,
+        update_user
+    ) values (
+              UUID(),
+              #{taskType},
+              #{startDate},
+              #{endDate},
+              #{vpointsCog},
+              #{createTime},
+              #{createUser},
+              #{updateTime},
+              #{updateUser}
+                 )
+</insert>
+
+    <update id="updateVipDailyTask" parameterType="com.dbt.platform.integral.bean.VpsVipDailyTaskCog">
+        update
+        vps_vip_daily_task_cog
+        <set>
+            <if test="startDate != null and startDate != ''">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+            <if test="vpointsCog != null and vpointsCog != ''">
+                vpoints_cog = #{vpointsCog},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                update_user = #{updateUser},
+            </if>
+        </set>
+        where
+        info_key = #{infoKey}
+    </update>
+
+    <select id="queryForLst" parameterType="map" resultMap="baseResultMap">
+        select * from vps_vip_daily_task_cog where 1=1
+        <if test="queryBean.taskType != null and queryBean.taskType != ''">
+            AND task_type = #{queryBean.taskType}
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            AND #{queryBean.startDate} between start_date and end_date
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            AND #{queryBean.endDate} between start_date and end_date
+        </if>
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        select count(*) from vps_vip_daily_task_cog where 1=1
+        <if test="queryBean.taskType != null and queryBean.taskType != ''">
+            AND task_type = #{queryBean.taskType}
+        </if>
+        <if test="queryBean.startDate != null and queryBean.startDate != ''">
+            AND #{queryBean.startDate} between start_date and end_date
+        </if>
+        <if test="queryBean.endDate != null and queryBean.endDate != ''">
+            AND #{queryBean.endDate} between start_date and end_date
+        </if>
+    </select>
+
+    <select id="queryCountForTaskType" parameterType="string" resultType="int">
+        select count(*) from vps_vip_daily_task_cog where task_type = #{taskType}
+    </select>
+
+    <select id="findById" parameterType="string" resultMap="baseResultMap">
+        select * from vps_vip_daily_task_cog where info_key = #{infoKey}
+    </select>
+</mapper>

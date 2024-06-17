@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityCogDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityCog" id="resultActivityCog">
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+		<result property="vcodeActivityNo" column="VCODE_ACTIVITY_NO"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="skuKey" column="SKU_KEY"/>
+		<result property="skuName" column="SKU_NAME"/>
+		<result property="activityVersion" column="ACTIVITY_VERSION"/>
+		<result property="activityType" column="ACTIVITY_TYPE"/>
+		<result property="activityYear" column="ACTIVITY_YEAR"/>
+		<result property="vcodeActivityName" column="VCODE_ACTIVITY_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+        <result property="firstRebateType" column="FIRST_REBATE_TYPE"/>
+		<result property="firstRebateFlag" column="FIRST_REBATE_FLAG"/>
+		<result property="firstRebateMin" column="FIRST_REBATE_MIN"/>
+		<result property="firstRebateMax" column="FIRST_REBATE_MAX"/>
+		<result property="firstRebateReserver" column="FIRST_REBATE_RESERVER"/>
+		<result property="dotRuleInfo" column="DOT_RULE_INFO"/>
+		<result property="blacklistFlag" column="BLACKLIST_FLAG"/>
+		<result property="sameMinuteRestrict" column="SAME_MINUTE_RESTRICT" />
+		<result property="sameDayRestrict" column="SAME_DAY_RESTRICT" />
+		<result property="historyTimesRestrict" column="HISTORY_TIMES_RESTRICT" />
+		<result property="sameMonthRestrict" column="SAME_MONTH_RESTRICT" />
+		<result property="doubtfulTimeLimitType" column="DOUBTFUL_TIME_LIMIT_TYPE" />
+        <result property="doubtRebateType" column="DOUBT_REBATE_TYPE" />
+		<result property="doubtRuleType" column="DOUBT_RULE_TYPE" />
+		<result property="doubtRuleCoe" column="DOUBT_RULE_COE" />
+		<result property="doubtRuleRangeMin" column="DOUBT_RULE_RANGE_MIN" />
+		<result property="doubtRuleRangeMax" column="DOUBT_RULE_RANGE_MAX" />
+		<result property="dangerRuleType" column="DANGER_RULE_TYPE" />
+		<result property="dangerRuleCoe" column="DANGER_RULE_COE" />
+		<result property="dangerRuleRangeMin" column="DANGER_RULE_RANGE_MIN" />
+		<result property="dangerRuleRangeMax" column="DANGER_RULE_RANGE_MAX" />
+		<result property="everyDayScanCount" column="EVERY_DAY_SCAN_COUNT" />
+		<result property="everyWeekScanCount" column="EVERY_WEEK_SCAN_COUNT" />
+		<result property="everyMonthScanCount" column="EVERY_MONTH_SCAN_COUNT" />
+        <result property="activityScanCount" column="ACTIVITY_SCAN_COUNT" />
+		<result property="moneyConfigFlag" column="MONEY_CONFIG_FLAG"/>
+		<result property="guideLink" column="GUIDE_LINK"/>
+		<result property="cascadeIncentiveRole" column="CASCADE_INCENTIVE_ROLE"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			VCODE_ACTIVITY_KEY,
+			VCODE_ACTIVITY_NO,
+			COMPANY_KEY,
+			SKU_KEY,
+			ACTIVITY_VERSION,
+			ACTIVITY_TYPE,
+			ACTIVITY_YEAR,
+			VCODE_ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+            FIRST_REBATE_TYPE,
+			FIRST_REBATE_FLAG,
+			FIRST_REBATE_MIN,
+			FIRST_REBATE_MAX,
+			FIRST_REBATE_RESERVER,
+			DOT_RULE_INFO,
+			BLACKLIST_FLAG,
+			SAME_MINUTE_RESTRICT,
+			SAME_DAY_RESTRICT,
+			HISTORY_TIMES_RESTRICT,
+			SAME_MONTH_RESTRICT,
+			DOUBTFUL_TIME_LIMIT_TYPE,
+            DOUBT_REBATE_TYPE,
+			DOUBT_RULE_TYPE,
+			DOUBT_RULE_COE,
+			DOUBT_RULE_RANGE_MIN,
+			DOUBT_RULE_RANGE_MAX,
+			DANGER_RULE_TYPE,
+			DANGER_RULE_COE,
+			DANGER_RULE_RANGE_MIN,
+			DANGER_RULE_RANGE_MAX,
+			EVERY_DAY_SCAN_COUNT,
+			EVERY_WEEK_SCAN_COUNT,
+			EVERY_MONTH_SCAN_COUNT,
+            ACTIVITY_SCAN_COUNT,
+			MONEY_CONFIG_FLAG,
+			CASCADE_INCENTIVE_ROLE,
+			GUIDE_LINK,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+	</sql>
+	
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeActivityCog">
+		INSERT INTO vps_vcode_activity_cog (
+			VCODE_ACTIVITY_KEY,
+			VCODE_ACTIVITY_NO,
+			COMPANY_KEY,
+			SKU_KEY,
+			ACTIVITY_VERSION,
+			ACTIVITY_TYPE,
+			ACTIVITY_YEAR,
+			VCODE_ACTIVITY_NAME,
+			START_DATE,
+			END_DATE,
+            FIRST_REBATE_TYPE,
+			FIRST_REBATE_FLAG,
+			FIRST_REBATE_MIN,
+			FIRST_REBATE_MAX,
+			FIRST_REBATE_RESERVER,
+			DOT_RULE_INFO,
+			BLACKLIST_FLAG,
+			SAME_MINUTE_RESTRICT,
+			SAME_DAY_RESTRICT,
+			HISTORY_TIMES_RESTRICT,
+			SAME_MONTH_RESTRICT,
+			DOUBTFUL_TIME_LIMIT_TYPE,
+            DOUBT_REBATE_TYPE,
+			DOUBT_RULE_TYPE,
+			DOUBT_RULE_COE,
+			DOUBT_RULE_RANGE_MIN,
+			DOUBT_RULE_RANGE_MAX,
+			DANGER_RULE_TYPE,
+			DANGER_RULE_COE,
+			DANGER_RULE_RANGE_MIN,
+			DANGER_RULE_RANGE_MAX,
+			EVERY_DAY_SCAN_COUNT,
+			EVERY_WEEK_SCAN_COUNT,
+			EVERY_MONTH_SCAN_COUNT,
+            ACTIVITY_SCAN_COUNT,
+			MONEY_CONFIG_FLAG,
+			ALLOW_SCAN_ROLE,
+			CASCADE_INCENTIVE_ROLE,
+			GUIDE_LINK,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{vcodeActivityKey},
+			#{vcodeActivityNo},
+			#{companyKey},
+			#{skuKey},
+			#{activityVersion},
+			#{activityType},
+			#{activityYear},
+			#{vcodeActivityName},
+			#{startDate},
+			#{endDate},
+            #{firstRebateType},
+			#{firstRebateFlag},
+			#{firstRebateMin},
+			#{firstRebateMax},
+			#{firstRebateReserver},
+			#{dotRuleInfo},
+			#{blacklistFlag},
+			#{sameMinuteRestrict},
+			#{sameDayRestrict},
+			#{historyTimesRestrict},
+			#{sameMonthRestrict},
+			#{doubtfulTimeLimitType},
+            #{doubtRebateType},
+			#{doubtRuleType},
+			#{doubtRuleCoe},
+			#{doubtRuleRangeMin},
+			#{doubtRuleRangeMax},
+			#{dangerRuleType},
+			#{dangerRuleCoe},
+			#{dangerRuleRangeMin},
+			#{dangerRuleRangeMax},
+			#{everyDayScanCount},
+			#{everyWeekScanCount},
+			#{everyMonthScanCount},
+            #{activityScanCount},
+			#{moneyConfigFlag},
+			#{allowScanRole},
+			#{cascadeIncentiveRole},
+			#{guideLink},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VcodeActivityCog">
+        UPDATE
+			vps_vcode_activity_cog
+		SET
+            <if test="vcodeActivityNo != null and vcodeActivityNo != ''">
+                vcode_activity_no = #{vcodeActivityNo},
+            </if>
+            <if test="vcodeActivityName != null and vcodeActivityName != ''">
+                VCODE_ACTIVITY_NAME = #{vcodeActivityName},
+            </if>
+            <if test="activityVersion != null and activityVersion != ''">
+                ACTIVITY_VERSION = #{activityVersion},
+            </if>
+            <if test="activityYear != null and activityYear != ''">
+                ACTIVITY_YEAR = #{activityYear},
+            </if>
+            <if test="startDate != null and startDate != ''">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+            <if test="doubtRebateType != null and doubtRebateType != ''">
+                DOUBT_REBATE_TYPE = #{doubtRebateType},
+                SAME_MINUTE_RESTRICT = #{sameMinuteRestrict},
+                SAME_DAY_RESTRICT = #{sameDayRestrict},
+                HISTORY_TIMES_RESTRICT = #{historyTimesRestrict},
+				SAME_MONTH_RESTRICT=#{sameMonthRestrict},
+				DOUBTFUL_TIME_LIMIT_TYPE=#{doubtfulTimeLimitType},
+				
+            </if>
+            <if test="doubtRuleRangeMin != null and doubtRuleRangeMin != ''">
+                DOUBT_RULE_RANGE_MIN = #{doubtRuleRangeMin},
+            </if>
+            <if test="doubtRuleRangeMax != null and doubtRuleRangeMax != ''">
+                DOUBT_RULE_RANGE_MAX = #{doubtRuleRangeMax},
+            </if>
+            <if test="skuKey != null and skuKey != '' ">
+                SKU_KEY = #{skuKey},
+			</if>
+			EVERY_DAY_SCAN_COUNT = #{everyDayScanCount},
+			EVERY_WEEK_SCAN_COUNT = #{everyWeekScanCount},
+			EVERY_MONTH_SCAN_COUNT = #{everyMonthScanCount},
+            ACTIVITY_SCAN_COUNT = #{activityScanCount},
+			ALLOW_SCAN_ROLE = #{allowScanRole},
+			CASCADE_INCENTIVE_ROLE = #{cascadeIncentiveRole},
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</update>
+	
+	<update id="changeStatus" parameterType="com.dbt.platform.activity.bean.VcodeActivityCog">
+		UPDATE
+			vps_vcode_activity_cog
+		SET
+			MONEY_CONFIG_FLAG = #{moneyConfigFlag}
+		WHERE
+			VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</update>
+	
+	<select id="findById" resultMap="resultActivityCog" parameterType="String">
+		SELECT
+			a.*,
+            CASE 
+                WHEN Date(NOW()) >= a.START_DATE AND Date(NOW()) <![CDATA[<=]]> a.END_DATE AND a.MONEY_CONFIG_FLAG = '1' THEN '1' 
+                WHEN Date(NOW()) > a.END_DATE THEN '2' 
+                ELSE '0'
+            END AS isBegin,
+			s.sku_name,
+			s.sku_type as skuType,
+			a.DOUBT_RULE_RANGE_MIN as doubtRuleRangeMin,
+			a.START_DATE as startDate,
+			a.END_DATE as endDate
+		FROM
+			vps_vcode_activity_cog a
+        left join vps_sku_info s on a.sku_key = s.sku_key and s.delete_flag = '0'
+		WHERE
+			a.VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</select>
+	
+	<select id="queryForLst" resultMap="resultActivityCog" parameterType="Map">
+        SELECT DISTINCT
+        a.VCODE_ACTIVITY_KEY,
+        a.VCODE_ACTIVITY_NO,
+        a.VCODE_ACTIVITY_NAME,
+        a.START_DATE,
+        a.END_DATE,
+        a.ACTIVITY_VERSION,
+        a.ACTIVITY_TYPE,
+        a.ACTIVITY_YEAR,
+        CASE
+        WHEN #{queryBean.currDate} >= a.START_DATE AND #{queryBean.currDate} <![CDATA[<=]]> a.END_DATE AND
+        a.MONEY_CONFIG_FLAG = '1' THEN '1'
+        WHEN #{queryBean.currDate} > a.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin,
+        a.create_time,
+        CASE
+        WHEN #{queryBean.currDate} >= a.START_DATE AND #{queryBean.currDate} <![CDATA[<=]]> a.END_DATE AND
+        a.MONEY_CONFIG_FLAG != '1' THEN '1'
+        ELSE '0'
+        END AS isWarning,
+		m.VALID_COUNT as validCount
+        FROM
+        vps_vcode_activity_cog a
+        left join vps_vcode_activity_cog_sku_relation r on a.VCODE_ACTIVITY_KEY = r.VCODE_ACTIVITY_KEY
+		left join
+		( SELECT vcode_activity_key,delete_flag,min_valid_date,max_valid_date, GROUP_CONCAT(VALID_COUNT) as VALID_COUNT
+		FROM vps_vcode_activity_morescan_cog
+		where delete_flag = '0'
+		  and min_valid_date <![CDATA[<=]]> #{queryBean.currDate}
+		  and max_valid_date >=#{queryBean.currDate}
+		group by
+		VCODE_ACTIVITY_KEY ) m
+		on a.vcode_activity_key = m.vcode_activity_key
+        WHERE
+        a.DELETE_FLAG = '0'
+        <if test="queryBean.vcodeActivityNo != null and queryBean.vcodeActivityNo != ''">
+            and (a.vcode_activity_no like '%${queryBean.vcodeActivityNo}%'
+            or a.vcode_activity_name like '%${queryBean.vcodeActivityNo}%')
+        </if>
+        <if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+            and r.sku_key = #{queryBean.skuKey}
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND !(a.start_date > #{queryBean.endDate} or #{queryBean.startDate} > a.end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND #{queryBean.startDate} between a.start_date and a.end_date
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} between a.start_date and a.end_date
+            </when>
+        </choose>
+        <choose>
+            <when test="queryBean.tabsFlag == 1">
+                and (a.start_date > #{queryBean.currDate}
+                or (a.MONEY_CONFIG_FLAG = '0' and #{queryBean.currDate} between a.start_date and a.end_date))
+            </when>
+            <when test="queryBean.tabsFlag == 2">
+                and a.MONEY_CONFIG_FLAG = '1' and #{queryBean.currDate} between a.start_date and a.end_date
+            </when>
+            <when test="queryBean.tabsFlag == 3">
+                and #{queryBean.currDate} > a.end_date
+            </when>
+        </choose>
+        group by a.VCODE_ACTIVITY_NO
+        <choose>
+            <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'a.create_time'">
+                ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, a.CREATE_TIME DESC
+            </when>
+            <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+                ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+            </when>
+            <when test="queryBean.tabsFlag == 4">
+                ORDER BY isBegin, a.CREATE_TIME DESC
+            </when>
+            <otherwise>ORDER BY a.CREATE_TIME DESC</otherwise>
+        </choose>
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+	
+	<select id="queryForCount" resultType="Integer" parameterType="Map">
+		SELECT
+		COUNT(DISTINCT a.VCODE_ACTIVITY_KEY)
+		FROM
+            vps_vcode_activity_cog a
+		left join vps_vcode_activity_cog_sku_relation r on a.VCODE_ACTIVITY_KEY = r.VCODE_ACTIVITY_KEY
+        left join vps_vcode_activity_morescan_cog m on a.vcode_activity_key = m.vcode_activity_key and m.delete_flag = '0' and #{queryBean.currDate} between m.min_valid_date and m.max_valid_date
+        WHERE
+            a.DELETE_FLAG = '0' 
+            <if test="queryBean.vcodeActivityNo != null and queryBean.vcodeActivityNo != ''">
+                and (a.vcode_activity_no like '%${queryBean.vcodeActivityNo}%'
+                       or a.vcode_activity_name like '%${queryBean.vcodeActivityNo}%')
+            </if>
+			<if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+				and  r.sku_key = #{queryBean.skuKey}
+			</if>
+            <choose>
+				<when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+		            AND !(a.start_date > #{queryBean.endDate} or #{queryBean.startDate} > a.end_date)
+		        </when>
+		        <when test="queryBean.startDate != null and queryBean.startDate != ''">
+		            AND #{queryBean.startDate} between a.start_date and a.end_date 
+		        </when>
+		        <when test="queryBean.endDate != null and queryBean.endDate != ''">
+		            AND #{queryBean.endDate} between a.start_date and a.end_date 
+		        </when>
+			</choose>
+            <choose>
+               <when test="queryBean.tabsFlag == 1">
+                   and (a.start_date > #{queryBean.currDate} 
+                           or (a.MONEY_CONFIG_FLAG = '0' and #{queryBean.currDate} between a.start_date and a.end_date))
+               </when>
+               <when test="queryBean.tabsFlag == 2">
+                   and a.MONEY_CONFIG_FLAG = '1' and #{queryBean.currDate} between a.start_date and a.end_date
+               </when>
+               <when test="queryBean.tabsFlag == 3">
+                   and #{queryBean.currDate} > a.end_date
+               </when>
+            </choose>
+	</select>
+	
+	<select id="findAllVcodeActivityList" resultMap="resultActivityCog" parameterType="Map">
+	select 
+	   t.* 
+	from (SELECT 
+			  <choose>
+			      <when test="activityType != 0 and activityType != 7">
+	                  ACTIVITY_KEY VCODE_ACTIVITY_KEY,
+	                  ACTIVITY_NAME VCODE_ACTIVITY_NAME,
+			      </when>
+				  <when test=" activityType == 7">
+					  ACTIVITY_KEY VCODE_ACTIVITY_KEY,
+					  RULE_NAME VCODE_ACTIVITY_NAME,
+				  </when>
+				  <when test=" activityType == 8 or activityType == 9">
+					  ACTIVITY_KEY VCODE_ACTIVITY_KEY,
+					  ACTIVITY_NAME VCODE_ACTIVITY_NAME,
+				  </when>
+			      <otherwise>
+	                  VCODE_ACTIVITY_KEY,
+	                  VCODE_ACTIVITY_NAME,
+			      </otherwise>
+			  </choose>
+			  start_date,
+			  end_date,
+	            CASE 
+	                WHEN CURDATE() >= START_DATE AND CURDATE() <![CDATA[<=]]> END_DATE AND MONEY_CONFIG_FLAG = '1' THEN '1' 
+	                WHEN CURDATE() > END_DATE THEN '2' 
+	                ELSE '0'
+	            END AS isBegin,
+	            CREATE_TIME
+			FROM 
+	          <choose>
+	              <when test="activityType == 4">
+	                  vps_vcode_signin_cog
+	              </when>
+	              <when test="activityType == 5">
+	                  vps_vcode_bindpromotion_cog
+	              </when>
+	              <when test="activityType == 6">
+	                  vps_vcode_doubleprize_cog
+	              </when>
+	              <when test="activityType == 7">
+					  vps_vcode_activate_red_envelope_rule_cog
+	              </when>
+				  <when test="activityType == 8 or activityType == 9 ">
+					  vps_turntable_activity_cog
+				  </when>
+	              <otherwise>
+	                  VPS_VCODE_ACTIVITY_COG
+	              </otherwise>
+	          </choose>
+			WHERE DELETE_FLAG = '0' ) t
+		where t.VCODE_ACTIVITY_NAME != '生成码源专属活动'
+		      and (t.END_DATE >= CURDATE() or t.VCODE_ACTIVITY_KEY = #{currActivityKey})
+		ORDER BY t.isBegin desc, t.CREATE_TIME desc
+	</select>
+	
+	<select id="queryActivityCountBySkuKey" resultType="int" parameterType="String">
+		SELECT 
+			COUNT(1)
+		FROM 
+			VPS_VCODE_ACTIVITY_COG
+		WHERE SKU_KEY = #{skuKey} 
+	    AND DELETE_FLAG = '0'
+	</select>
+	
+	<select id="queryActivityListBySkuKey" resultMap="resultActivityCog" parameterType="String">
+		SELECT 
+			<include refid="Base_Column_List" />
+		FROM 
+			VPS_VCODE_ACTIVITY_COG
+		WHERE SKU_KEY = #{skuKey} 
+	    AND DELETE_FLAG = '0'
+	</select>
+	
+	<!-- 查询可配置一码多扫的活动（没有关联一码多扫或已关联并过期的活动 ）-->
+	<select id="queryListForSuitMorescan" parameterType="Map" resultMap="resultActivityCog">
+		SELECT 
+			c.*,
+			s.sku_name,
+			s.sku_type as skuType
+		FROM 
+			vps_vcode_activity_cog c
+		LEFT JOIN vps_sku_info s ON c.sku_key = s.sku_key
+		WHERE
+			c.END_DATE >= CURDATE()
+		AND c.VCODE_ACTIVITY_NAME NOT IN ('默认批次专属活动','生成码源专属活动') 
+		AND c.DELETE_FLAG = '0'
+	</select>
+	
+	<!-- 查询可配置逢百规则的活动（没有关联逢百规则或已关联并过期的活动 ）-->
+	<select id="queryListForSuitPerhundred" parameterType="Map" resultMap="resultActivityCog">
+		SELECT 
+			c.*,
+			s.sku_name,
+			s.sku_type as skuType
+		FROM 
+			vps_vcode_activity_cog c
+		LEFT JOIN vps_sku_info s ON c.sku_key = s.sku_key
+		WHERE
+			c.END_DATE >= CURDATE()
+		AND 
+			c.VCODE_ACTIVITY_KEY NOT IN (
+				<!-- 有效的逢百规则 -->
+				SELECT c.VCODE_ACTIVITY_KEY FROM vps_vcode_activity_perhundred_cog c 
+				WHERE c.MAX_VALID_DATE >= CURDATE() AND c.DELETE_FLAG = '0'
+				<if test="infoKey != null and infoKey != ''">
+					AND c.INFO_KEY != #{infoKey}
+				</if>
+			)
+		AND c.VCODE_ACTIVITY_NAME NOT IN ('默认批次专属活动','生成码源专属活动') 
+		AND c.DELETE_FLAG = '0'
+	</select>
+	
+	<!-- 查询可配置阶梯的有效活动 -->
+	<select id="queryListForLadder" parameterType="Map" resultMap="resultActivityCog">
+		SELECT 
+			VCODE_ACTIVITY_KEY, 
+			VCODE_ACTIVITY_NAME 
+		FROM vps_vcode_activity_cog 
+		WHERE DELETE_FLAG = '0'
+		AND CURDATE() <![CDATA[<=]]> END_DATE
+		<if test="ruleKey != '' and ruleKey != null">
+		UNION
+	
+		SELECT 
+			c.VCODE_ACTIVITY_KEY, 
+			c.VCODE_ACTIVITY_NAME 
+		FROM vps_vcode_activity_cog c
+		INNER JOIN vps_ladder_rule_cog r 
+			on LOCATE(c.VCODE_ACTIVITY_KEY, r.VCODE_ACTIVITY_KEYS) > 0 and r.info_key = #{ruleKey}
+		</if>
+	</select>
+	
+	<select id="queryActivityForLadder" parameterType="Map" resultMap="resultActivityCog">
+		SELECT c.VCODE_ACTIVITY_KEY, c.VCODE_ACTIVITY_NAME,r.start_date,r.end_date,r.info_key as 'ladderInfoKey' FROM vps_vcode_activity_cog c
+		INNER JOIN vps_ladder_rule_cog r 
+		on LOCATE(c.VCODE_ACTIVITY_KEY, r.VCODE_ACTIVITY_KEYS) > 0 
+		AND r.DELETE_FLAG = '0'
+		AND c.VCODE_ACTIVITY_KEY IN
+		<foreach collection="activityKeys" item="activityKey" open="(" separator="," close=")">
+			#{activityKey}
+		</foreach>
+	</select>
+    
+    <select id="queryActivityForTaoEasterEgg" parameterType="Map" resultMap="resultActivityCog">
+        SELECT c.VCODE_ACTIVITY_KEY, c.VCODE_ACTIVITY_NAME FROM vps_vcode_activity_cog c
+        INNER JOIN vps_vcode_tao_easteregg_cog r 
+        on LOCATE(c.VCODE_ACTIVITY_KEY, r.VCODE_ACTIVITY_KEYS) > 0 
+        AND CURDATE() <![CDATA[<=]]> r.end_date AND r.DELETE_FLAG = '0'
+        AND c.VCODE_ACTIVITY_KEY IN
+        <foreach collection="activityKeys" item="activityKey" open="(" separator="," close=")">
+            #{activityKey}
+        </foreach>
+    </select>
+    
+<!--     查询未结束的活动 -->
+    <select id="queryValidActivity" resultMap="resultActivityCog">
+        select
+            *
+        from 
+            vps_vcode_activity_cog
+        where 
+            delete_flag != '1'
+            and end_date >= CURDATE();
+    </select>
+    
+<!--     依据活动主键查询活动 -->
+    <select id="queryByActivityKey" parameterType="Map" resultMap="resultActivityCog">
+        select
+            *
+        from 
+            vps_vcode_activity_cog
+        where 
+            delete_flag != '1'
+            AND VCODE_ACTIVITY_KEY IN
+            <foreach collection="activityKeyAry" item="activityKey" open="(" separator="," close=")">
+	            #{activityKey}
+	        </foreach>
+    </select>
+	
+	<!-- 查询快到期活动进行短信预警 -->
+	<select id="queryActivityExpiredPrize" resultType="com.dbt.platform.activity.bean.VcodeActivityCog">
+        SELECT  
+            '扫码活动' AS 'activityType',
+            vcode_activity_name as 'vcodeActivityName',
+            END_DATE as 'endDate'
+        FROM
+            vps_vcode_activity_cog
+        WHERE
+            DELETE_FLAG != '1'
+        AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+        UNION
+		SELECT
+			'万能签到' AS 'activityType',
+			ACTIVITY_NAME as 'vcodeActivityName',
+			END_DATE as 'endDate'
+		FROM
+			vps_vcode_signin_cog
+		WHERE
+			DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT
+			'捆绑升级' AS 'activityType',
+			cog.ACTIVITY_NAME as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_vcode_bindpromotion_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'一码双奖' AS 'activityType',
+			cog.ACTIVITY_NAME as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_vcode_doubleprize_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'一码多扫' AS 'activityType',
+			cog.MORESCAN_NAME as 'vcodeActivityName',
+			cog.MAX_VALID_DATE as 'endDate'
+		FROM
+			vps_vcode_activity_morescan_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+			AND DATEDIFF(MAX_VALID_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'逢百规则' AS 'activityType',
+			cog.PERHUNDRED_NAME as 'vcodeActivityName',
+			cog.MAX_VALID_DATE as 'endDate'
+		FROM
+			vps_vcode_activity_perhundred_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(MAX_VALID_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'秒杀活动' AS 'activityType',
+			cog.seckill_name as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			seckill_activity cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'逢尾规则' AS 'activityType',
+			cog.PERMANTISSA_NAME as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_vcode_permantissa_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'优惠券配置' AS 'activityType',
+			cog.ACTIVITY_NAME as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_vcode_ticket_activity_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'阶梯活动' AS 'activityType',
+			cog.rule_name as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_ladder_rule_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+		UNION
+		SELECT	
+			'淘彩蛋活动' AS 'activityType',
+			cog.TAO_NAME as 'vcodeActivityName',
+			cog.END_DATE as 'endDate'
+		FROM
+			vps_vcode_tao_easteregg_cog cog
+		WHERE
+			cog.DELETE_FLAG != '1'
+		AND DATEDIFF(END_DATE, CURDATE()) BETWEEN 0 AND 2
+	</select>
+	
+<!-- 	依据主键获取活动名称 -->
+	<select id="findActivityNameByKey" parameterType="String" resultType="String">
+		select concat('扫码活动-', VCODE_ACTIVITY_NAME) vcodeActivityName from vps_vcode_activity_cog  where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+		union all 
+		select concat('签到活动-', ACTIVITY_NAME) vcodeActivityName from vps_vcode_signin_cog where ACTIVITY_KEY = #{vcodeActivityKey}
+		union all 
+		select concat('捆绑促销-', ACTIVITY_NAME) vcodeActivityName from vps_vcode_bindpromotion_cog where ACTIVITY_KEY = #{vcodeActivityKey}
+		union all 
+		select concat('一码双奖-', ACTIVITY_NAME) vcodeActivityName from vps_vcode_doubleprize_cog where ACTIVITY_KEY = #{vcodeActivityKey}
+		union all 
+		select concat('逢尾规则-', PERMANTISSA_NAME) vcodeActivityName from vps_vcode_permantissa_cog where INFO_KEY = #{vcodeActivityKey}
+	</select>
+	<delete id="deleteactivityCogDaoByVcodeActivityKey">
+		delete from vps_vcode_activity_cog_extends where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</delete>
+
+	<insert id="createActivityExtendCog">
+		INSERT INTO vps_vcode_activity_cog_extends (
+		EXTENDS_Id,
+		VCODE_ACTIVITY_KEY,
+		SCAN_ROLE,
+		SAME_MINUTE_RESTRICT,
+		SAME_DAY_RESTRICT,
+		HISTORY_TIMES_RESTRICT,
+		SAME_MONTH_RESTRICT,
+		DOUBTFUL_TIME_LIMIT_TYPE,
+		DOUBT_REBATE_TYPE,
+		DOUBT_RULE_TYPE,
+		DOUBT_RULE_COE,
+		DOUBT_RULE_RANGE_MIN,
+		DOUBT_RULE_RANGE_MAX,
+		DANGER_RULE_TYPE,
+		DANGER_RULE_COE,
+		DANGER_RULE_RANGE_MIN,
+		DANGER_RULE_RANGE_MAX,
+		EVERY_DAY_SCAN_COUNT,
+		EVERY_WEEK_SCAN_COUNT,
+		EVERY_MONTH_SCAN_COUNT,
+        ACTIVITY_SCAN_COUNT
+		) VALUES (
+		#{extendsId},
+		#{vcodeActivityKey},
+		#{scanRole},
+		#{sameMinuteRestrict},
+		#{sameDayRestrict},
+		#{historyTimesRestrict},
+		#{sameMonthRestrict},
+		#{doubtfulTimeLimitType},
+		#{doubtRebateType},
+		#{doubtRuleType},
+		#{doubtRuleCoe},
+		#{doubtRuleRangeMin},
+		#{doubtRuleRangeMax},
+		#{dangerRuleType},
+		#{dangerRuleCoe},
+		#{dangerRuleRangeMin},
+		#{dangerRuleRangeMax},
+		#{everyDayScanCount},
+		#{everyWeekScanCount},
+		#{everyMonthScanCount},
+        #{activityScanCount}
+		)
+	</insert>
+	<select id="findActivityExtendsByVcodeActityKey" resultType="com.dbt.platform.activity.bean.VcodeActivityCogExtends">
+		select
+		EXTENDS_Id extendsId,
+		VCODE_ACTIVITY_KEY vcodeActivityKey,
+		SCAN_ROLE scanRole,
+		SAME_MINUTE_RESTRICT sameMinuteRestrict,
+		SAME_DAY_RESTRICT sameDayRestrict,
+		HISTORY_TIMES_RESTRICT historyTimesRestrict,
+		SAME_MONTH_RESTRICT sameMonthRestrict,
+		DOUBTFUL_TIME_LIMIT_TYPE doubtfulTimeLimitType,
+		DOUBT_REBATE_TYPE doubtRebateType,
+		DOUBT_RULE_TYPE doubtRuleType,
+		DOUBT_RULE_COE doubtRuleCoe,
+		DOUBT_RULE_RANGE_MIN doubtRuleRangeMin,
+		DOUBT_RULE_RANGE_MAX doubtRuleRangeMax,
+		DANGER_RULE_TYPE dangerRuleType,
+		DANGER_RULE_COE dangerRuleCoe,
+		DANGER_RULE_RANGE_MIN dangerRuleRangeMin,
+		DANGER_RULE_RANGE_MAX dangerRuleRangeMax,
+		EVERY_DAY_SCAN_COUNT everyDayScanCount,
+		EVERY_WEEK_SCAN_COUNT everyWeekScanCount,
+		EVERY_MONTH_SCAN_COUNT everyMonthScanCount,
+        ACTIVITY_SCAN_COUNT activityScanCount
+		 from vps_vcode_activity_cog_extends where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</select>
+
+    <select id="queryListForNotFrequencyCog" parameterType="Map" resultMap="resultActivityCog">
+        SELECT
+        c.*,
+        s.sku_name,
+        s.sku_type as skuType
+        FROM
+        vps_vcode_activity_cog c
+        LEFT JOIN vps_sku_info s ON c.sku_key = s.sku_key
+        WHERE
+        c.END_DATE >= CURDATE()
+        AND c.VCODE_ACTIVITY_NAME NOT IN ('默认批次专属活动','生成码源专属活动')
+        AND c.DELETE_FLAG = '0'
+    </select>
+</mapper>

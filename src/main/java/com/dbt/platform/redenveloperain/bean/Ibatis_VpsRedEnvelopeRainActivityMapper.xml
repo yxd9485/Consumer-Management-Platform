@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.redenveloperain.dao.IVpsRedEnvelopeRainActivityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.platform.redenveloperain.dto.RedEnvelopeRainActivityQuery">
+        <id column="info_key" property="infoKey" />
+        <result column="activity_name" property="activityName" />
+        <result column="area_codes" property="areaCode" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="time_range" property="timeRange" />
+        <result column="hot_area_key" property="hotAreaKey" />
+        <result column="vcode_activity_key" property="vcodeActivityKey" />
+        <result column="restrict_time_type" property="restrictTimeType" />
+        <result column="restrict_user_count" property="restrictUserCount" />
+        <result column="restrict_money" property="restrictMoney" />
+        <result column="restrict_bottle" property="restrictBottle" />
+        <result column="status_flag" property="statusFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="isBegin" property="isBegin" />
+        <result column="rule_content_url" property="ruleContentUrl" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        info_key, activity_name, area_codes,rule_content_url, start_date, end_date, time_range, hot_area_key, vcode_activity_key, restrict_time_type, restrict_user_count, restrict_money, restrict_bottle, status_flag, create_time, create_user, update_time, update_user
+    </sql>
+    <select id="selectPageVO" resultMap="BaseResultMap">
+        select * from (  select cog.*, CASE
+        WHEN DATE(NOW()) >= cog.start_date AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1'
+        WHEN DATE(NOW()) > cog.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin from vps_red_envelope_rain_activity_cog cog
+
+        ) ac
+        <where>
+            ac.delete_flag = '0'
+            <if test="param.activityName != null and param.activityName != ''">
+                and ac.activity_name like  concat("%",#{param.activityName},"%")
+            </if>
+            <if test="param.startDate != null and param.startDate != ''">
+                AND concat(#{param.startDate},' 00:00:00')  &lt;= ac.create_time
+            </if>
+            <if test="param.endDate != null and param.endDate != ''">
+                AND concat(#{param.endDate},' 23:59:59')  >= ac.create_time
+            </if>
+
+            <if test="param.isBegin != null and param.isBegin != ''">
+                and ac.isBegin =  #{param.isBegin}
+            </if>
+        </where>
+        order by ac.isBegin,ac.update_time desc
+    </select>
+    <select id="validDateTime" resultMap="BaseResultMap">
+        select * from (  select cog.*, CASE
+        WHEN DATE(NOW()) >= cog.start_date AND DATE(NOW()) <![CDATA[<=]]> cog.END_DATE THEN '1'
+        WHEN DATE(NOW()) > cog.END_DATE THEN '2'
+        ELSE '0'
+        END AS isBegin from vps_red_envelope_rain_activity_cog cog
+
+        ) ac
+        <where>
+            ac.delete_flag = '0'
+            <if test="param.infoKey != null and param.infoKey != ''">
+                and ac.info_key !=#{param.infoKey}
+            </if>
+            and ( ac.area_codes like '%000000%'
+            <foreach collection="param.areaCodes" close="" open="" separator="" item="item">
+                <if test="item!=''">
+                   or ac.area_codes like concat('%',#{item},'%')
+                </if>
+            </foreach>
+                )
+              and  ((ac.START_DATE &lt;= str_to_date(#{param.startDate},'%Y-%m-%d')  and ac.END_DATE >=  str_to_date(#{param.startDate},'%Y-%m-%d'))
+                or (ac.END_DATE >=  str_to_date(#{param.endDate},'%Y-%m-%d') and ac.START_DATE &lt;= str_to_date(#{param.endDate},'%Y-%m-%d'))
+            or (ac.END_DATE  &lt;=  str_to_date(#{param.endDate},'%Y-%m-%d') and ac.START_DATE >= str_to_date(#{param.startDate},'%Y-%m-%d'))
+            )
+
+
+        </where>
+
+    </select>
+
+
+</mapper>

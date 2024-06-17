@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsVcodeTicketExchangeDao">
+    <resultMap type="com.dbt.platform.ticket.bean.VpsVcodeTicketExchangeCog" id="resultMap">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="ticketNo" column="TICKET_NO"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="exchangeEndTime" column="EXCHANGE_END_TIME"/>
+        <result property="vpointsCog" column="VPOINTS_COG"/>
+        <result property="exchangeLimit" column="EXCHANGE_LIMIT"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+        <result property="exchangeEndDay" column="EXCHANGE_END_DAY"/>
+    </resultMap>
+
+    <insert id="doTicketExchangeAdd" parameterType="com.dbt.platform.ticket.bean.VpsVcodeTicketExchangeCog">
+        insert into vps_vcode_ticket_exchange_cog(
+            INFO_KEY,
+            TICKET_NO,
+            START_DATE,
+            END_DATE,
+            EXCHANGE_END_TIME,
+            EXCHANGE_END_DAY,
+            VPOINTS_COG,
+            EXCHANGE_LIMIT,
+            DELETE_FLAG,
+            CREATE_TIME,
+            CREATE_USER,
+            UPDATE_TIME,
+            UPDATE_USER
+        ) values (
+                  #{infoKey},
+                  #{ticketNo},
+                  #{startDate},
+                  #{endDate},
+                  #{exchangeEndTime},
+                  #{exchangeEndDay},
+                  #{vpointsCog},
+                  #{exchangeLimit},
+                  #{deleteFlag},
+                  #{createTime},
+                  #{createUser},
+                  #{updateTime},
+                  #{updateUser})
+    </insert>
+
+    <update id="doTicketExchangeEdit" parameterType="com.dbt.platform.ticket.bean.VpsVcodeTicketExchangeCog">
+        UPDATE vps_vcode_ticket_exchange_cog
+        <set>
+            <if test="startDate != null and startDate != '' ">
+                START_DATE = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != '' ">
+                END_DATE = #{endDate},
+            </if>
+            <if test="vpointsCog != null and vpointsCog != '' ">
+                VPOINTS_COG = #{vpointsCog},
+            </if>
+            EXCHANGE_END_TIME = #{exchangeEndTime},
+            EXCHANGE_END_DAY = #{exchangeEndDay},
+            EXCHANGE_LIMIT = #{exchangeLimit},
+            UPDATE_TIME = NOW(),
+            UPDATE_USER = #{updateUser}
+        </set>
+        WHERE info_key = #{infoKey}
+    </update>
+
+    <update id="doTicketExchangeDelete" parameterType="map">
+        UPDATE vps_vcode_ticket_exchange_cog
+        <set>
+            UPDATE_TIME = NOW(),
+            UPDATE_USER = #{updateUser},
+            DELETE_FLAG = '1'
+        </set>
+        WHERE info_key = #{infoKey}
+    </update>
+
+    <select id="queryForList" parameterType="map" resultMap="resultMap">
+        select e.*,t.TICKET_NAME as ticketName,t.TICKET_URL as ticketUrl,c.JUMP_ID as jumpId
+        from vps_vcode_ticket_exchange_cog e
+        left join vps_sys_ticket_info t
+        on e.TICKET_NO = t.TICKET_NO
+        left join vps_sys_ticket_category_info c
+        on t.CATEGORY_KEY = c.CATEGORY_KEY
+        where e.DELETE_FLAG = '0'
+        <if test="queryBean.ticketNo != null and queryBean.ticketNo != ''">
+            and e.TICKET_NO = #{queryBean.ticketNo}
+        </if>
+        <if test="queryBean.ticketName != null and queryBean.ticketName != ''">
+            and t.TICKET_NAME like '%${queryBean.ticketName}%'
+        </if>
+        <if test="queryBean.jumpId != null and queryBean.jumpId != ''">
+            and c.JUMP_ID like '%${queryBean.jumpId}%'
+        </if>
+        <if test="queryBean.ticketUrl != null and queryBean.ticketUrl != ''">
+            and t.TICKET_URL like '%${queryBean.ticketUrl}%'
+        </if>
+        <if test="queryBean.minVpointCog != null and queryBean.minVpointCog != ''">
+            and e.VPOINTS_COG &gt;= #{queryBean.minVpointCog}
+        </if>
+        <if test="queryBean.maxVpointCog != null and queryBean.maxVpointCog != ''">
+            and e.VPOINTS_COG &lt;= #{queryBean.maxVpointCog}
+        </if>
+        order by e.UPDATE_TIME desc
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        select count(*)
+        from vps_vcode_ticket_exchange_cog e
+        left join vps_sys_ticket_info t
+        on e.TICKET_NO = t.TICKET_NO
+        left join vps_sys_ticket_category_info c
+        on t.CATEGORY_KEY = c.CATEGORY_KEY
+        where e.DELETE_FLAG = '0'
+        <if test="queryBean.ticketNo != null and queryBean.ticketNo != ''">
+            and e.TICKET_NO = #{queryBean.ticketNo}
+        </if>
+        <if test="queryBean.ticketName != null and queryBean.ticketName != ''">
+            and t.TICKET_NAME like '%${queryBean.ticketName}%'
+        </if>
+        <if test="queryBean.jumpId != null and queryBean.jumpId != ''">
+            and c.JUMP_ID like '%${queryBean.jumpId}%'
+        </if>
+        <if test="queryBean.ticketUrl != null and queryBean.ticketUrl != ''">
+            and t.TICKET_URL like '%${queryBean.ticketUrl}%'
+        </if>
+        <if test="queryBean.minVpointCog != null and queryBean.minVpointCog != ''">
+            and e.VPOINTS_COG &gt;= #{queryBean.minVpointCog}
+        </if>
+        <if test="queryBean.maxVpointCog != null and queryBean.maxVpointCog != ''">
+            and e.VPOINTS_COG &lt;= #{queryBean.maxVpointCog}
+        </if>
+    </select>
+
+    <select id="findById" parameterType="string" resultMap="resultMap">
+        select * from vps_vcode_ticket_exchange_cog where INFO_KEY = #{infoKey}
+    </select>
+
+</mapper>

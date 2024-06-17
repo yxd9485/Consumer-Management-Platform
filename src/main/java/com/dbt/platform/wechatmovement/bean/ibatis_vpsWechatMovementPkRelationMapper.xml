@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatMovementPkRelationDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatMovementPkRelation" id="resultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="periodsKey" column="PERIODS_KEY"/>
+		<result property="weekDay" column="WEEK_DAY"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="pkUserKey" column="PK_USER_KEY"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			PERIODS_KEY,
+			WEEK_DAY,
+			USER_KEY,
+			PK_USER_KEY,
+			CREATE_TIME,
+			UPDATE_TIME
+	</sql>
+    
+    <!-- 新增 -->
+    <insert id="createBatch" parameterType="Map">
+    	INSERT INTO vps_wechat_movement_pk_relation_${tableIndex}(
+    		INFO_KEY,
+			PERIODS_KEY,
+			WEEK_DAY,
+			USER_KEY,
+			PK_USER_KEY,
+			CREATE_TIME
+    	) VALUES
+    	<foreach collection="relationList" item="item" separator=",">
+    	(
+    		UUID(),
+    		#{periodsKey},
+    		#{weekDay},
+    		#{item.userKey},
+    		#{item.pkUserKey},
+	    	#{createTime}
+    	)
+    	</foreach>
+    		
+    </insert>
+    
+    <select id="findCountByPeriodsKey" parameterType="Map" resultType="Integer">
+    	select count(1) from vps_wechat_movement_pk_relation_${tableIndex}
+    	where periods_key = #{periodsKey}
+    </select>
+    
+    <select id="queryRelation" parameterType="Map" resultMap="resultMap">
+    	SELECT 
+			r.INFO_KEY, 
+			r.USER_KEY,
+			r.PK_USER_KEY,
+			a.PAY_VPOINTS AS 'payVpoints',
+			CASE 
+				WHEN a.STEP_NUMBER > IFNULL(b.STEP_NUMBER,0) THEN '1'
+				WHEN a.STEP_NUMBER <![CDATA[<]]> IFNULL(b.STEP_NUMBER,0) THEN '2'
+				ELSE '3'
+			END AS 'pkStatus'
+		FROM vps_wechat_movement_pk_relation_${tableIndex} r
+		LEFT JOIN vps_wechat_movement_pk_apply_${tableIndex} a on r.USER_KEY = a.USER_KEY AND r.PERIODS_KEY = a.PERIODS_KEY
+		LEFT JOIN vps_wechat_movement_pk_apply_${tableIndex} b on r.PK_USER_KEY = b.USER_KEY AND r.PERIODS_KEY = b.PERIODS_KEY
+		WHERE r.PERIODS_KEY = #{periodsKey}
+    </select>
+</mapper>

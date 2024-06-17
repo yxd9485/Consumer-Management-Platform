@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeQrcodeLibDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VpsVcodeQrcodeLib" id="vpsVcodeQrcodeLibResultMap">
+		<result property="vcodeKey" column="VCODE_KEY"/>
+		<result property="batchKey" column="BATCH_KEY"/>
+  		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+  		<result property="companyKey" column="COMPANY_KEY"/>
+  		<result property="packKey" column="PACK_KEY"/>
+  		<result property="qrcodeContent" column="QRCODE_CONTENT"/>
+  		<result property="qrcodeType" column="QRCODE_TYPE"/>
+  		<result property="libName" column="LIB_NAME"/>
+  		<result property="userKey" column="USER_KEY"/>
+  		<result property="vpointsCogKey" column="VPOINTS_COG_KEY"/>
+  		<result property="fixedAmount" column="FIXED_AMOUNT"/>
+  		<result property="useStatus" column="USE_STATUS"/>
+  		<result property="useTime" column="USE_TIME"/>
+  		<result property="earnMoney" column="EARN_MONEY"/>
+  		<result property="batchAutocodeNo" column="COL5"/>
+  		<result property="traceabilityURL" column="col1"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         VCODE_KEY, 
+  			 BATCH_KEY,
+  			 VCODE_ACTIVITY_KEY,
+  			 COMPANY_KEY,
+  			 PACK_KEY, 
+  			 QRCODE_CONTENT, 
+  			 QRCODE_TYPE,
+  			 LIB_NAME,
+  			 USER_KEY,
+  			 VPOINTS_COG_KEY,
+  			 FIXED_AMOUNT,
+  			 USE_STATUS,
+  			 USE_TIME,
+  			 EARN_MONEY,
+  			 col1,
+  			 COL5
+  	</sql>
+  	<insert id="batchInsertQrcode" parameterType="Map">
+  		INSERT INTO ${libName} 
+  		(
+  			 VCODE_KEY, 
+  			 BATCH_KEY,
+  			 COMPANY_KEY,
+  			 QRCODE_CONTENT, 
+  			 QRCODE_TYPE,
+  			 LIB_NAME,
+  			 USE_STATUS,
+  			 COL1,
+  			 CREDATE
+  		)
+  		VALUES
+  		<foreach collection="list" item="lib" separator=",">
+  		(
+  			UUID(),
+  			#{batchKey},
+  			#{companyKey},
+			#{lib.qrcodeContent},
+			'0',
+  			#{libName},
+  			'0',
+  			#{lib.traceabilityURL},
+  			#{createTime}
+  		)
+  		</foreach>
+  	</insert>
+
+	<insert id="batchReplaceInsertQrcode" parameterType="Map">
+		REPLACE INTO ${libName}
+		(
+		VCODE_KEY,
+		BATCH_KEY,
+		COMPANY_KEY,
+		QRCODE_CONTENT,
+		QRCODE_TYPE,
+		LIB_NAME,
+		USE_STATUS,
+		COL1,
+		CREDATE
+		)
+		VALUES
+		<foreach collection="list" item="lib" separator=",">
+			(
+			UUID(),
+			#{batchKey},
+			#{companyKey},
+			#{lib.qrcodeContent},
+			#{lib.qrcodeType},
+			#{libName},
+			'0',
+			#{lib.traceabilityURL},
+			#{createTime}
+			)
+		</foreach>
+	</insert>
+
+
+  	<insert id="batchInsertQrcodeAutocodeNo" parameterType="Map">
+  		INSERT INTO ${libName} 
+  		(
+  			 VCODE_KEY, 
+  			 BATCH_KEY,
+  			 COMPANY_KEY,
+  			 QRCODE_CONTENT, 
+  			 COL5,
+  			 QRCODE_TYPE,
+  			 LIB_NAME,
+  			 USE_STATUS,
+  			 CREDATE
+  		)
+  		VALUES
+  		<foreach collection="list" item="lib" separator=",">
+  		(
+  			UUID(),
+  			#{lib.batchKey},
+  			#{companyKey},
+  			#{lib.qrcodeContent},
+  			#{lib.batchAutocodeNo},
+  			'0',
+  			#{libName},
+  			'0',
+  			#{createTime}
+  		)
+  		</foreach>
+  	</insert>
+  	
+  	<insert id="insertQrcode" parameterType="Map">
+  		INSERT INTO ${libName} 
+  		(
+  			 VCODE_KEY, 
+  			 BATCH_KEY,
+  			 COMPANY_KEY,
+  			 QRCODE_CONTENT, 
+  			 QRCODE_TYPE,
+  			 LIB_NAME,
+  			 USE_STATUS,
+  			 CREDATE
+  		)
+  		VALUES
+  		(
+  			UUID(),
+  			#{batchKey},
+  			#{companyKey},
+  			#{qrcodeContent},
+			'0',
+  			#{libName},
+  			'0',
+  			#{createTime}
+  		)
+  	</insert>
+  	
+  	<!-- 根据二维码查询 -->
+	<select id="queryVcodeQrcodeLibByQrcodeContent" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+		SELECT 
+			<include refid="Base_Column_List"/> 
+		FROM 
+			${libName} 
+		WHERE 
+			QRCODE_CONTENT = #{qrcodeContent} 
+	</select>
+	<!-- 更新二维码的扫码状态 -->
+	<update id="modifyQrcodeLibUseStatus" parameterType="Map">
+		UPDATE 
+			${libName} 
+		SET 
+			USE_STATUS = '1',
+			USE_TIME = #{useTime},
+			USER_KEY = #{userKey},
+			VPOINTS_COG_KEY = #{vpointsCogKey}
+			<if test="earnMoney != null and earnMoney!=''">
+				,EARN_MONEY = #{earnMoney} 
+			</if> 
+		WHERE 
+			VCODE_KEY = #{vcodeKey} 
+	</update>
+	
+	<update id="updateVcodeQrcode" parameterType="Map">
+		UPDATE 
+			${libName} 
+		SET 
+			VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+		WHERE 1=1
+	</update>
+	
+	<select id="queryQrcodeLibByVcodeKeyAndUserKey" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+		SELECT 
+			USER_KEY,
+  			USE_STATUS,
+  			EARN_MONEY,
+  			VPOINTS_COG_KEY 
+		FROM 
+			${libName} 
+		WHERE 
+			VCODE_KEY = #{vcodeKey} and USER_KEY = #{userKey}
+	</select>
+	
+	<select id="isExistsTableName" parameterType="String" resultType="String">
+		SHOW TABLES LIKE '%${_parameter}%'
+	</select>
+	
+	<select id="querySuccessImportQrcodeCount" parameterType="Map" resultType="Integer">
+		SELECT SUM(counts) FROM (
+			<foreach collection="libNameList" item="libName" separator="UNION ALL">
+				SELECT COUNT(1) AS counts FROM ${libName}
+			</foreach>
+		) a
+	</select>
+	
+	<!-- 创建码库表 -->
+  	<update id="createQrcodeTable" parameterType="Map">
+  		CREATE TABLE IF NOT EXISTS ${libName} (
+			VCODE_KEY VARCHAR (36) NOT NULL,
+			VCODE_ACTIVITY_KEY VARCHAR (36) DEFAULT NULL,
+			COMPANY_KEY VARCHAR (36) DEFAULT NULL,
+			PACK_KEY VARCHAR (36) DEFAULT NULL,
+			BATCH_KEY VARCHAR (36) DEFAULT NULL,
+			QRCODE_CONTENT VARCHAR (10) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+			QRCODE_TYPE VARCHAR (2) DEFAULT '0',
+			LIB_NAME VARCHAR (300) DEFAULT NULL,
+			CREDATE TIMESTAMP NULL DEFAULT NULL,
+			PRIZE_TYPE VARCHAR (100) DEFAULT '0',
+			USE_STATUS VARCHAR (2) DEFAULT NULL,
+			USE_COUNT  int(11) NULL DEFAULT 0 COMMENT '使用次数',
+			IS_FINISH char(1) NULL DEFAULT '0' COMMENT '是否完成扫码，默认0否，1是',
+			FIXED_AMOUNT int(11) NULL DEFAULT 0 COMMENT '瓜分固定金额',
+			VPOINTS_COG_KEY VARCHAR (500) DEFAULT NULL,
+			USER_KEY VARCHAR (500) DEFAULT NULL,
+			<if test="serverName == 'mengniu'">
+			     USER_TYPE VARCHAR (500) DEFAULT NULL  COMMENT '扫码角色',
+			</if>
+			USE_TIME VARCHAR (500) DEFAULT NULL,
+			EARN_MONEY VARCHAR (500) DEFAULT NULL,
+			EARN_VPOINTS VARCHAR (500) NULL DEFAULT 0,
+			PROVINCE VARCHAR (30) DEFAULT NULL,
+			CITY VARCHAR (30) DEFAULT NULL,
+			COUNTY VARCHAR (30) DEFAULT NULL,
+			MOER_SCAN_KEY  VARCHAR(36) NULL COMMENT '一码多扫主键',
+			TICKET_CODE VARCHAR(500) DEFAULT NULL COMMENT '优惠券码',
+			COL1 VARCHAR (100) DEFAULT NULL,
+			COL2 VARCHAR (100) DEFAULT NULL,
+			COL3 VARCHAR (100) DEFAULT NULL,
+			COL4 VARCHAR (100) DEFAULT NULL,
+			COL5 VARCHAR (100) DEFAULT NULL,
+			PRIMARY KEY (VCODE_KEY),
+			UNIQUE KEY idx_QRCODECONTENT (QRCODE_CONTENT),
+			UNIQUE KEY idx_BATCHAUTOCODENO (COL5)
+		) ENGINE = INNODB DEFAULT CHARSET = utf8mb4
+  	</update>
+
+	<!-- 清空码库表 -->
+	<update id="truncateQrcodeTable" parameterType="Map">
+		truncate table ${libName}
+	</update>
+	
+	<!-- 二维码入库 -->
+	<update id="writeQrcodeToData" parameterType="Map">
+		load data local infile #{tmpFilePath} 
+		into table ${libName} character set utf8 fields terminated by '+'
+		(VCODE_KEY,QRCODE_CONTENT,COMPANY_KEY,PACK_KEY,BATCH_KEY,CREDATE,USE_STATUS,@COL5,LIB_NAME)
+		set col5 = case when @COL5 != 'NaN' then @COL5 end
+	</update>
+	
+	<!-- 查询码源数量 -->
+	<select id="findQrcodeCountByLibNames" parameterType="Map" resultType="Integer">
+		SELECT SUM(count) FROM (
+			<foreach collection="libNameList" item="libName" separator="UNION ALL">
+				SELECT COUNT(1) count FROM ${libName}${wanbak}
+				where batch_key in (
+				    <foreach collection="batchKeyList" item="batchKey" separator=" , ">
+				        #{batchKey}
+				    </foreach>
+				)
+			</foreach>
+		) a
+	</select>
+	<!-- 查询表是否存在 -->
+	<select id="findTableIsExist" parameterType="Map" resultType="int">
+		SELECT count(1) FROM information_schema.TABLES WHERE table_name = #{libName}
+	</select>
+	
+	<!-- 删除码库表数据 -->
+	<delete id="deleteByLibNameList" parameterType="Map">
+		<foreach collection="libNameList" item="libName" separator=";">
+			DROP TABLE IF EXISTS ${libName};
+			DROP TABLE IF EXISTS ${libName}_wan_bak
+		</foreach>
+	</delete>
+	
+	<!-- 重命名码库表数据 -->
+	<update id="renameTable" parameterType="Map">
+		RENAME TABLE ${libName} TO ${libName}_${dateTime}
+	</update>
+	
+	<!-- 批量更新二维码使用完成字段 -->
+	<update id="batchUpdateQrcodeIsFinish" parameterType="Map">
+		<foreach collection="libRelationList" item="item" separator=";">
+			UPDATE ${item.libName} SET IS_FINISH = '1' 
+			WHERE USE_COUNT > 0
+			AND IS_FINISH = '0' 
+			AND BATCH_KEY IN (${item.batchKey})
+		</foreach>
+	</update>
+    
+<!--    查找已存在的码源 -->
+    <select id="queryQrcode" parameterType="Map" resultType="String">
+        select 
+             QRCODE_CONTENT
+        from 
+             ${libName} 
+        where
+             <foreach collection="list" item="qrcodeContent" open=" QRCODE_CONTENT in (" close=")" separator=",">
+                 #{qrcodeContent}
+             </foreach>
+    </select>
+    
+<!--    查找码库中所有码源 -->
+    <select id="queryAllQrcode" parameterType="Map" resultType="String">
+        select 
+             QRCODE_CONTENT
+        from 
+             ${libName} 
+    </select>
+    
+<!--    查找已存在的批次序号 -->
+    <select id="queryQrcodeByBatchAutocodeNo" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+        select 
+            BATCH_KEY,
+            QRCODE_CONTENT,
+            col5
+        from 
+            ${libName} 
+        where
+             <foreach collection="list" item="batchAutocodeNo" open=" col5 in (" close=")" separator=",">
+                 #{batchAutocodeNo}
+             </foreach>
+    </select>
+<!--    查找批次序号分批次码量 -->
+    <select id="queryQrcodeByBatchAutocodeNoGroup" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+        select 
+            BATCH_KEY,
+            count(*) qrcodeAmount
+        from 
+            ${libName} 
+        where
+             <foreach collection="list" item="batchAutocodeNo" open=" col5 in (" close=")" separator=",">
+                 #{batchAutocodeNo}
+             </foreach>
+        group by BATCH_KEY
+    </select>
+	<!--根据码库表名称，条件为已扫过，时间倒叙，取第一条记录 -->
+	<select id="queryVcodeQrcodeLibByIsFinishAndTimeDescAndFirst" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+		  select
+             <include refid="Base_Column_List"/>
+        from
+             ${libName}
+		 ORDER BY USE_TIME DESC LIMIT 1;
+
+	</select>
+	<!--根据码库表名称，条件为已扫过，时间倒叙，取第一条记录 -->
+	<select id="queryQrcodeLibByCol5" parameterType="Map" resultMap="vpsVcodeQrcodeLibResultMap">
+		  select
+             <include refid="Base_Column_List"/>
+        from
+             ${libName}
+		 where col5  = #{col5}
+
+	</select>
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VpsVcodeQrcodeLib">
+		UPDATE  ${libName} SET
+			VCODE_KEY = #{vcodeKey},
+			QRCODE_CONTENT = #{qrcodeContent},
+			PRIZE_TRYPE = '0',
+			USE_STATUS = null,
+			USE_TIME = null,
+			EARN_MONEY = null,
+			EARN_VPOINTS = '0',
+			PROVINCE = NULL,
+			CITY = NULL,
+			COUNTY = NULL,
+			MOER_SCAN_KEY = NULL,
+			TICKET_CODE = NULL,
+	</update>
+<!--	二维码补录新增 -->
+	<insert id="insertVpsQrcodeLib" parameterType="com.dbt.platform.autocode.dto.VpsQrcodeLibNameSaveDTO">
+  		INSERT INTO ${libName}
+  		(
+  			 VCODE_KEY,
+  			 VCODE_ACTIVITY_KEY,
+  			 COMPANY_KEY,
+  			 PACK_KEY,
+  			 BATCH_KEY,
+  			 QRCODE_CONTENT,
+  			 QRCODE_TYPE,
+  			 LIB_NAME,
+  			 CREDATE,
+  			 FIXED_AMOUNT,
+  			 MOER_SCAN_KEY,
+  			 USE_STATUS,
+  			 TICKET_CODE,
+  			 col5
+  		)
+  		VALUES
+  		(
+  			#{vcodeKey},
+  			#{vcodeActivityKey},
+  			#{companyKey},
+  			#{packKey},
+  			#{batchKey},
+  			#{qrcodeContent},
+  			#{qrcodeType},
+  			#{libName},
+  			#{creDate},
+  			#{fixedAmount},
+  			#{moerScanKey},
+  			#{useStatus},
+  			#{ticketCode},
+  			#{batchAutocodeNo}
+  		)
+  	</insert>
+  	
+<!--   	更新批次序号 -->
+  	<update id="updateBatchAutocodeNo" parameterType="String">
+  		update 
+  			${libName} l, ${libName}_wan_bak w
+  		set 
+  			l.col5 = w.col5
+  		where 
+  			l.qrcode_content = w.qrcode_content
+  			and l.col5 is null
+  	</update>
+
+	<update id="updateCode" parameterType="com.dbt.platform.activity.bean.VpsVcodeQrcodeLib">
+		update
+			${libName} l, ${libName}_wan_bak w
+		set
+			l.COL1 = #{traceabilityURL},
+		    w.COL1 = #{traceabilityURL}
+		where
+			l.qrcode_content = #{qrcodeContent}
+		    and
+		    w.qrcode_content = #{qrcodeContent}
+	</update>
+</mapper>

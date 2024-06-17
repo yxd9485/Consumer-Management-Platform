@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsVcodeTicketLibDao">
+
+	<resultMap type="com.dbt.platform.ticket.bean.VpsVcodeTicketLib" id="baseResult">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="activityKey" column="ACTIVITY_KEY"/>
+		<result property="ticketKey" column="TICKET_KEY"/>
+		<result property="ticketCode" column="TICKET_CODE"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="earnTime" column="EARN_TIME"/>
+		<result property="useStatus" column="USE_STATUS"/>
+		<result property="createTime" column="CREATE_TIME"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			ACTIVITY_KEY,
+			TICKET_KEY,
+			TICKET_CODE,
+			USER_KEY,
+			EARN_TIME,
+			USE_STATUS,
+			CREATE_TIME
+	</sql>
+	
+	
+    <!-- 批量插入 -->
+	<insert id="batchWrite" parameterType="Map">
+		INSERT INTO ${libName} (
+			INFO_KEY,
+			ACTIVITY_KEY,
+			TICKET_KEY,
+			TICKET_CODE,
+			USE_STATUS,
+			CREATE_TIME
+		) VALUES 
+		<foreach collection="ticketCodeList" item="ticketCode" separator=",">
+		(
+			UUID(),
+			#{activityKey},
+			#{ticketKey},
+			#{ticketCode},
+			#{useStatus},
+			#{createTime}
+		)
+		</foreach>
+	</insert>
+	
+	<!-- 券码入库 -->
+	<update id="addTicketCodeToData" parameterType="Map">
+		load data local infile #{filePath} 
+		into table ${libName} character set utf8 fields terminated by '+'
+			(INFO_KEY,TICKET_KEY,TICKET_CODE,USE_STATUS,CREATE_TIME)
+	</update>
+	
+	<!-- 创建优惠券码库表 -->
+  	<update id="createTicketTable" parameterType="String">
+  		CREATE TABLE IF NOT EXISTS ${libName} (
+			`INFO_KEY` varchar(36) NOT NULL,
+		  	`ACTIVITY_KEY` varchar(36) NOT NULL COMMENT '优惠券活动主键',
+			`TICKET_KEY` varchar(36) NOT NULL COMMENT '优惠券面额主键',
+		  	`TICKET_CODE` varchar(150) DEFAULT NULL COMMENT '电子兑换码',
+		  	`USER_KEY` varchar(36) DEFAULT NULL COMMENT '扫码用户',
+		  	`EARN_TIME` datetime DEFAULT NULL COMMENT '获取时间',
+		  	`USE_STATUS` varchar(1) DEFAULT '0' COMMENT '使用状态：0:未使用、1:已使用',
+		  	`CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+		  	PRIMARY KEY (`INFO_KEY`),
+		  	INDEX `TICKET_KEY_IDX` (`TICKET_KEY`) USING BTREE,
+		  	INDEX `USER_KEY_IDX` (`USER_KEY`) USING BTREE,
+  			UNIQUE INDEX `TICKET_CODE_IDX` (`TICKET_CODE`) USING BTREE
+		) ENGINE = INNODB DEFAULT CHARSET = utf8mb4
+  	</update>
+  	
+  	<delete id="deleteByTime" parameterType="Map">
+  		DELETE FROM  ${libName} WHERE CREATE_TIME = #{importTime}
+  	</delete>
+</mapper>

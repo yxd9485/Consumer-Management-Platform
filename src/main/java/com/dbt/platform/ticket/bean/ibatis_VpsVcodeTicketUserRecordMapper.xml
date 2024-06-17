@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.ticket.dao.IVpsVcodeTicketUserRecordDao">
+    <resultMap type="com.dbt.platform.ticket.bean.VpsVcodeTicketUserRecord" id="baseResult">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="ticketName" column="TICKET_NAME"/>
+        <result property="consumeVpoints" column="CONSUME_VPOINTS"/>
+        <result property="userName" column="NICK_NAME"/>
+        <result property="phoneNumber" column="PHONE_NUMBER"/>
+        <result property="earnTime" column="EARN_TIME"/>
+    </resultMap>
+
+    <select id="queryList" parameterType="map" resultMap="baseResult">
+        select a.* from (
+        <foreach collection="tableSuffix" item="tableIndex" separator="UNION ALL">
+            select t.INFO_KEY ,s.TICKET_NAME,t.CONSUME_VPOINTS,
+                   u.NICK_NAME,u.PHONE_NUMBER,t.EARN_TIME
+            from
+            vps_vcode_ticket_user_record_${tableIndex} t
+            left join vps_consumer_user_info u
+            on t.USER_KEY = u.USER_KEY
+            left join vps_sys_ticket_info s
+            on t.TICKET_KEY = s.INFO_KEY
+            where t.ACTIVITY_KEY = #{infoKey}
+            and t.CHANNEL_TYPE = '1'
+            <if test="queryBean.userName != null and queryBean.userName != ''">
+                and (u.NICK_NAME like '%${queryBean.userName}%')
+            </if>
+            <if test="queryBean.phoneNumber != null and queryBean.phoneNumber != ''">
+                and (u.PHONE_NUMBER like '%${queryBean.phoneNumber}%')
+            </if>
+            <if test="queryBean.startTime != null and queryBean.startTime != ''">
+                and t.EARN_TIME &gt; #{queryBean.startTime}
+            </if>
+            <if test="queryBean.endTime != null and queryBean.endTime != ''">
+                and t.EARN_TIME &lt;= #{queryBean.endTime}
+            </if>
+            <if test="queryBean.minVpointCog != null and queryBean.minVpointCog != ''">
+                and t.CONSUME_VPOINTS &gt;= #{queryBean.minVpointCog}
+            </if>
+            <if test="queryBean.maxVpointCog != null and queryBean.maxVpointCog != ''">
+                and t.CONSUME_VPOINTS &lt;= #{queryBean.maxVpointCog}
+            </if>
+        </foreach>
+        ) a
+        order by a.EARN_TIME desc
+        <if test="pageInfo != null">
+            LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+        </if>
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        select count(*) from (
+        <foreach collection="tableSuffix" item="tableIndex" separator="UNION ALL">
+            select t.INFO_KEY ,s.TICKET_NAME,t.CONSUME_VPOINTS,
+            u.NICK_NAME,u.PHONE_NUMBER,t.EARN_TIME
+            from
+            vps_vcode_ticket_user_record_${tableIndex} t
+            left join vps_consumer_user_info u
+            on t.USER_KEY = u.USER_KEY
+            left join vps_sys_ticket_info s
+            on t.TICKET_KEY = s.INFO_KEY
+            where t.ACTIVITY_KEY = #{infoKey}
+            and t.CHANNEL_TYPE = '1'
+            <if test="queryBean.userName != null and queryBean.userName != ''">
+                and (u.NICK_NAME like '%${queryBean.userName}%')
+            </if>
+            <if test="queryBean.phoneNumber != null and queryBean.phoneNumber != ''">
+                and (u.PHONE_NUMBER like '%${queryBean.phoneNumber}%')
+            </if>
+            <if test="queryBean.startTime != null and queryBean.startTime != ''">
+                and t.EARN_TIME &gt; #{queryBean.startTime}
+            </if>
+            <if test="queryBean.endTime != null and queryBean.endTime != ''">
+                and t.EARN_TIME &lt;= #{queryBean.endTime}
+            </if>
+            <if test="queryBean.minVpointCog != null and queryBean.minVpointCog != ''">
+                and t.CONSUME_VPOINTS &gt;= #{queryBean.minVpointCog}
+            </if>
+            <if test="queryBean.maxVpointCog != null and queryBean.maxVpointCog != ''">
+                and t.CONSUME_VPOINTS &lt;= #{queryBean.maxVpointCog}
+            </if>
+        </foreach>
+        ) a
+    </select>
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.lotterysign.dao.LotterySignDao">
+
+    <resultMap type="com.dbt.platform.lotterysign.bean.VpsLotterySignCog" id="resultMap">
+        <result property="infoKey" column="info_key"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="cycleType" column="cycle_type"/>
+        <result property="scanCountCog" column="scan_count_cog"/>
+        <result property="skuCog" column="sku_cog"/>
+        <result property="activityRule" column="activity_rule"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+
+
+    <insert id="doLotterySignAdd" parameterType="com.dbt.platform.lotterysign.bean.VpsLotterySignCog">
+        insert into vps_lottery_sign_cog(info_key,
+                                         activity_name,
+                                         start_date,
+                                         end_date,
+                                         cycle_type,
+                                         scan_count_cog,
+                                         sku_cog,
+                                         activity_rule,
+                                         delete_flag,
+                                         create_time,
+                                         create_user,
+                                         update_time,
+                                         update_user)
+        values (UUID(),
+                #{activityName},
+                #{startDate},
+                #{endDate},
+                #{cycleType},
+                #{scanCountCog},
+                #{skuCog},
+                #{activityRule},
+                '0',
+                NOW(),
+                #{createUser},
+                NOW(),
+                #{updateUser})
+    </insert>
+
+    <update id="doLotterySignEdit" parameterType="com.dbt.platform.lotterysign.bean.VpsLotterySignCog">
+        update vps_lottery_sign_cog
+        <set>
+            <if test="activityName != null and activityName !=''">
+                activity_name = #{activityName},
+            </if>
+            <if test="startDate != null and startDate !=''">
+                start_date = #{startDate},
+            </if>
+            end_date = #{endDate},
+            <if test="cycleType != null and cycleType !=''">
+                cycle_type = #{cycleType},
+            </if>
+            sku_cog = #{skuCog},
+            <if test="scanCountCog != null and scanCountCog !=''">
+                scan_count_cog = #{scanCountCog},
+            </if>
+            activity_rule = #{activityRule},
+            update_time = now(),
+            update_user = #{updateUser}
+        </set>
+        where info_key = #{infoKey}
+    </update>
+
+    <update id="doLotterySignDel" parameterType="com.dbt.platform.lotterysign.bean.VpsLotterySignCog">
+        update vps_lottery_sign_cog
+        <set>
+            delete_flag = '1',
+            update_time = now(),
+            update_user = #{updateUser}
+        </set>
+        where info_key = #{infoKey}
+    </update>
+
+    <select id="findById" parameterType="string" resultMap="resultMap">
+        select *,
+               CASE
+                   WHEN curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE THEN '1'
+                   WHEN curdate() &gt; END_DATE THEN '2'
+                   ELSE '0'
+                   END AS status
+        from vps_lottery_sign_cog
+        where info_key = #{infoKey}
+    </select>
+
+    <select id="queryForList" parameterType="map" resultMap="resultMap">
+        select *,
+        CASE
+        WHEN curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE THEN '1'
+        WHEN curdate() &gt; END_DATE THEN '2'
+        ELSE '0'
+        END AS status
+        from vps_lottery_sign_cog
+        where delete_flag = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            <choose>
+                <when test="queryBean.status == 0">
+                    AND curdate() &lt; START_DATE
+                </when>
+                <when test="queryBean.status == 1">
+                    AND curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <otherwise>
+                    AND curdate() &gt; END_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND #{queryBean.startDate} between start_date and end_date
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} between start_date and end_date
+            </when>
+        </choose>
+        <if test="queryBean.cycleType != null and queryBean.cycleType != ''">
+            and cycle_type = #{queryBean.cycleType}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="queryForCount" parameterType="map" resultType="int">
+        select COUNT(*)
+        from vps_lottery_sign_cog
+        where delete_flag = '0'
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.activityName != null and queryBean.activityName != ''">
+            and activity_name like '%${queryBean.activityName}%'
+        </if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            <choose>
+                <when test="queryBean.status == 0">
+                    AND curdate() &lt; START_DATE
+                </when>
+                <when test="queryBean.status == 1">
+                    AND curdate() &gt;= START_DATE AND curdate() &lt;= END_DATE
+                </when>
+                <otherwise>
+                    AND curdate() &gt; END_DATE
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="queryBean.startDate != null and queryBean.startDate != '' and  queryBean.endDate != null and queryBean.endDate != ''">
+                AND !(start_date > #{queryBean.endDate} or #{queryBean.startDate} > end_date)
+            </when>
+            <when test="queryBean.startDate != null and queryBean.startDate != ''">
+                AND #{queryBean.startDate} between start_date and end_date
+            </when>
+            <when test="queryBean.endDate != null and queryBean.endDate != ''">
+                AND #{queryBean.endDate} between start_date and end_date
+            </when>
+        </choose>
+        <if test="queryBean.cycleType != null and queryBean.cycleType != ''">
+            and cycle_type = #{queryBean.cycleType}
+        </if>
+    </select>
+
+    <select id="queryOverlapActivity" parameterType="map" resultType="int">
+        select count(*)
+        from vps_lottery_sign_cog
+        where
+        ((START_DATE &gt;= #{startDate} AND START_DATE &lt;= #{endDate}) OR
+        (START_DATE &lt;= #{startDate} AND END_DATE &gt;= #{endDate}) OR
+        (END_DATE &gt;= #{startDate} AND END_DATE &lt;= #{endDate}))
+        and delete_flag = '0'
+        <if test="infoKey != null and infoKey != ''">
+            and info_key != #{infoKey}
+        </if>
+    </select>
+
+</mapper>

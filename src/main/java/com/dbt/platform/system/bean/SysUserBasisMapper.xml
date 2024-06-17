@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.system.dao.ISysUserBasisDao">
+
+	<resultMap type="com.dbt.platform.system.bean.SysUserBasis" id="resultSysUserBasis">
+		<result property="userKey" column="USER_KEY"/>
+		<result property="nickName" column="NICK_NAME"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="userPassword" column="USER_PASSWORD"/>
+		<result property="userType" column="USER_TYPE"/>
+		<result property="companyKey" column="COMPANY_KEY"/>
+		<result property="projectServerName" column="PROJECT_SERVER_NAME"/>
+		<result property="userStatus" column="USER_STATUS"/>
+		<result property="picBrandType" column="PIC_BRAND_TYPE"/>
+	</resultMap>
+
+	<update id="updatePassword" parameterType="com.dbt.platform.system.bean.SysUserBasis">
+		UPDATE
+			sys_user_basis
+		SET
+			USER_PASSWORD = #{userPassword}
+		WHERE
+			USER_KEY = #{userKey}
+	</update>
+
+	<select id="findById" resultMap="resultSysUserBasis" parameterType="String">
+		SELECT
+			USER_KEY,
+			NICK_NAME,
+			USER_NAME,
+			USER_PASSWORD,
+			USER_TYPE,
+			COMPANY_KEY,
+			USER_STATUS
+		FROM
+			sys_user_basis
+		WHERE
+			USER_KEY = #{userKey}
+	</select>
+
+	<select id="loadUserByUserName" resultMap="resultSysUserBasis" parameterType="String">
+		SELECT
+			USER_KEY,
+			NICK_NAME,
+			USER_NAME,
+			USER_PASSWORD,
+			USER_TYPE,
+			COMPANY_KEY,
+			PROJECT_SERVER_NAME,
+			PIC_BRAND_TYPE,
+			USER_STATUS
+		FROM
+			sys_user_basis
+		WHERE DELETE_FLAG = '0'
+            <if test="userName != null and userName != '' ">
+                AND USER_NAME = #{userName}
+            </if>
+            <if test="unionid != null and unionid != '' ">
+                AND LOCATE(#{unionid}, LOGINUNIONID) > 0
+            </if>
+		ORDER BY UPDATE_TIME DESC
+		LIMIT 1
+	</select>
+
+
+    <select id="findUserList" resultMap="resultSysUserBasis"  >
+	    SELECT
+			USER_KEY,
+			NICK_NAME,
+			USER_NAME,
+			USER_PASSWORD,
+			USER_TYPE,
+			COMPANY_KEY,
+			USER_STATUS
+		FROM
+			sys_user_basis
+    </select>
+</mapper>

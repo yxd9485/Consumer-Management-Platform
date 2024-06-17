@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.batchreward.dao.BatchRewardDetailsDao">
+    <resultMap id="resultMap" type="com.dbt.platform.batchreward.bean.VpsBatchRewardRecordDetails">
+        <result property="infoKey" column="info_key"/>
+        <result property="batchRewardKey" column="batch_reward_key"/>
+        <result property="userRole" column="user_role"/>
+        <result property="userKey" column="user_key"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPhone" column="user_phone"/>
+        <result property="userBigregion" column="user_bigregion"/>
+        <result property="userDealer" column="user_dealer"/>
+        <result property="contractYear" column="contract_year"/>
+        <result property="mallVpoints" column="mall_vpoints"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="county" column="county"/>
+        <result property="address" column="address"/>
+        <result property="appointSkuSweepNum" column="appoint_sku_sweep_num"/>
+        <result property="rewardVpoints" column="reward_vpoints"/>
+        <result property="rewardMoney" column="reward_money"/>
+        <result property="prizeNo" column="prize_no"/>
+        <result property="prizeName" column="prize_name"/>
+        <result property="idcard" column="idcard"/>
+        <result property="excelDate" column="excel_date"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="batchCreate" parameterType="list">
+        insert into vps_batch_reward_record_details(
+        info_key,
+        batch_reward_key,
+        user_role,
+        user_key,
+        user_name,
+        user_phone,
+        user_bigregion,
+        user_dealer,
+        contract_year,
+        mall_vpoints,
+        province,
+        city,
+        county,
+        address,
+        appoint_sku_sweep_num,
+        reward_vpoints,
+        reward_money,
+        prize_no,
+        prize_name,
+        idcard,
+        excel_date,
+        create_time
+        ) values
+        <foreach collection="list" item="itm" separator=",">
+            (
+            UUID(),
+            #{itm.batchRewardKey},
+            #{itm.userRole},
+            #{itm.userKey},
+            #{itm.userName},
+            #{itm.userPhone},
+            #{itm.userBigregion},
+            #{itm.userDealer},
+            #{itm.contractYear},
+            #{itm.mallVpoints},
+            #{itm.province},
+            #{itm.city},
+            #{itm.county},
+            #{itm.address},
+            #{itm.appointSkuSweepNum},
+            #{itm.rewardVpoints},
+            #{itm.rewardMoney},
+            #{itm.prizeNo},
+            #{itm.prizeName},
+            #{itm.idcard},
+            #{itm.excelDate},
+            now()
+            )
+        </foreach>
+
+    </insert>
+
+</mapper>

@@ -1,0 +1,12 @@
+-- 菜单
+INSERT INTO `sys_function`(`FUNCTION_KEY`, `FUNCTION_NAME`, `PARENT_KEY`, `LINK_URL`, `FUNCTION_DESC`, `FUNCTION_LEVEL`, `MENU_ICON`, `FUNCTION_CODE`, `FUNCTION_STATUS`, `FUNCTION_TYPE`, `SEQUENCE_NUM`, `DELETE_FLAG`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`) VALUES ('300500', '二维码补录', '300000', 'qrcodeMakeUp/showQrcodeMakeUpView.do', '二维码补录', '2', NULL, NULL, '1', '0', 130, '0', '2021-12-02 15:32:39', 'admin', NULL, NULL);
+INSERT INTO `sys_function`(`FUNCTION_KEY`, `FUNCTION_NAME`, `PARENT_KEY`, `LINK_URL`, `FUNCTION_DESC`, `FUNCTION_LEVEL`, `MENU_ICON`, `FUNCTION_CODE`, `FUNCTION_STATUS`, `FUNCTION_TYPE`, `SEQUENCE_NUM`, `DELETE_FLAG`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`) VALUES ('300600', '二维码序号查询', '300000', 'qrcodeMakeUp/showQrcodeQueryView.do', '二维码序号查询', '2', NULL, NULL, '1', '0', 130, '0', '2021-12-02 15:32:39', 'admin', NULL, NULL);
+
+
+
+
+-- 角色关联 系统管理员 活动管理员
+INSERT INTO`sys_role_function_relation`(`RELATION_KEY`, `ROLE_KEY`, `FUNCTION_KEY`) VALUES ('4949a7da-f550-4b61-aeff-0d2d96fa2dbd', '1', '300500');
+INSERT INTO `sys_role_function_relation`(`RELATION_KEY`, `ROLE_KEY`, `FUNCTION_KEY`) VALUES ('d9c1f148-1a2f-570d-b963-c1e89287e391', '1', '300600');
+INSERT INTO`sys_role_function_relation`(`RELATION_KEY`, `ROLE_KEY`, `FUNCTION_KEY`) VALUES ('a718de55-7993-4fe4-b725-d95e6c66da58', '2', '300500');
+INSERT INTO `sys_role_function_relation`(`RELATION_KEY`, `ROLE_KEY`, `FUNCTION_KEY`) VALUES ('cd1af399-7567-49c2-9bc7-406abd0e1b8e', '2', '300600');

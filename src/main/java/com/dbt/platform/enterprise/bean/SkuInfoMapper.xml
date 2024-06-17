@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.enterprise.dao.ISkuInfoDao">
+
+	<resultMap type="com.dbt.platform.enterprise.bean.SkuInfo" id="resultSkuInfo">
+		<result property="skuKey" column="SKU_KEY" />
+		<result property="companyKey" column="COMPANY_KEY" />
+		<result property="brandKey" column="BRAND_KEY" />
+		<result property="categoryKey" column="CATEGORY_KEY" />
+		<result property="commodityCode" column="COMMODITY_CODE" />
+		<result property="spuKey" column="SPU_KEY" />
+		<result property="spuInfoKey" column="SPU_INFO_KEY" />
+		<result property="skuName" column="SKU_NAME" />
+		<result property="shortName" column="SHORT_NAME" />
+		<result property="unificationCode" column="UNIFICATION_CODE" />
+		<result property="unificationName" column="UNIFICATION_NAME" />
+		<result property="skuLogo" column="SKU_LOGO" />
+		<result property="brandIntroduceUrl" column="BRAND_INTRODUCE_URL"/>
+        <result property="skuType" column="SKU_TYPE" />
+        <result property="skuYear" column="SKU_YEAR" />
+        <result property="skuBrand" column="SKU_BRAND" />
+        <result property="suggestPrice" column="SUGGEST_PRICE" />
+		<result property="pushMsgFlag" column="PUSH_MSG_FLAG" />
+		<result property="contractFlag" column="CONTRACT_FLAG" />
+		<result property="validDay" column="VALID_DAY" />
+		<result property="autocodeNo" column="AUTOCODE_NO" />
+		<result property="skuPromotionMoney" column="SKU_PROMOTION_MONEY" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+		<result property="volume" column="VOLUME" />
+		<result property="autocodePrefix" column="AUTOCODE_PREFIX" />
+		<result property="channel" column="CHANNEL" />
+		<result property="specificationDesc" column="SPECIFICATION_DESC" />
+        <result property="mztSku" column="mzt_sku" />
+        <result property="acMztSku" column="ac_mzt_sku" />
+        <result property="zdSku" column="zd_sku" />
+		<result property="jhSku" column="jh_sku" />
+		<result property="zjSku" column="jz_sku"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="operationsType" column="OPERATIONS_TYPE"/>
+        <result property="canGetConsumerReward" column="CAN_GET_CONSUMER_REWARD"/>
+        <result property="canConsumerScanAfterTerminal" column="CAN_CONSUMER_SCAN_AFTER_TERMINAL"/>
+        <result property="scanAfterTimeLimit" column="SCAN_AFTER_TIME_LIMIT"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.enterprise.bean.SkuInfo">
+		INSERT INTO VPS_SKU_INFO (
+			SKU_KEY,
+			SKU_NAME,
+			SHORT_NAME,
+			SKU_LOGO,
+			BRAND_INTRODUCE_URL,
+            SKU_TYPE,
+			COMPANY_KEY,
+			BRAND_KEY,
+			CATEGORY_KEY,
+			COMMODITY_CODE,
+			UNIFICATION_CODE,
+			UNIFICATION_NAME,
+			VALID_DAY,
+			PUSH_MSG_FLAG,
+			CONTRACT_FLAG,
+			AUTOCODE_NO,
+			SPU_KEY,
+			SKU_YEAR,
+			SKU_BRAND,
+			SUGGEST_PRICE,
+			autocode_Prefix,
+			SKU_PROMOTION_MONEY,
+            mzt_sku,
+            ac_mzt_sku,
+            zd_sku,
+			jh_sku,
+			JZ_SKU,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER,
+			VOLUME,
+			CHANNEL,
+            ITEM_NAME,
+            OPERATIONS_TYPE,
+            CAN_GET_CONSUMER_REWARD,
+            CAN_CONSUMER_SCAN_AFTER_TERMINAL,
+            SCAN_AFTER_TIME_LIMIT
+		) VALUES (
+			#{skuKey},
+			TRIM(#{skuName}),
+			#{shortName},
+			#{skuLogo},
+		    #{brandIntroduceUrl},
+            #{skuType},
+			#{companyKey},
+			#{brandKey},
+			#{categoryKey},
+			#{commodityCode},
+			#{unificationCode},
+			#{unificationName},
+			#{validDay},
+			#{pushMsgFlag},
+			#{contractFlag},
+			#{autocodeNo},
+			#{spuKey},
+			#{skuYear},
+			#{skuBrand},
+			#{suggestPrice},
+			TRIM(#{autocodePrefix}),
+			#{skuPromotionMoney},
+			#{mztSku},
+			#{acMztSku},
+			#{zdSku},
+		    #{jhSku},
+		    #{zjSku},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser},
+			#{volume},
+			#{channel},
+		    #{itemName},
+		    #{operationsType},
+		    #{canGetConsumerReward},
+		    #{canConsumerScanAfterTerminal},
+		    #{scanAfterTimeLimit}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.enterprise.bean.SkuInfo">
+		UPDATE VPS_SKU_INFO 
+		<set>
+			<if test="skuName != null and skuName != '' ">
+				SKU_NAME = TRIM(#{skuName}),
+			</if>
+			<if test="shortName != null and shortName != '' ">
+				SHORT_NAME = #{shortName},
+			</if>
+			<if test="commodityCode != null and commodityCode != '' ">
+				COMMODITY_CODE = #{commodityCode},
+			</if>
+			<if test="unificationCode != null and unificationCode != '' ">
+				UNIFICATION_CODE = #{unificationCode},
+			</if>
+			<if test="unificationName != null and unificationName != '' ">
+				UNIFICATION_NAME = #{unificationName},
+			</if>
+            <if test="skuType != null and skuType != '' ">
+                SKU_TYPE = #{skuType},
+            </if>
+			<if test="validDay != null and validDay != '' ">
+				VALID_DAY = #{validDay},
+			</if>
+			<if test="pushMsgFlag != null and pushMsgFlag != '' ">
+				PUSH_MSG_FLAG = #{pushMsgFlag},
+			</if>
+			<if test="contractFlag != null and contractFlag != '' ">
+				CONTRACT_FLAG = #{contractFlag},
+			</if>
+			<if test="autocodeNo != null and autocodeNo != '' ">
+				AUTOCODE_NO = #{autocodeNo},
+			</if>
+			<if test="spuKey != null and spuKey != '' ">
+				spu_key = #{spuKey},
+			</if>
+			<if test="skuYear != null and skuYear != '' ">
+				sku_year = #{skuYear},
+			</if>
+			<if test="skuBrand != null and skuBrand != '' ">
+				sku_brand = #{skuBrand},
+			</if>
+			<if test="suggestPrice != null and suggestPrice != '' ">
+				SUGGEST_PRICE = #{suggestPrice},
+			</if>
+			<if test="suggestPrice != null and suggestPrice != '' ">
+				sku_promotion_money = #{skuPromotionMoney},
+			</if>
+			<if test="volume != null">
+				volume = #{volume},
+			</if>
+			<if test="autocodePrefix != null">
+				autocode_Prefix = TRIM(#{autocodePrefix}),
+			</if>
+			<if test="channel != null">
+				CHANNEL = #{channel},
+			</if>
+            <if test="mztSku != null">
+                mzt_sku = #{mztSku},
+            </if>
+            <if test="acMztSku != null">
+                ac_mzt_sku = #{acMztSku},
+            </if>
+            <if test="zdSku != null">
+                zd_sku = #{zdSku},
+            </if>
+		    <if test="jhSku != null">
+				jh_sku = #{jhSku},
+			</if>
+			<if test="zjSku != null">
+				jz_sku = #{zjSku},
+			</if>
+            <if test="itemName != null">
+                ITEM_NAME = #{itemName},
+            </if>
+			OPERATIONS_TYPE = #{operationsType},
+			CAN_GET_CONSUMER_REWARD = #{canGetConsumerReward},
+			CAN_CONSUMER_SCAN_AFTER_TERMINAL = #{canConsumerScanAfterTerminal},
+			SCAN_AFTER_TIME_LIMIT = #{scanAfterTimeLimit},
+			BRAND_INTRODUCE_URL = #{brandIntroduceUrl},
+			SKU_LOGO = #{skuLogo},
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE SKU_KEY = #{skuKey}
+	</update>
+	
+	<update id="updateSpuInfo" parameterType="Map">
+		UPDATE VPS_SKU_INFO 
+		<set>
+			<if test="spuInfoKey != null and spuInfoKey != '' ">
+				spu_info_key = #{spuInfoKey},
+			</if>
+			UPDATE_TIME = NOW(),
+			UPDATE_USER = #{updateUser}
+		</set>
+		WHERE 1 =1
+		<if test="skuKeyList != null">
+			AND sku_key IN 
+			<foreach collection="skuKeyList" item="skuKey" open="(" separator="," close=")">
+				#{skuKey}
+			</foreach>
+		</if>
+	</update>
+	
+	<update id="clearSpuInfoKey" parameterType="String">
+		UPDATE VPS_SKU_INFO 
+		<set>
+			spu_info_key = NULL,
+			UPDATE_TIME = NOW()
+		</set>
+		WHERE spu_Info_key = #{spuInfoKey}
+	</update>
+	
+	<delete id="deleteById" parameterType="String">
+		DELETE FROM VPS_SKU_INFO WHERE SKU_KEY = #{skuKey}
+	</delete>
+	
+	<select id="queryForLst" resultMap="resultSkuInfo" parameterType="Map">
+		SELECT
+			*
+		FROM
+			vps_sku_info
+		WHERE
+			DELETE_FLAG = 0
+		<if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+		    and company_key = #{queryBean.companyKey}
+		</if>
+		<if test="queryBean.skuName != null and queryBean.skuName != ''">
+		    and sku_name like '%${queryBean.skuName}%'
+		</if>
+		<if test="queryBean.skuKey != null and queryBean.skuKey != ''">
+			and sku_key like '%${queryBean.skuKey}%'
+		</if>
+		<if test="queryBean.commodityCode != null and queryBean.commodityCode != ''">
+		    and commodity_code like '%${queryBean.commodityCode}%'
+		</if>
+		<if test="queryBean.validDay != null and queryBean.validDay != ''">
+		    and valid_day = #{queryBean.validDay}
+		</if>
+		<if test="queryBean.skuType != null and queryBean.skuType != ''">
+		    and sku_type = #{queryBean.skuType}
+		</if>
+		<if test="queryBean.operationsType != null and queryBean.operationsType != ''">
+		    and OPERATIONS_TYPE = #{queryBean.operationsType}
+		</if>
+		<choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, create_time DESC
+          </when>
+		  <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+		      ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+		  </when>
+		  <otherwise>ORDER BY create_time DESC</otherwise>
+		</choose>
+        
+        LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_sku_info
+		WHERE
+			DELETE_FLAG = 0
+        <if test="queryBean.companyKey != null and queryBean.companyKey != ''">
+            and company_key = #{queryBean.companyKey}
+        </if>
+        <if test="queryBean.skuName != null and queryBean.skuName != ''">
+            and sku_name like '%${queryBean.skuName}%'
+        </if>
+        <if test="queryBean.commodityCode != null and queryBean.commodityCode != ''">
+            and commodity_code like '%${queryBean.commodityCode}%'
+        </if>
+        <if test="queryBean.validDay != null and queryBean.validDay != ''">
+            and valid_day = #{queryBean.validDay}
+        </if>
+        <if test="queryBean.skuType != null and queryBean.skuType != ''">
+            and sku_type = #{queryBean.skuType}
+        </if>
+		<if test="queryBean.operationsType != null and queryBean.operationsType != ''">
+			and OPERATIONS_TYPE = #{queryBean.operationsType}
+		</if>
+	</select>
+	
+    <select id="loadSkuListByCompany" resultMap="resultSkuInfo" parameterType="String">
+        SELECT
+            *
+        FROM
+            vps_sku_info
+        WHERE
+            DELETE_FLAG = 0
+        <if test="companyKey != '0'.toString() and companyKey != null and companyKey != ''">
+            AND COMPANY_KEY = #{companyKey}
+        </if>
+    </select>
+    
+    <select id="loadSkuListByCompanyCount" resultType="int" parameterType="String">
+        SELECT
+            COUNT(1)
+        FROM
+            vps_sku_info
+        WHERE
+            DELETE_FLAG = 0
+        <if test="companyKey != '0'.toString() ">
+            AND COMPANY_KEY = #{companyKey}
+        </if>
+    </select>
+	
+	<select id="findById" resultMap="resultSkuInfo" parameterType="String">
+		SELECT
+			*
+		FROM
+			vps_sku_info
+		WHERE
+			SKU_KEY = #{skuKey}
+	</select>
+	
+	<select id="findMaxSkuKeyNum" resultType="int">
+		SELECT IFNULL(MAX(CAST(RIGHT(SKU_KEY,3) AS SIGNED)),0) AS num FROM vps_sku_info
+	</select>
+	
+	<select id="queryForCountBySpuKey" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_sku_info
+		WHERE
+			DELETE_FLAG = 0
+		AND
+			SPU_INFO_KEY = #{spuInfoKey}
+	</select>
+	
+	<select id="queryForListBySpuKey" parameterType="String" resultMap="resultSkuInfo">
+		SELECT
+			*
+		FROM
+			vps_sku_info
+		WHERE
+			SPU_INFO_KEY = #{spuInfoKey}
+	</select>
+	
+	<select id="queryListByMap" parameterType="Map" resultMap="resultSkuInfo">
+		SELECT
+			*
+		FROM
+			vps_sku_info
+		WHERE
+			DELETE_FLAG = 0
+		<if test="isExistSpuKey">
+			AND SPU_INFO_KEY IS NOT NULL AND SPU_INFO_KEY != ''
+		</if>
+		<if test="!isExistSpuKey">
+			AND (SPU_INFO_KEY IS NULL OR SPU_INFO_KEY = '')
+		</if>
+		<if test="spuInfoKey != null and spuInfoKey != ''">
+			OR SPU_INFO_KEY = #{spuInfoKey}
+		</if>
+	</select>
+	
+<!-- 	获取与高印同步的SKU信息 -->
+	<select id="queryForCPIS" resultMap="resultSkuInfo">
+		SELECT
+			*
+		FROM
+			vps_sku_info
+		WHERE
+			DELETE_FLAG = 0
+			and sku_name not like '%测试%'
+			and sku_name not like '%补码%'
+	    order by short_name
+	</select>
+</mapper>

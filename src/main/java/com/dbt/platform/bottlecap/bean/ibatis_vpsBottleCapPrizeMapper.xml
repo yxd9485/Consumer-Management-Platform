@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.platform.bottlecap.dao.BottleCapPrizeCogDao">
+
+    <resultMap id="resultMap" type="com.dbt.platform.bottlecap.bean.VpsVcodeBottlecapPrizeCogInfo">
+        <result property="infoKey" column="INFO_KEY"/>
+        <result property="boottlecapActivityKey" column="BOOTTLECAP_ACTIVITY_KEY"/>
+        <result property="ladder" column="LADDER"/>
+        <result property="boottlecapPrizeType" column="BOOTTLECAP_PRIZE_TYPE"/>
+        <result property="consumeBoottlecap" column="CONSUME_BOOTTLECAP"/>
+        <result property="minMoney" column="MIN_MONEY"/>
+        <result property="maxMoney" column="MAX_MONEY"/>
+        <result property="minVpoints" column="MIN_VPOINTS"/>
+        <result property="maxVpoints" column="MAX_VPOINTS"/>
+        <result property="bigPrizeType" column="BIG_PRIZE_TYPE"/>
+        <result property="launchAmount" column="launch_amount"/>
+        <result property="receiveAmount" column="receive_amount"/>
+        <result property="receiveMoneyAmount" column="receive_money_amount"/>
+        <result property="receiveVpointsAmount" column="receive_vpoints_amount"/>
+        <result property="limitExchange" column="limit_exchange"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUser" column="CREATE_USER"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="updateUser" column="UPDATE_USER"/>
+    </resultMap>
+
+    <insert id="createBottleCapPrize" parameterType="list">
+        insert into vps_vcode_bottlecap_prize_cog(
+        INFO_KEY,
+        BOOTTLECAP_ACTIVITY_KEY,
+        LADDER,
+        BOOTTLECAP_PRIZE_TYPE,
+        CONSUME_BOOTTLECAP,
+        MIN_MONEY,
+        MAX_MONEY,
+        MIN_VPOINTS,
+        MAX_VPOINTS,
+        BIG_PRIZE_TYPE,
+        launch_amount,
+        limit_exchange,
+        receive_end_time,
+        DELETE_FLAG,
+        CREATE_TIME,
+        CREATE_USER,
+        UPDATE_TIME,
+        UPDATE_USER
+        )
+        values
+        <foreach collection="list" item="itm" separator=",">
+            (
+            #{itm.infoKey},
+            #{itm.boottlecapActivityKey},
+            #{itm.ladder},
+            #{itm.boottlecapPrizeType},
+            #{itm.consumeBoottlecap},
+            #{itm.minMoney},
+            #{itm.maxMoney},
+            #{itm.minVpoints},
+            #{itm.maxVpoints},
+            #{itm.bigPrizeType},
+            #{itm.launchAmount},
+            #{itm.limitExchange},
+             #{itm.receiveEndTime},
+            #{itm.deleteFlag},
+            #{itm.createTime},
+            #{itm.createUser},
+            #{itm.updateTime},
+            #{itm.updateUser}
+            )
+        </foreach>
+    </insert>
+
+    <select id="queryPrizeCogByActivityKey" parameterType="string" resultMap="resultMap">
+        select * from vps_vcode_bottlecap_prize_cog where BOOTTLECAP_ACTIVITY_KEY = #{activityKey} and DELETE_FLAG = '0' order by LADDER + 0
+    </select>
+
+    <update id="deletePrizeCogByActivityKey" parameterType="string">
+        update vps_vcode_bottlecap_prize_cog set DELETE_FLAG = '1' where BOOTTLECAP_ACTIVITY_KEY = #{activityKey}
+    </update>
+
+    <select id="queryPrizeCogByPrizeKey" parameterType="string" resultMap="resultMap">
+        select * from vps_vcode_bottlecap_prize_cog where INFO_KEY = #{infoKey}
+    </select>
+
+    <update id="updatePrizeLaunchAmount" parameterType="map">
+        update vps_vcode_bottlecap_prize_cog
+        <set>
+            launch_amount = #{launchAmount},
+            UPDATE_USER = #{updateUser},
+            UPDATE_TIME = now()
+        </set>
+        where INFO_KEY = #{infoKey}
+    </update>
+
+</mapper>

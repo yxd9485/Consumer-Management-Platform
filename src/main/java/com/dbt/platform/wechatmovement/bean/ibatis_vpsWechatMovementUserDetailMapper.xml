@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.wechatmovement.dao.IVpsWechatMovementUserDetailDao">
+
+	<resultMap type="com.dbt.platform.wechatmovement.bean.VpsWechatMovementUserDetail" id="VpsWechatMovementUserDetailResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="userKey" column="USER_KEY"/>
+		<result property="periodsKey" column="PERIODS_KEY"/>
+		<result property="payVpoints" column="PAY_VPOINTS"/>
+		<result property="stepNumber" column="STEP_NUMBER"/>
+		<result property="isInvitee" column="IS_INVITEE"/>
+		<result property="isFinish" column="IS_FINISH"/>
+		<result property="earnMoney" column="EARN_MONEY"/>
+		<result property="earnTime" column="EARN_TIME"/>
+		<result property="province" column="PROVINCE"/>
+		<result property="city" column="CITY"/>
+		<result property="county" column="COUNTY"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+			INFO_KEY,
+			PERIODS_KEY,
+			USER_KEY,
+			PAY_VPOINTS,
+			STEP_NUMBER,
+			IS_INVITEE,
+			IS_FINISH,
+			EARN_MONEY,
+			EARN_TIME,
+			PROVINCE,
+			CITY,
+			COUNTY,
+			CREATE_TIME,
+			UPDATE_TIME
+	</sql>
+    
+    
+    <!-- 更新已达标记录 -->
+    <update id="updateFinishDetailByMap" parameterType="Map">
+    	UPDATE 
+    		vps_wechat_movement_user_detail_${tableIndex}
+    	SET 
+    		IS_FINISH = '1',
+    		EARN_MONEY = #{earnMoney},
+    		EARN_TIME = #{earnTime},
+    		UPDATE_TIME = #{earnTime}
+    	WHERE 
+    		PERIODS_KEY = #{periodsKey}
+		 	AND STEP_NUMBER >= #{stepLimit}
+    </update>
+    
+    <!-- 根据期数查询参与运动数据List -->
+    <select id="queryWechatMovemen" parameterType="Map" resultMap="VpsWechatMovementUserDetailResultMap">
+		SELECT 
+			<include refid="Base_Column_List" />
+		 FROM 
+		 	vps_wechat_movement_user_detail_${tableIndex}
+		 WHERE 
+		 	PERIODS_KEY = #{periodsKey}
+		 <if test="stepLimit != null and stepLimit != ''">
+		 	AND STEP_NUMBER >= #{stepLimit}
+		 </if>
+		<if test="isFinish == '1'.toString() or isFinish == '0'.toString()">
+		 	AND IS_FINISH = #{isFinish}
+		 </if>
+    </select>
+    
+    <!-- 已达标数据list -->
+    <select id="queryFinishWechatMovemenList" parameterType="Map" resultMap="VpsWechatMovementUserDetailResultMap">
+		SELECT 
+			d.INFO_KEY,
+			d.PERIODS_KEY,
+			d.USER_KEY,
+			d.PAY_VPOINTS,
+			d.STEP_NUMBER,
+			d.IS_INVITEE,
+			d.IS_FINISH,
+			d.EARN_MONEY,
+			d.EARN_TIME,
+			d.UPDATE_TIME,
+			s.INFO_KEY AS weekSignInfoKey,
+			IFNULL(s.SIGN_DAYS, 0) AS signDays
+		 FROM vps_wechat_movement_user_detail_${tableIndex} d
+		 LEFT JOIN vps_wechat_movement_signin_record s on d.user_key = s.user_key AND s.SIGN_WEEK = #{signWeek}
+		 WHERE d.PERIODS_KEY = #{periodsKey}
+		 <if test="stepLimit > 0">
+		 AND d.STEP_NUMBER >= #{stepLimit}
+		 </if>
+    </select>
+    
+    <!-- 根据期数查询参与用户List -->
+    <select id="queryWechatMovemenUserInfo" parameterType="Map" resultMap="VpsWechatMovementUserDetailResultMap">
+		SELECT 
+			t.openid,
+			u.nick_name as nickName,
+			d.periods_key,
+			d.earn_money,
+			d.earn_time,
+			d.update_time
+		 FROM vps_wechat_movement_user_detail_${tableIndex} d
+		 LEFT JOIN vps_consumer_user_info u on d.user_key = u.user_key
+		 LEFT JOIN vps_consumer_thirdaccount_info t on d.user_key = t.user_key
+		 WHERE 
+		 	d.PERIODS_KEY = #{periodsKey}
+		 <if test="isFinish == '0'.toString() or isFinish == '1'.toString()">
+		 	AND d.IS_FINISH = #{isFinish}
+		 </if>
+    </select>
+    
+    <!-- 获取用户7天参赛情况 -->
+    <select id="queryUser7DayEntryDetail" parameterType="Map" resultMap="VpsWechatMovementUserDetailResultMap">
+    	SELECT 
+			p.PERIODS_KEY, 
+			p.TOTAL_VPOINTS AS totalVpoints, 
+			p.PARTICIPANTS_COUNT AS participantsCount,
+			p.FINISH_COUNT AS finishCount,
+			p.ACTIVITY_MAGNIFICATION AS activityMagnification,
+			p.CURRENCY_PRICE AS currencyPrice,
+			p.FINISH_AVG_MONEY AS finishAvgMoney,
+			d.USER_KEY,
+			d.STEP_NUMBER, 
+			d.IS_FINISH, 
+			d.EARN_MONEY, 
+			d.EARN_TIME,
+			d.UPDATE_TIME 
+		FROM vps_wechat_movement_periods p
+		LEFT JOIN 
+			(
+				<foreach collection="packTables" item="tableIndex" separator="UNION ALL">
+					SELECT 
+						PERIODS_KEY, USER_KEY, STEP_NUMBER, IS_FINISH, EARN_MONEY, EARN_TIME 
+					FROM 
+						vps_wechat_movement_user_detail_${tableIndex} 
+					WHERE 
+						USER_KEY = #{userKey} 
+					AND PERIODS_KEY BETWEEN #{startDate} and #{endDate}
+				</foreach>
+			) d on p.PERIODS_KEY = d.PERIODS_KEY
+		WHERE p.PERIODS_KEY BETWEEN #{startDate} and #{endDate}
+    </select>
+</mapper>

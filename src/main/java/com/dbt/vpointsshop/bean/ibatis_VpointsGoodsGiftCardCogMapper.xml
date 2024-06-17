@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dbt.vpointsshop.dao.IVpointsGoodsGiftCardCogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardCog">
+        <id column="info_key" property="infoKey" />
+        <result column="gift_card_name" property="giftCardName" />
+        <result column="gift_card_type" property="giftCardType" />
+        <result column="cover" property="cover" />
+        <result column="card_status" property="cardStatus" />
+        <result column="stop_sell_cards" property="stopSellCards" />
+        <result column="real_pay" property="realPay" />
+        <result column="denomination" property="denomination" />
+        <result column="term_of_validity" property="termOfValidity" />
+        <result column="gift_card_status" property="giftCardStatus" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+    </resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultVOMap" type="com.dbt.vpointsshop.dto.VpointsGoodsGiftCardCogVO">
+        <id column="info_key" property="infoKey" />
+        <result column="gift_card_name" property="giftCardName" />
+        <result column="gift_card_type" property="giftCardType" />
+        <result column="cover" property="cover" />
+        <result column="card_status" property="cardStatus" />
+        <result column="stop_sell_cards" property="stopSellCards" />
+        <result column="real_pay" property="realPay" />
+        <result column="denomination" property="denomination" />
+        <result column="term_of_validity" property="termOfValidity" />
+        <result column="gift_card_status" property="giftCardStatus" />
+        <result column="createTime" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="goods_name" property="goodsName" />
+        <result column="goods_id" property="goodsId" />
+        <result column="isBegin" property="isBegin" />
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cog.info_key,
+        cog.info_no,
+        cog.gift_card_name,
+        cog.gift_card_type,
+        cog.cover,
+        cog.card_status,
+        cog.stop_sell_cards,
+        cog.term_of_validity,
+        cog.gift_card_status,
+        cog.create_time,
+        cog.create_user,
+        cog.update_time,
+        cog.update_user,
+        cog.delete_flag
+       </sql>
+
+    <insert id="insert" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardCog">
+        insert into vpoints_goods_gift_card_cog (
+                   info_key,
+                   info_no,
+                  gift_card_name,
+                  gift_card_type,
+                  cover,
+                  card_status,
+                  stop_sell_cards,
+                  term_of_validity,
+                  gift_card_status,
+                  create_time,
+                  create_user,
+                  update_time,
+                  update_user,
+                  delete_flag
+        ) values (
+                #{infoKey},
+                #{infoNo},
+                #{giftCardName},
+                #{giftCardType},
+                #{cover},
+                #{cardStatus},
+                #{stopSellCards},
+                #{termOfValidity},
+                #{giftCardStatus},
+                #{createTime},
+                #{createUser},
+                #{updateTime},
+                #{updateUser},
+                #{deleteFlag}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsGiftCardCog">
+        update  vpoints_goods_gift_card_cog set
+
+                    <if test=" giftCardName!=null and giftCardName !=''">
+                         gift_card_name =   #{giftCardName},
+                    </if>
+                    <if test=" giftCardType!=null and giftCardType !=''">
+                         gift_card_type =   #{giftCardType},
+                    </if>
+                    <if test=" cover!=null and cover !=''">
+                         cover =   #{cover},
+                    </if>
+                    <if test=" cardStatus!=null and cardStatus !=''">
+                         card_status =   #{cardStatus},
+                    </if>
+                    <if test=" stopSellCards!=null and stopSellCards !=''">
+                         stop_sell_cards =   #{stopSellCards},
+                    </if>
+                    <if test=" termOfValidity!=null and termOfValidity !=''">
+                         term_of_validity =   #{termOfValidity},
+                    </if>
+                    <if test=" createTime!=null">
+                         create_time =   #{createTime},
+                    </if>
+                    <if test=" createUser!=null">
+                         create_user =   #{createUser},
+                    </if>
+                    <if test=" updateUser!=null">
+                         update_user =   #{updateUser},
+                    </if>
+                    <if test=" deleteFlag!=null and deleteFlag !=''">
+                         delete_flag =   #{deleteFlag},
+                    </if>
+                    <if test=" giftCardStatus!=null and giftCardStatus!=''">
+                        gift_card_status =   #{giftCardStatus},
+                    </if>
+                    update_time =now()
+                    where info_key =  #{infoKey}
+
+    </update>
+
+    <select id="selectPageVO" resultMap="BaseResultVOMap">
+        select <include refid="Base_Column_List"/>,
+        date_format(cog.create_time,'%Y-%m-%d %H:%i:%S') createTime,
+        cog.card_status isBegin from vpoints_goods_gift_card_cog cog
+        <where>
+            cog.delete_flag = '0'
+            <if test="ew.giftCardName!='' and ew.giftCardName!=null ">
+                and  cog.gift_card_name like  concat('%',#{ew.giftCardName},'%')
+            </if>
+            <if test="ew.giftCardType!='' and ew.giftCardType!=null ">
+                and  cog.gift_card_type = #{ew.giftCardType}
+            </if>
+            <if test="ew.cardStatus!='' and ew.cardStatus!=null ">
+                and  cog.card_status = #{ew.cardStatus}
+            </if>
+            <if test="ew.startDate!='' and ew.startDate!=null ">
+                and  cog.create_time >= #{ew.startDate}
+            </if>
+            <if test="ew.endDate!='' and ew.endDate!=null ">
+                and  cog.create_time &lt;=  #{ew.endDate}
+            </if>
+        </where>
+        order by cog.create_time desc
+    </select>
+    <select id="checkGoodsActivity" parameterType="com.dbt.vpointsshop.dto.VpointsGoodsGiftCardCogVO" resultMap="BaseResultVOMap">
+        select <include refid="Base_Column_List"/>,
+        date_format(cog.create_time,'%Y-%m-%d %H:%i:%S') createTime,goods.goods_name,
+        cog.card_status isBegin from vpoints_goods_gift_card_cog cog
+        left join vpoints_goods_gift_card_relation rela on rela.gift_card_info_key = cog.info_key
+        left join vpoints_goods_info goods on goods.goods_id = rela.goods_id
+        where cog.delete_flag = '0' and cog.card_status = '1'
+        <foreach collection="goodsIdList" item="Id" open="and (" close=" )" separator="or">
+            rela.goods_id = #{Id}
+        </foreach>
+        <if test="infoKey != null and infoKey != ''">
+            and cog.info_key != #{infoKey}
+        </if>
+    </select>
+    <select id="getCurrentActivity" resultMap="BaseResultVOMap">
+        select <include refid="Base_Column_List"/>,rela.goods_id
+        from vpoints_goods_gift_card_cog cog
+        left join vpoints_goods_gift_card_relation rela on rela.gift_card_info_key = cog.info_key
+        where cog.delete_flag = '0' and cog.card_status = '1'
+    </select>
+</mapper>

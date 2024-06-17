@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.taoeasteregg.dao.IVpsVcodeTaoEasterEggCogDao">
+
+	<resultMap type="com.dbt.platform.taoeasteregg.bean.VpsVcodeTaoEasterEggCog" id="baseResultMap">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="taoNo" column="TAO_NO"/>
+		<result property="taoName" column="TAO_NAME"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="taoMemberOrder" column="TAO_MEMBER_ORDER"/>
+		<result property="ladderType" column="LADDER_TYPE"/>
+		<result property="vcodeActivityKeys" column="VCODE_ACTIVITY_KEYS"/>
+		<result property="ladderRule" column="LADDER_RULE"/>
+		<result property="deleteFlag" column="DELETE_FLAG"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="createUser" column="CREATE_USER"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="com.dbt.platform.taoeasteregg.bean.VpsVcodeTaoEasterEggCog">
+		INSERT INTO vps_vcode_tao_easteregg_cog (
+			INFO_KEY,
+			TAO_NO,
+			TAO_NAME,
+			START_DATE,
+			END_DATE,
+			TAO_MEMBER_ORDER,
+			LADDER_TYPE,
+			VCODE_ACTIVITY_KEYS,
+			LADDER_RULE,
+			DELETE_FLAG,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			UUID(),
+			#{taoNo},
+			#{taoName},
+			#{startDate},
+			#{endDate},
+			#{taoMemberOrder},
+			#{ladderType},
+			#{vcodeActivityKeys},
+			#{ladderRule},
+			'0',
+			#{createTime},
+			#{createUser},
+			#{updateTime},
+			#{updateUser}
+		) 
+	</insert>
+	
+	<update id="update" parameterType="com.dbt.platform.taoeasteregg.bean.VpsVcodeTaoEasterEggCog">
+        UPDATE
+			vps_vcode_tao_easteregg_cog
+		SET
+            <if test="taoName != null and taoName != ''">
+                tao_name = #{taoName},
+            </if>
+            <if test="startDate != null and startDate != ''">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+            <if test="taoMemberOrder != null and taoMemberOrder != ''">
+                tao_member_order = #{taoMemberOrder},
+            </if>
+            <if test="ladderType != null and ladderType != ''">
+                ladder_type = #{ladderType},
+            </if>
+            <if test="vcodeActivityKeys != null and vcodeActivityKeys != ''">
+                vcode_activity_keys = #{vcodeActivityKeys},
+            </if>
+            <if test="ladderRule != null and ladderRule != ''">
+                ladder_rule = #{ladderRule},
+            </if>
+            <if test="deleteFlag != null and deleteFlag != ''">
+                delete_flag = #{deleteFlag},
+            </if>
+			UPDATE_TIME = #{updateTime},
+			UPDATE_USER = #{updateUser}
+		WHERE
+			INFO_KEY = #{infoKey}
+	</update>
+	
+	<select id="findById" resultMap="baseResultMap" parameterType="String">
+		SELECT
+			*
+		FROM
+			vps_vcode_tao_easteregg_cog
+		WHERE
+			INFO_KEY = #{infoKey}
+	</select>
+	
+	<select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			*,
+			CASE 
+				WHEN #{queryBean.currDate} >= START_DATE AND #{queryBean.currDate} <![CDATA[<=]]> END_DATE THEN '1'
+				WHEN #{queryBean.currDate} > END_DATE THEN '2' 
+				ELSE '0'
+			END AS isBegin
+		FROM
+			vps_vcode_tao_easteregg_cog
+		WHERE
+			DELETE_FLAG = '0'  
+		<if test="queryBean.taoName != null and queryBean.taoName != ''">
+            and tao_name like '%${queryBean.taoName}%'
+        </if>		
+        <choose>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != '' and pageInfo.orderCol != 'create_time'">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}, CREATE_TIME DESC
+          </when>
+          <when test="pageInfo.orderCol != null and pageInfo.orderCol != ''">
+              ORDER BY ${pageInfo.orderCol} ${pageInfo.orderType}
+          </when>
+          <otherwise>ORDER BY isBegin, CREATE_TIME DESC</otherwise>
+        </choose>
+		LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="Integer" parameterType="Map">
+		SELECT COUNT(1) FROM vps_vcode_tao_easteregg_cog
+		WHERE DELETE_FLAG = '0'  
+        <if test="queryBean.taoName != null and queryBean.taoName != ''">
+            and tao_name like '%${queryBean.taoName}%'
+        </if>
+	</select>
+	
+	<select id="findByActivityKey" parameterType="String" resultMap="baseResultMap">
+		select * FROM vps_vcode_tao_easteregg_cog
+		WHERE LOCATE(#{activityKey}, VCODE_ACTIVITY_KEYS) > 0 
+		AND CURDATE() BETWEEN start_date AND END_DATE
+		AND DELETE_FLAG = '0'
+		LIMIT 1
+	</select>
+	
+<!-- 	配置活动冲突校验 -->
+	<select id="queryForConflictCheck" parameterType="String" resultMap="baseResultMap">
+        select 
+            * 
+        FROM 
+            vps_vcode_tao_easteregg_cog
+		WHERE 
+            delete_flag != '1'
+            and !(#{startDate} > end_date or #{endDate} <![CDATA[<]]> start_date)
+            and (
+                <foreach collection="activityKeyAry" item="activityKey" separator=" or ">
+                    vcode_activity_keys like '%${activityKey}%'
+                </foreach>
+            )
+            <if test="infoKey != null and infoKey != ''">
+                and info_key != #{infoKey}
+            </if>
+	</select>
+	
+	
+</mapper>

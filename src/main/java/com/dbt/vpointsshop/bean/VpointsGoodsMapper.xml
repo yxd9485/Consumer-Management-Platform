@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.VpointsGoodsDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCategoryType" id="categoryMap">
+		<result property="categoryType" column="category_type" />
+		<result property="categoryName" column="category_name" />
+		<result property="categoryParent" column="category_parent" />
+		<result property="exchangeType" column="exchange_type" />
+		<result property="categoryIco" column="category_ico" />
+		<result property="categoryImg" column="category_img" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsBrandInfo" id="brandResultMap">
+		<result property="brandId" column="brand_id" />
+		<result property="brandName" column="brand_name" />
+		<result property="brandParent" column="brand_parent" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.CompanyInfo" id="companyMap">
+		<result property="companyKey" column="companyKey" />
+		<result property="companyName" column="companyName" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsGoodsInfo" id="goodsMap">
+		<result property="firstName" column="firstName" />
+		<result property="secondName" column="secondName" />
+		<result property="goodsId" column="goodsId" />
+		<result property="companyKey" column="companyKey" />
+		<result property="companyName" column="companyName" />
+		<result property="categoryParent" column="categoryParent" />
+		<result property="categoryType" column="categoryType" />
+		<result property="exchangeChannel" column="exchangeChannel" />
+		<result property="exchangeType" column="exchangeType" />
+		<result property="goodsName" column="goodsName" />
+		<result property="goodsUrl" column="goodsUrl" />
+		<result property="goodsBigUrl" column="goodsBigUrl" />
+		<result property="goodsSpecification" column="goodsSpecification" />
+		<result property="goodsUnitName" column="goodsUnitName" />
+		<result property="goodsContent" column="goodsContent" />
+		<result property="batchKey" column="batchKey" />
+		<result property="goodsValue" column="goodsValue" />
+		<result property="goodsMoney" column="goodsMoney" />
+		<result property="realPay" column="realPay" />
+		<result property="goodsVpoints" column="goodsVpoints" />
+		<result property="goodsPay" column="goodsPay" />
+		<result property="goodsDiscount" column="goodsDiscount" />
+		<result property="goodsNum" column="goodsNum" />
+		<result property="goodsExchangeNum" column="goodsExchangeNum" />
+		<result property="goodsRemains" column="goodsRemains" />
+		<result property="goodsLimit" column="goodsLimit" />
+		<result property="goodsUserDayLimit" column="goodsUserDayLimit" />
+		<result property="goodsStartTime" column="goodsStartTime" />
+		<result property="goodsEndTime" column="goodsEndTime" />
+		<result property="isCommend" column="isCommend" />
+		<result property="isGift" column="is_gift" />
+		<result property="isGiftCard" column="is_gift_card" />
+		<result property="isGiftAsCoupons" column="is_gift_as_coupons" />
+		<result property="secKill" column="secKill" />
+		<result property="showNum" column="showNum" />
+		<result property="brandId" column="brandId" />
+		<result property="goodsClientNo" column="goodsClientNo" />
+		<result property="goodsShortName" column="goodsShortName" />
+		<result property="daicaiMoney" column="daicaiMoney" />
+		<result property="daicaiVpoints" column="daicaiVpoints" />
+		<result property="goodsStatus" column="goodsStatus" />
+		<result property="pauseExchangeTips" column="pauseExchangeTips" />
+		<result property="goodShowFlag" column="goodShowFlag" />
+		<result property="goodShowSequence" column="goodShowSequence" />
+		<result property="saleNumSequence" column="saleNumSequence" />
+		<result property="youPinFlag" column="youPinFlag" />
+		<result property="expressTips" column="expressTips" />
+		<result property="shipmentsArea" column="shipmentsArea" />
+		<result property="exchangeCardType" column="exchangeCardType" />
+		<result property="isGroupBuying" column="isGroupBuying" />
+		<result property="groupBuyingVpoints" column="groupBuyingVpoints" />
+		<result property="limitGroupNum" column="limitGroupNum" />
+		<result property="reachNum" column="reachNum" />
+		<result property="remarkInfo" column="remarkInfo" />
+		<result property="goodsCustomSequence" column="goods_custom_sequence" />
+		<result property="hotRecommendTitle" column="hot_recommend_title" />
+		<result property="expressHotareaKey" column="express_hotarea_key" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsCouponBatch" id="batchMap">
+		<result property="batchKey" column="batchKey" />
+		<result property="batchName" column="batchName" />
+		<result property="batchCount" column="batchCount" />
+		<result property="batchTable" column="batchTable" />
+		<result property="companyKey" column="companyKey" />
+		<result property="companyName" column="companyName" />
+	</resultMap>
+	<resultMap type="com.dbt.vpointsshop.bean.VpointsGoodsInfo" id="goodsResultMap">
+		<result property="goodsId" column="goods_Id" />
+		<result property="companyKey" column="company_Key" />
+		<result property="companyName" column="company_Name" />
+		<result property="categoryType" column="category_Type" />
+		<result property="exchangeChannel" column="exchange_Channel" />
+		<result property="exchangeType" column="exchange_Type" />
+		<result property="goodsName" column="goods_Name" />
+		<result property="goodsUrl" column="goods_Url" />
+		<result property="goodsBigUrl" column="goods_big_url" />
+		<result property="goodsActivityUrl" column="goods_activity_url" />
+		<result property="goodsSpecification" column="goods_specification" />
+		<result property="goodsUnitName" column="goods_unit_name" />
+		<result property="goodsContent" column="goods_Content" />
+		<result property="batchKey" column="batch_Key" />
+		<result property="goodsValue" column="goods_Value" />
+		<result property="goodsMoney" column="goods_Money" />
+		<result property="goodsVpoints" column="goods_Vpoints" />
+		<result property="goodsPay" column="goods_pay" />
+		<result property="realPay" column="real_pay" />
+		<result property="goodsDiscount" column="goods_Discount" />
+		<result property="goodsNum" column="goods_Num" />
+		<result property="goodsExchangeNum" column="goods_Exchange_Num" />
+		<result property="goodsRemains" column="goods_Remains" />
+		<result property="goodsLimit" column="goods_Limit" />
+		<result property="goodsUserDayLimit" column="goods_user_day_limit" />
+		<result property="goodsStartTime" column="goods_Start_Time" />
+		<result property="goodsEndTime" column="goods_End_Time" />
+		<result property="isCommend" column="is_Commend" />
+		<result property="isGift" column="is_gift" />
+		<result property="isGiftAsCoupons" column="is_gift_as_coupons" />
+		<result property="secKill" column="sec_Kill" />
+		<result property="showNum" column="show_Num" />
+		<result property="goodsClientNo" column="goods_client_no" />
+		<result property="brandId" column="brand_id" />
+		<result property="goodsClientNo" column="goods_client_no" />
+		<result property="goodsShortName" column="goods_short_name" />
+		<result property="daicaiMoney" column="daicai_money" />
+		<result property="daicaiVpoints" column="daicai_vpoints" />
+		<result property="goodsStatus" column="goods_status" />
+		<result property="pauseExchangeTips" column="pause_exchange_tips" />
+		<result property="goodShowFlag" column="good_show_flag" />
+		<result property="goodShowSequence" column="good_show_sequence" />
+		<result property="saleNumSequence" column="sale_num_sequence" />
+		<result property="youPinFlag" column="you_pin_flag" />
+		<result property="expressTips" column="express_tips" />
+		<result property="shipmentsArea" column="shipments_area" />
+		<result property="exchangeCardType" column="exchange_card_type" />
+		<result property="isGroupBuying" column="isGroupBuying" />
+		<result property="groupBuyingVpoints" column="groupBuyingVpoints" />
+		<result property="limitGroupNum" column="limitGroupNum" />
+		<result property="reachNum" column="reachNum" />
+		<result property="remarkInfo" column="remarkInfo" />
+		<result property="isShowSales" column="is_showSales" />
+		<result property="showSalesType" column="showSalesType" />
+		<result property="showSales" column="showSales" />
+		<result property="showSalesBase" column="showSalesBase" />
+		<result property="hotRecommendTitle" column="hot_recommend_title" />
+
+		<result property="expressHotareaKey" column="express_hotarea_key" />
+	</resultMap>
+	<!-- 	<select id="getCompanyList" resultMap="companyMap"> -->
+	<!-- 		select t.company_key as companyKey,t.company_name as companyName  from vps_company_info t  -->
+	<!-- 	</select> -->
+	<select id="getGoodsList" parameterType="Map" resultMap="goodsMap">
+		select
+		a.category_name as firstName,
+		c.category_name as secondName,
+		t.goods_id as goodsId,
+		a.category_type as categoryParent,
+		t.remark_info as remarkInfo,
+		t.category_type as categoryType,
+		t.exchange_channel as exchangeChannel,
+		t.exchange_type as exchangeType,
+		t.goods_name as goodsName,
+		t.goods_url as goodsUrl,
+		t.goods_big_url as goodsBigUrl,
+		t.goods_activity_url as goodsActivityUrl,
+		t.goods_content as goodsContent,
+		t.batch_key as batchKey,
+		t.goods_value as goodsValue,
+		t.goods_money as goodsMoney,
+		t.real_pay as realPay,
+		t.goods_vpoints as goodsVpoints,
+		t.goods_pay as goodsPay,
+		t.goods_discount as goodsDiscount,
+		t.goods_num as goodsNum,
+		t.goods_exchange_num as goodsExchangeNum,
+		t.goods_remains as goodsRemains,
+		t.goods_limit as goodsLimit,
+		t.goods_user_day_limit as goodsUserDayLimit,
+		date_format(t.goods_start_time,'%Y-%m-%d %H:%i:%S') as goodsStartTime,
+		date_format(t.goods_end_time,'%Y-%m-%d %H:%i:%S') as goodsEndTime,
+		t.is_commend as isCommend,
+		t.you_pin_flag as youPinFlag,
+		t.sec_kill as secKill,
+		t.show_num as showNum,
+		t.brand_id as brandId,
+		t.goods_client_no as goodsClientNo,
+		t.goods_short_name as goodsShortName,
+		t.daicai_money as daicaiMoney,
+		t.daicai_vpoints as daicaiVpoints,
+		t.goods_status as goodsStatus,
+		t.pause_exchange_tips as pauseExchangeTips,
+		t.good_show_flag as goodShowFlag,
+		t.good_show_sequence as goodShowSequence,
+		t.sale_num_sequence as saleNumSequence,
+		t.express_tips as expressTips,
+		t.shipments_area as shipmentsArea,
+		t.exchange_card_type as exchangeCardType,
+		t.is_group_buying as isGroupBuying,
+		t.group_buying_vpoints as groupBuyingVpoints,
+		t.limit_group_num as limitGroupNum,
+		t.reach_num as reachNum,
+		b.brand_name as brandName,
+		t.goods_specification as goodsSpecification,
+		t.goods_Unit_Name as goodsUnitName,
+		t.is_showSales as isShowSales,
+		t.showSalesType as showSalesType,
+		t.showSalesBase as showSalesBase,
+		t.showSales as showSales,
+		t.hot_recommend_title,
+		t.is_gift,
+		t.is_gift_card,
+		t.is_gift_as_coupons,
+		t.goods_custom_sequence,
+		t.express_hotarea_key
+		from vpoints_goods_info t
+		LEFT JOIN vpoints_category_type c on c.category_type=t.category_type
+		LEFT JOIN vpoints_category_type a on c.category_parent=a.category_type
+		left join vpoints_brand_info b on t.brand_id = b.brand_id
+		where  t.delete_flag='0'
+		<if test="bean.goodsId != null and bean.goodsId != ''">
+			and t.goods_id=#{bean.goodsId}
+		</if>
+		<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+			and t.exchange_channel  = #{bean.exchangeChannel}
+		</if>
+		<if test="bean.exchangeType != null and bean.exchangeType != ''">
+			and t.exchange_type  = #{bean.exchangeType}
+		</if>
+		<if test="bean.categoryParent != null and bean.categoryParent != ''">
+			and c.category_parent=#{bean.categoryParent}
+		</if>
+		<if test="bean.categoryType != null and bean.categoryType != ''">
+			and t.category_type=#{bean.categoryType}
+		</if>
+		<if test="bean.goodsName != null and bean.goodsName != ''">
+			and t.goods_name like '%${bean.goodsName}%'
+		</if>
+		<if test="bean.brandId != null and bean.brandId != ''">
+			and b.brand_id = #{bean.brandId}
+		</if>
+		<if test="bean.goodShowFlag != null and bean.goodShowFlag != ''">
+			and t.good_show_flag = #{bean.goodShowFlag}
+		</if>
+		<if test="bean.goodsStatus != null and bean.goodsStatus != ''">
+			and t.goods_status = #{bean.goodsStatus}
+		</if>
+
+		<if test="bean.youPinFlag != null and bean.youPinFlag != ''">
+			and t.you_pin_flag = #{bean.youPinFlag}
+		</if>
+
+		<if test="bean.isGift != null and bean.isGift != ''">
+			and t.is_gift = #{bean.isGift}
+		</if>
+		<if test="bean.goodsStartTime != null and bean.goodsStartTime != ''">
+			and t.goods_start_time &lt;= str_to_date(#{bean.goodsStartTime},'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="bean.goodsEndTime != null and bean.goodsEndTime != ''">
+			and t.goods_end_time >= str_to_date(#{bean.goodsEndTime},'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="bean.goodsRemains != null and bean.goodsRemains != ''">
+			and t.goods_remains > #{goodsRemains}
+		</if>
+		<if test="param != null">
+			<choose>
+				<when test="param.orderCol == null and param.orderCol == '' and param.orderType == '' and param.orderType ==null">
+					ORDER BY t.UPDATE_TIME DESC
+				</when>
+				<when test="param.orderCol != null and param.orderCol != '' and param.orderType != '' and param.orderType !=null  ">
+					ORDER BY  ${param.orderCol} ${param.orderType}
+				</when>
+
+				<otherwise>order by t.UPDATE_TIME desc</otherwise>
+			</choose>
+			limit #{param.startCount}, #{param.pagePerCount}
+		</if>
+	</select>
+	<select id="getAllGoodsForJob" parameterType="Map" resultMap="goodsMap">
+		select
+		a.category_name as firstName,
+		c.category_name as secondName,
+		t.goods_id as goodsId,
+		a.category_type as categoryParent,
+		t.category_type as categoryType,
+		t.exchange_channel as exchangeChannel,
+		t.exchange_type as exchangeType,
+		t.goods_name as goodsName,
+		t.goods_url as goodsUrl,
+		t.goods_big_url as goodsBigUrl,
+		t.goods_activity_url as goodsActivityUrl,
+		t.goods_content as goodsContent,
+		t.batch_key as batchKey,
+		t.goods_value as goodsValue,
+		t.goods_money as goodsMoney,
+		t.goods_vpoints as goodsVpoints,
+		t.goods_pay as goodsPay,
+		t.goods_discount as goodsDiscount,
+		t.goods_num as goodsNum,
+		t.goods_exchange_num as goodsExchangeNum,
+		t.goods_remains as goodsRemains,
+		t.goods_limit as goodsLimit,
+		t.goods_user_day_limit as goodsUserDayLimit,
+		date_format(t.goods_start_time,'%Y-%m-%d %H:%i:%S') as goodsStartTime,
+		date_format(t.goods_end_time,'%Y-%m-%d %H:%i:%S') as goodsEndTime,
+		t.is_commend as isCommend,
+		t.you_pin_flag as youPinFlag,
+		t.sec_kill as secKill,
+		t.show_num as showNum,
+		t.brand_id as brandId,
+		t.goods_client_no as goodsClientNo,
+		t.goods_short_name as goodsShortName,
+		t.daicai_money as daicaiMoney,
+		t.daicai_vpoints as daicaiVpoints,
+		t.goods_status as goodsStatus,
+		t.pause_exchange_tips as pauseExchangeTips,
+		t.good_show_flag as goodShowFlag,
+		t.good_show_sequence as goodShowSequence,
+		t.sale_num_sequence as saleNumSequence,
+		t.express_tips as expressTips,
+		t.shipments_area as shipmentsArea,
+		t.exchange_card_type as exchangeCardType,
+		t.is_group_buying as isGroupBuying,
+		t.group_buying_vpoints as groupBuyingVpoints,
+		t.limit_group_num as limitGroupNum,
+		t.reach_num as reachNum,
+		b.brand_name as brandName,
+		t.goods_specification as goodsSpecification,
+		t.goods_Unit_Name as goodsUnitName,
+		t.is_showSales as isShowSales,
+		t.showSalesType as showSalesType,
+		t.showSalesBase as showSalesBase,
+		t.hot_recommend_title,
+		t.showSales AS showSales
+		from vpoints_goods_info t
+		LEFT JOIN vpoints_category_type c on c.category_type=t.category_type
+		LEFT JOIN vpoints_category_type a on c.category_parent=a.category_type
+		left join vpoints_brand_info b on t.brand_id = b.brand_id
+		where  t.delete_flag='0'
+	</select>
+	<select id="getGoodsCount" parameterType="Map" resultType="int">
+		select count(*)  from vpoints_goods_info t
+		LEFT JOIN vpoints_category_type c on c.category_type=t.category_type
+		LEFT JOIN vpoints_category_type a on c.category_parent=a.category_type
+		left join vpoints_brand_info b on t.brand_id = b.brand_id
+		where  t.delete_flag='0'
+		<if test="bean.goodsId != null and bean.goodsId != ''">
+			and t.goods_id=#{bean.goodsId}
+		</if>
+		<if test="bean.exchangeChannel != null and bean.exchangeChannel != ''">
+			and t.exchange_channel  = #{bean.exchangeChannel}
+		</if>
+		<if test="bean.exchangeType != null and bean.exchangeType != ''">
+			and t.exchange_type  = #{bean.exchangeType}
+		</if>
+		<if test="bean.categoryParent != null and bean.categoryParent != ''">
+			and c.category_parent=#{bean.categoryParent}
+		</if>
+		<if test="bean.categoryType != null and bean.categoryType != ''">
+			and t.category_type=#{bean.categoryType}
+		</if>
+		<if test="bean.goodsName != null and bean.goodsName != ''">
+			and t.goods_name like '%${bean.goodsName}%'
+		</if>
+		<if test="bean.brandId != null and bean.brandId != ''">
+			and b.brand_id = #{bean.brandId}
+		</if>
+		<if test="bean.goodShowFlag != null and bean.goodShowFlag != ''">
+			and t.good_show_flag = #{bean.goodShowFlag}
+		</if>
+		<if test="bean.goodsStatus != null and bean.goodsStatus != ''">
+			and t.goods_status = #{bean.goodsStatus}
+		</if>
+	</select>
+	<insert id="addGoods" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsInfo">
+		insert into vpoints_goods_info(
+			goods_id,company_key,category_type,exchange_type,exchange_channel,goods_name,goods_big_url,goods_activity_url,goods_url,goods_content,
+			batch_key,goods_value,goods_money,goods_vpoints,goods_pay,goods_discount,real_vpoints,real_pay,goods_num,show_num,
+			goods_remains,goods_limit,goods_user_day_limit,goods_start_time,goods_end_time,is_commend,you_pin_flag,sec_kill,goods_status,
+			brand_id,goods_client_no,goods_short_name,daicai_money,good_show_flag, good_show_sequence,pause_exchange_flag,pause_exchange_tips,express_Tips,
+			is_group_buying,group_buying_vpoints,limit_group_num,reach_num,daicai_vpoints,shipments_area, exchange_card_type,sale_num_sequence,goods_specification,
+			goods_Unit_Name,remark_info,create_user,create_time,update_time,delete_flag,is_showSales,showSalesType,showSales,showSalesBase,is_gift,is_gift_card,is_gift_as_coupons,
+			goods_custom_sequence,hot_recommend_title,express_hotarea_key
+		)values(
+			#{goodsId},#{companyKey},#{categoryType},#{exchangeType},#{exchangeChannel},#{goodsName},#{goodsBigUrl},#{goodsActivityUrl},#{goodsUrl},#{goodsContent},
+			#{batchKey},#{goodsValue},#{goodsMoney},#{goodsVpoints},#{goodsPay},#{goodsDiscount},#{goodsVpoints}*#{goodsDiscount}/100,#{goodsPay}*#{goodsDiscount}/100,#{goodsNum},#{showNum},
+			#{goodsNum},#{goodsLimit},#{goodsUserDayLimit},#{goodsStartTime},#{goodsEndTime},#{isCommend},#{youPinFlag},#{secKill},#{goodsStatus},
+			#{brandId},#{goodsClientNo},#{goodsShortName},#{daicaiMoney},#{goodShowFlag},#{goodShowSequence},#{goodsStatus},#{pauseExchangeTips},#{expressTips},
+			#{isGroupBuying},#{groupBuyingVpoints},#{limitGroupNum},#{reachNum},#{daicaiVpoints},#{shipmentsArea},#{exchangeCardType},#{saleNumSequence},#{goodsSpecification},
+			#{goodsUnitName},#{remarkInfo},#{createUser},#{createTime},#{updateTime},#{deleteFlag},#{isShowSales},#{showSalesType},#{showSalesBase},#{showSalesBase},#{isGift},#{isGiftCard},#{isGiftAsCoupons},
+		    #{goodsCustomSequence},#{hotRecommendTitle},#{expressHotareaKey}
+		)
+	</insert>
+	<update id="updateGoods" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsInfo">
+		update vpoints_goods_info
+		<set>
+			category_type=#{categoryType},
+			company_key=#{companyKey},
+			exchange_channel=#{exchangeChannel},
+			exchange_type=#{exchangeType},
+			goods_name=#{goodsName},
+			goods_url=#{goodsUrl},
+			goods_big_url=#{goodsBigUrl},
+			goods_activity_url=#{goodsActivityUrl},
+			goods_content=#{goodsContent},
+			batch_key=#{batchKey},
+			goods_value=#{goodsValue},
+			goods_money=#{goodsMoney},
+			goods_vpoints=#{goodsVpoints},
+			goods_pay=#{goodsPay},
+			goods_discount=#{goodsDiscount},
+			real_vpoints=#{goodsVpoints}*#{goodsDiscount}/100,
+			real_pay=#{goodsPay}*#{goodsDiscount}/100,
+			goods_num=#{goodsNum},
+			is_commend=#{isCommend},
+			is_gift=#{isGift},
+			is_gift_card=#{isGiftCard},
+			is_gift_as_coupons=#{isGiftAsCoupons},
+			you_pin_flag=#{youPinFlag},
+			sec_kill=#{secKill},
+			goods_exchange_num=#{goodsExchangeNum},
+			goods_remains=goods_remains+#{goodsRemains},
+			goods_limit=#{goodsLimit},
+			goods_user_day_limit=#{goodsUserDayLimit},
+			goods_start_time=#{goodsStartTime},
+			goods_end_time=#{goodsEndTime},
+			is_group_buying = #{isGroupBuying},
+			group_buying_vpoints=#{groupBuyingVpoints},
+			limit_group_num=#{limitGroupNum},
+			reach_num=#{reachNum},
+			daicai_vpoints=#{daicaiVpoints},
+			is_showSales=#{isShowSales},
+			showSalesType=#{showSalesType},
+			show_num= #{showNum},
+			showSales= #{showSales},
+			showSalesBase= #{showSalesBase},
+			express_hotarea_key= #{expressHotareaKey},
+			showSales = IF(IFNULL(showSalesBase, 0) > IFNULL(showSales, 0), showSalesBase, showSales),
+			<if test="brandId != null and brandId != ''">
+				brand_id=#{brandId},
+			</if>
+			<if test="goodsClientNo != null and goodsClientNo != ''">
+				goods_client_No=#{goodsClientNo},
+			</if>
+			<if test="goodsShortName != null and goodsShortName != ''">
+				goods_short_name=#{goodsShortName},
+			</if>
+			<if test="goodsStatus != null and goodsStatus != ''">
+				goods_status=#{goodsStatus},
+			</if>
+			<if test="pauseExchangeTips != null and pauseExchangeTips != ''">
+				pause_exchange_tips=#{pauseExchangeTips},
+			</if>
+			<if test="expressTips != null and expressTips != ''">
+				express_tips=#{expressTips},
+			</if>
+			good_show_flag=#{goodShowFlag},
+			good_show_sequence=#{goodShowSequence},
+			shipments_area=#{shipmentsArea},
+			exchange_card_type=#{exchangeCardType},
+			sale_num_sequence=#{saleNumSequence},
+			goods_custom_sequence=#{goodsCustomSequence},
+			goods_specification=#{goodsSpecification},
+			goods_Unit_Name=#{goodsUnitName},
+			remark_info = #{remarkInfo},
+			hot_recommend_title = #{hotRecommendTitle},
+			update_time=#{updateTime}
+		</set>
+		where goods_id=#{goodsId}
+	</update>
+	<update id="delGoodsById" parameterType="String">
+		update vpoints_goods_info
+		<set>
+			delete_flag='1',
+			goods_num = goods_exchange_num,
+			goods_remains = 0
+		</set>
+		where goods_id=#{goodsId}
+	</update>
+	<select id="getFirstCategoryList" resultMap="categoryMap">
+		select t.category_type,t.category_name,t.category_ico,t.category_img from vpoints_category_type t
+		where t.category_parent='0' order by t.category_order
+	</select>
+	<select id="getCategoryByParent" resultMap="categoryMap" parameterType="String">
+		select t.category_type,t.category_name,t.category_ico,t.exchange_type,t.category_img from vpoints_category_type t
+		where t.category_parent=#{parentId} order by t.category_order
+	</select>
+	<select id="getBatchList"  resultMap="batchMap">
+		select t.batch_key as batchKey,t.batch_name as batchName
+		 from vpoints_coupon_batch t
+		where t.delete_flag=0
+	</select>
+	<select id="getUseCount" parameterType="String" resultType="int">
+	select ifnull(t.batch_count-ifnull(sum(g.goods_num),0),0)
+	from vpoints_coupon_batch t,vpoints_goods_info g where t.batch_key=#{0} and g.batch_key=#{0} and g.goods_id!=#{1}
+	</select>
+
+	<!-- 	依据品牌ID获取商品信息 -->
+	<select id="queryGoodsByBrandId" parameterType="Map" resultMap="goodsResultMap">
+	   select
+	       *
+	   from
+	       vpoints_goods_info
+	   where
+	       delete_flag = '0'
+	       and brand_id = #{brandId}
+	</select>
+
+	<!-- 	依据品牌父ID获取子品牌信息 -->
+	<select id="queryBrandByParentId" parameterType="Map" resultMap="brandResultMap">
+	   select
+	       *
+	   from
+	       vpoints_brand_info
+	   where
+	       delete_flag = '0'
+	       and brand_parent = #{parentId}
+	</select>
+
+	<!-- 	更新积分好礼排序 -->
+	<update id="updateGoodShowSequence" parameterType="Map">
+        update vpoints_goods_info g, (
+            select (@rownum:=@rownum+1) rownum, t1.goods_id from vpoints_goods_info t1, (select @rownum:=0) t2 where t1.good_show_sequence >= #{goodShowSequence} order by t1.good_show_sequence) t
+        set
+            g.good_show_sequence = t.rownum + #{goodShowSequence}
+        where
+            g.goods_id = t.goods_id
+            and g.goods_id != #{goodsId}
+	</update>
+
+	<!-- 	更新自定义销量排序 -->
+	<update id="updateSaleNumSequence" parameterType="Map">
+        update vpoints_goods_info g, (
+            select (@rownum:=@rownum+1) rownum, t1.goods_id from vpoints_goods_info t1, (select @rownum:=0) t2 where t1.sale_num_sequence >= #{saleNumSequence} order by t1.sale_num_sequence) t
+        set
+            g.sale_num_sequence = t.rownum + #{saleNumSequence}
+        where
+            g.goods_id = t.goods_id
+            and g.goods_id != #{goodsId}
+	</update>
+
+	<!-- 	依据商品客户自定义编号获取 -->
+	<select id="findByGoodsClientNo" resultMap="goodsResultMap">
+	   select
+	       *
+	   from
+	       vpoints_goods_info
+	   where
+	       goods_client_no = #{goodsClientNo}
+	   limit 1
+	</select>
+
+	<!-- 撤单返回商品数量 -->
+	<update id="updateGoodsRemains" parameterType="Map">
+		update vpoints_goods_info set
+			goods_exchange_num = goods_exchange_num - #{exchangeNum},
+			goods_remains = goods_remains + #{exchangeNum},
+			update_time = NOW()
+		where goods_id=#{goodsId}
+	</update>
+
+	<!-- 预扣商品库存 -->
+	<update id="updateGoodsRemainsForWithholding" parameterType="Map">
+		update vpoints_goods_info set
+			goods_remains = goods_remains - #{goodsRemains},
+			update_time = NOW()
+		where goods_id=#{goodsId}
+	</update>
+
+	<!-- 更新商品最近30销量 -->
+	<update id="updateGoodShowSales" parameterType="Map">
+		update vpoints_goods_info set
+			showSales = showSales - #{interval}
+		where goods_id=#{goodsId}
+	</update>
+
+	<!-- 	获取商品列表 -->
+	<select id="queryGoodsList" parameterType="Map" resultMap="goodsResultMap">
+		select
+		*
+		from
+		vpoints_goods_info
+		where
+		delete_flag = '0'
+        and `goods_status` = '0'
+		and `is_gift` = '1'
+		<!-- 目前拼团和团购只支持现金，积分的商品查询时临时屏蔽掉 --> 
+		and goods_vpoints = 0 and goods_pay > 0 
+		
+		<foreach collection="exchangeChannelLst" item="exchangeChannel" open=" and exchange_channel in (" close=")" separator=",">
+			#{exchangeChannel}
+		</foreach>
+		<if test="unexpiredFalg != null and unexpiredFalg != ''">
+			and NOW() <![CDATA[<=]]> goods_end_time
+		</if>
+		<if test="shipmentProviceLst != null and shipmentProviceLst.size > 0">
+		<foreach collection="shipmentProviceLst" item="province" open=" and (" close=")" separator=" or ">
+		  shipments_area like '%${province}%'
+		</foreach>
+		</if>
+		<if test="goodsIdLst != null and goodsIdLst.size() > 0">
+		  <foreach collection="goodsIdLst" item="goodsId" open=" or goods_id in (" separator="," close=")">
+		      #{goodsId}
+		  </foreach>
+		</if>
+		
+	</select>
+
+	<select id="getGoodsInfo" parameterType="String" resultMap="goodsMap">
+		select
+            a.category_name as firstName,
+            c.category_name as secondName,
+            t.goods_id as goodsId,
+            a.category_type as categoryParent,
+            t.category_type as categoryType,
+            t.exchange_channel as exchangeChannel,
+            t.exchange_type as exchangeType,
+            t.goods_name as goodsName,
+            t.goods_url as goodsUrl,
+            t.goods_big_url as goodsBigUrl,
+            t.goods_activity_url as goodsActivityUrl,
+            t.goods_content as goodsContent,
+            t.batch_key as batchKey,
+            t.goods_value as goodsValue,
+            t.goods_money as goodsMoney,
+            t.goods_vpoints as goodsVpoints,
+            t.goods_pay as goodsPay,
+            t.goods_discount as goodsDiscount,
+            t.goods_num as goodsNum,
+            t.goods_exchange_num as goodsExchangeNum,
+            t.goods_remains as goodsRemains,
+            t.goods_limit as goodsLimit,
+            t.goods_user_day_limit as goodsUserDayLimit,
+            date_format(t.goods_start_time,'%Y-%m-%d %H:%i:%S') as goodsStartTime,
+            date_format(t.goods_end_time,'%Y-%m-%d %H:%i:%S') as goodsEndTime,
+            t.is_commend as isCommend,
+            t.you_pin_flag as youPinFlag,
+            t.sec_kill as secKill,
+            t.show_num as showNum,
+            t.brand_id as brandId,
+            t.goods_client_no as goodsClientNo,
+            t.goods_short_name as goodsShortName,
+            t.daicai_money as daicaiMoney,
+            t.daicai_vpoints as daicaiVpoints,
+            t.goods_status as goodsStatus,
+            t.pause_exchange_tips as pauseExchangeTips,
+            t.good_show_flag as goodShowFlag,
+            t.good_show_sequence as goodShowSequence,
+            t.sale_num_sequence as saleNumSequence,
+            t.express_tips as expressTips,
+            t.shipments_area as shipmentsArea,
+            t.exchange_card_type as exchangeCardType,
+            t.is_group_buying as isGroupBuying,
+			t.group_buying_vpoints as groupBuyingVpoints,
+			t.limit_group_num as limitGroupNum,
+			t.reach_num as reachNum,
+            b.brand_name as brandName,
+            t.goods_specification as goodsSpecification,
+            t.goods_Unit_Name as goodsUnitName,
+            t.remark_info as remarkInfo,
+            t.hot_recommend_title,
+            t.is_gift as isGift,
+            t.express_hotarea_key ,
+            t.is_gift_as_coupons as isGiftAsCoupons
+			from vpoints_goods_info t 
+			LEFT JOIN vpoints_category_type c on c.category_type=t.category_type 
+			LEFT JOIN vpoints_category_type a on c.category_parent=a.category_type 
+			left join vpoints_brand_info b on t.brand_id = b.brand_id
+			where  t.goods_id=#{goodsId}
+	</select>
+	<!-- 	依据条件筛选商品  operateFlag 0新增 1修改-->
+	<select id="findByGoodsAsGift"  parameterType="Map" resultMap="goodsResultMap">
+			select * from vpoints_goods_info t
+				where t.is_gift = '1'  and t.goods_end_time > now()  and t.exchange_channel=#{exchangeChannel} and delete_flag = '0' and  goods_status = '0' and goods_remains > 0 	and t.goods_id not in (select goods_id from vpoints_goods_gift_relation)
+			<if test="operateFlag != null and operateFlag == '1'.toString()">
+				union all select t.* from vpoints_goods_info t
+				left join vpoints_goods_gift_relation g on t.goods_id = g.goods_id
+				where g.gift_id = #{goodsId}
+			</if>
+	</select>
+	
+
+    <!--    查询指定省份配送商品列表 -->
+    <select id="queryByShipmentProvince" parameterType="Map" resultMap="goodsResultMap">
+        select
+        *
+        from
+        vpoints_goods_info
+        where
+        delete_flag = '0'
+        and `goods_status` = '0'
+        and `is_gift` = '1'
+        and NOW() <![CDATA[<=]]> goods_end_time
+        and exchange_channel = #{exchangeChannel}
+        <if test="shipmentProviceLst != null and shipmentProviceLst.size > 0">
+	        <foreach collection="shipmentProviceLst" item="province" open=" and (" close=")" separator=" or ">
+	          shipments_area like '%${province}%'
+	        </foreach>
+        </if>
+        
+    </select>
+
+	<select id="getShopGoods" parameterType="com.dbt.vpointsshop.bean.VpointsGoodsInfo" resultMap="goodsMap">
+
+
+		select
+		t.goods_id as goodsId,
+		a.category_type as categoryParent,
+		t.category_type as categoryType,
+		t.exchange_type as exchangeType,
+		t.goods_name as goodsName,
+		t.goods_url as goodsUrl,
+		t.goods_big_url as goodsBigUrl,
+		t.goods_activity_url as goodsActivityUrl,
+		t.goods_content as goodsContent,
+		t.goods_money as goodsMoney,
+		t.goods_vpoints as goodsVpoints,
+		t.goods_pay as goodsPay,
+		t.real_pay as realPay,
+		t.real_vpoints as realVpoints,
+		t.goods_discount as goodsDiscount,
+		date_format(t.goods_start_time,'%Y-%m-%d %H:%i:%S') as goodsStartTime,
+		date_format(t.goods_end_time,'%Y-%m-%d %H:%i:%S') as goodsEndTime,
+		t.is_commend as isCommend,
+		t.you_pin_flag as youPinFlag,
+		t.show_num as showNum,
+		t.goods_remains as goodsRemains,
+		t.goods_client_no as goodsClientNo,
+		t.goods_short_name as goodsShortName,
+		t.goods_status as goodsStatus,
+		t.pause_exchange_tips as pauseExchangeTips,
+		t.express_tips as expressTips,
+		t.shipments_area as shipmentsArea,
+		t.goods_specification as goodsSpecification,
+		t.showSales as showSales,
+		t.showSalesType as showSalesType,
+		t.goods_exchange_num as goodsExchangeNum,
+		t.is_showSales as isShowSales,
+		t.is_gift_card,
+		t.goods_custom_sequence,
+		s.INFO_KEY as seckillActivityKey,
+		CASE WHEN s.INFO_KEY IS NOT NULL  THEN '0' ELSE t.sec_kill END AS secKill,
+
+		g.INFO_KEY as groupBuyingActivityKey,
+		CASE WHEN g.INFO_KEY IS NOT NULL  THEN '1' ELSE '0' END AS isGroupBuying,
+		g.limit_group_num as limitGroupNum,
+		g.reach_num as reachNum,
+
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.SECKILL_PAY WHEN g.INFO_KEY IS NOT NULL THEN g.GROUP_BUYING_PAY ELSE 0 END as activityRealPay,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.SECKILL_VPOINTS WHEN g.INFO_KEY IS NOT NULL THEN g.GROUP_BUYING_VPOINTS ELSE 0 END as activityRealVpoints,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.RULE_TYPE WHEN g.INFO_KEY IS NOT NULL THEN g.RULE_TYPE ELSE '' END as ruleType,
+
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.begin_date WHEN g.INFO_KEY IS NOT NULL THEN g.begin_date ELSE '' END as activityBeginDate,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.end_date WHEN g.INFO_KEY IS NOT NULL THEN g.end_date ELSE '' END as activityEndDate,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.activity_begin_time WHEN g.INFO_KEY IS NOT NULL THEN g.activity_begin_time ELSE '' END as activityBeginTime,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.activity_end_time WHEN g.INFO_KEY IS NOT NULL THEN g.activity_end_time ELSE '' END as activityEndTime,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.NOTICE_HOUR WHEN g.INFO_KEY IS NOT NULL THEN g.NOTICE_HOUR ELSE '' END as noticeHour,
+		CASE WHEN s.INFO_KEY IS NOT NULL THEN s.SECKILL_PERIODS_NUM WHEN g.INFO_KEY IS NOT NULL THEN g.GROUP_BUYING_PERIODS_NUM ELSE 0 END as activityPeriodsNum,
+
+		t.goods_Unit_Name as goodsUnitName,
+		t.goods_num as goodsNum,
+		t.hot_recommend_title as hotRecommendTitle
+		from vpoints_goods_info t
+
+		LEFT JOIN vpoints_category_type c on c.category_type=t.category_type
+		LEFT JOIN vpoints_category_type a on c.category_parent=a.category_type
+		LEFT JOIN vpoints_seckill_activity_view s on t.goods_id = s.goods_id and t.goods_status = '0'
+		LEFT JOIN vpoints_group_buying_activity_view g on t.goods_id = g.goods_id and t.goods_status = '0'
+		where  t.delete_flag='0'
+		and t.real_pay > 0
+
+		<choose>
+			<when test="goodsStatus != null and goodsStatus != ''">
+				and t.goods_status = #{goodsStatus}
+			</when>
+			<otherwise>
+				and t.goods_status != '2'
+			</otherwise>
+		</choose>
+		and t.is_gift = '1'
+		<choose>
+			<when test="exchangeChannel != null and exchangeChannel != ''">
+				and t.exchange_channel=#{exchangeChannel}
+			</when>
+			<otherwise>
+				and t.exchange_channel='1'
+			</otherwise>
+		</choose>
+		and CURDATE() <![CDATA[ >= ]]>date_format(t.goods_start_time,'%Y-%m-%d')
+		and CURDATE()<![CDATA[ <= ]]>date_format(t.goods_end_time,'%Y-%m-%d')
+
+		<if test="goodsId != null and goodsId != ''">
+			and t.goods_id=#{goodsId}
+		</if>
+		<if test="categoryParent != null and categoryParent != ''">
+			and c.category_parent=#{categoryParent}
+		</if>
+		<if test="categoryType != null and categoryType != ''">
+			and t.category_type=#{categoryType}
+		</if>
+		<if test="exchangeType != null and exchangeType != ''">
+			and t.exchange_type=#{exchangeType}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			and t.goods_name like '%${goodsName}%'
+		</if>
+		<if test="isCommend != null and isCommend == '0'.toString()">
+			and t.is_commend = '0'
+		</if>
+		<if test="secKill != null and secKill == '0'.toString()">
+			and s.INFO_KEY IS NOT NULL
+		</if>
+		<if test="secKill != null and secKill == '1'.toString()">
+			and s.INFO_KEY IS NULL
+		</if>
+		<if test="isGroupBuying != null and isGroupBuying == '1'.toString()">
+			and g.INFO_KEY IS NOT NULL
+		</if>
+		<if test="isGroupBuying != null and isGroupBuying == '0'.toString()">
+			and g.INFO_KEY IS NULL
+		</if>
+
+		<!-- 增加商品兑换可使用卡类型 -->
+		<if test="exchangeCardType != null and exchangeCardType != ''">
+			and t.exchange_card_type = #{exchangeCardType}
+		</if>
+		<!-- 优品推荐Flag -->
+		<choose>
+			<when test="youPinFlag != null and youPinFlag == '0'.toString()">
+				and t.you_pin_flag = '0'
+			</when>
+			<otherwise>
+				and IFNULL(t.you_pin_flag, '') != '0'
+			</otherwise>
+		</choose>
+		GROUP BY t.goods_id
+			order by t.good_show_sequence, t.update_time desc
+	</select>
+</mapper>

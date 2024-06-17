@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.vpointsshop.dao.VpsOrderCommentDao">
+
+	<resultMap type="com.dbt.vpointsshop.bean.VpsOrderComment" id="baseResultMap">
+		<result property="commentId" column="comment_id" />
+		<result property="commentType" column="comment_type" />
+		<result property="userKey" column="user_key" />
+		<result property="exchangeId" column="exchange_id" />
+		<result property="couponKey" column="coupon_key" />
+		<result property="isDisplay" column="is_display" />
+		<result property="userName" column="user_name" />
+		<result property="headPortrait" column="headPortrait" />
+        <result property="isTop" column="is_top" />
+        <result property="status" column="status" />
+        <result property="imageUrl" column="image_url" />
+        <result property="level" column="level" />
+        <result property="goodsLevel" column="goods_level" />
+        <result property="logisticsLevel" column="logistics_level" />
+        <result property="isIncognito" column="is_incognito" />
+        <result property="remarks" column="remarks" />
+        <result property="reply" column="reply" />
+        <result property="auditTime" column="audit_time" />
+        <result property="couponName" column="coupon_name" />
+        <result property="openId" column="open_id" />
+		<result property="deleteFlag" column="DELETE_FLAG" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="createUser" column="CREATE_USER" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+	
+	
+	
+	<!--更新状态 -->
+	<update id="update" parameterType="com.dbt.vpointsshop.bean.VpsOrderComment">
+	   update 
+	       vps_order_comment
+	       
+	   <set>
+			<if test="couponKey != null and couponKey != '' ">
+				coupon_key =#{couponKey},
+			</if>
+			<if test="couponName != null and couponName != '' ">
+				coupon_name =#{couponName},
+			</if>
+			<if test="isDisplay != null and isDisplay != '' ">
+				is_display = #{isDisplay}, 
+			</if>
+			<if test="isTop != null and isTop != '' ">
+				is_top =#{isTop},  	
+			</if>
+			<if test="status != null and status != '' ">
+				status = #{status},
+			</if>
+			<if test="remarks != null and remarks != '' ">
+				remarks = #{remarks},
+			</if>
+			<if test="reply != null and reply != '' ">
+				reply = #{reply},
+			</if>
+			<if test="auditTime != null and auditTime != '' ">
+				audit_Time = #{auditTime},	
+			</if>		
+	       	update_time = NOW(),
+		  	update_user = #{updateUser}
+		  </set>	
+	   where
+	       comment_id = #{commentId}
+	</update>
+	<update id="updateImg" parameterType="com.dbt.vpointsshop.bean.VpsOrderComment">
+		update
+		vps_order_comment
+
+		set image_url = #{imageUrl}
+		where
+		comment_id = #{commentId}
+	</update>
+	
+	<!--删除 -->
+	<update id="deleteById" parameterType="String">
+	   update
+	       vps_order_comment
+	   set 	delete_flag = '1'
+	   where comment_id = #{commentId}
+	</update>
+	
+	<select id="findById" parameterType="String" resultMap="baseResultMap">
+	   select 
+	       *,
+	       g.goods_name as 'goodsName', 
+	       g.goods_specification as 'goodsSpecification',
+	       a.headPortrait as 'headimgUrl',
+	       u.PHONE_NUMBER as 'phoneNum',
+	       t.pa_openid AS 'paOpenid',
+	       c.activity_name AS 'activityName',
+	       c.activity_type AS 'activityType',
+	       c.opening_number as 'openingNumber',
+	       p.periods_number AS 'periodsNumber'
+	   from
+	       vps_order_comment a 
+	       inner join vpoints_exchange_log l on l.exchange_id = a.exchange_id
+	       inner join vpoints_goods_info g on g.goods_id = l. goods_id
+	       left join vps_consumer_user_info u on u.user_key = a.user_key
+	       left join vps_consumer_thirdaccount_info t on t.USER_KEY =  a.user_key
+	       left join vps_bidding_periods p on a.exchange_id = p.exchange_id
+	       left join vps_bidding_activity_cog c on p.activity_key = c.activity_key
+	   where 
+	       a.comment_id = #{id}
+	</select>
+	<select id="queryCommentImg" parameterType="String" resultMap="baseResultMap">
+	   select
+	       *
+	   from
+	       vps_order_comment
+	   where
+	   left(create_time, 10) = #{expireTime}
+	</select>
+	
+	<select id="queryForLst" resultMap="baseResultMap" parameterType="Map">
+		SELECT
+			a.*,			
+			IF(locate('%',a.content),a.content,left(a.content, 20)) as 'orderContent',
+			g.goods_name as 'goodsName'
+		FROM
+			vps_order_comment a
+			inner join vpoints_exchange_log l on l.exchange_id = a.exchange_id
+			inner join vpoints_goods_info g on g.goods_id = l. goods_id
+		WHERE
+			a.delete_flag = '0'
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+		    and (g.goods_name like '%${queryBean.keyword}%' or a.content like '%${queryBean.keyword}%')
+		</if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and a.status = #{queryBean.status}
+        </if>
+        <if test="queryBean.userName != null and queryBean.userName != ''">
+            and a.NICK_NAME like '%${queryBean.userName}%' 
+        </if>
+			ORDER BY CREATE_TIME DESC  
+        	LIMIT #{pageInfo.startCount}, #{pageInfo.pagePerCount}
+	</select>
+	
+	<select id="queryForCount" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(1)
+		FROM
+			vps_order_comment a
+			inner join vpoints_exchange_log l on l.exchange_id = a.exchange_id
+			inner join vpoints_goods_info g on g.goods_id = l. goods_id
+		WHERE
+			a.delete_flag = '0'
+		<if test="queryBean.keyword != null and queryBean.keyword != ''">
+		    and (g.goods_name like '%${queryBean.keyword}%' or a.content like '%${queryBean.keyword}%')
+		</if>
+        <if test="queryBean.status != null and queryBean.status != ''">
+            and a.status = #{queryBean.status}
+        </if>
+        <if test="queryBean.userName != null and queryBean.userName != ''">
+            and a.NICK_NAME like '%${queryBean.userName}%' 
+        </if>
+	</select>
+
+
+</mapper>

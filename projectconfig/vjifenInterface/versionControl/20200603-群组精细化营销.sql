@@ -1,0 +1,139 @@
+ALTER TABLE `vps_vcode_activity_rebate_rule_cog`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '群组ID' AFTER `UPDATE_USER`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '群组名称' AFTER `GROUP_ID`,
+ADD INDEX `INDEX_GROUP_ID` (`GROUP_ID`) USING BTREE ;
+
+
+
+
+
+
+
+
+ALTER TABLE `vps_vcode_packs_record_1`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+ALTER TABLE `vps_vcode_packs_record_2`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_3`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_4`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_5`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_6`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_7`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_8`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_9`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_10`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_11`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_12`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_13`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_14`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_15`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_16`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_17`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_18`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_19`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_20`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_21`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_22`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_23`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+ALTER TABLE `vps_vcode_packs_record_24`
+ADD COLUMN `GROUP_ID`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组id' AFTER `COL5`,
+ADD COLUMN `GROUP_NAME`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '群组名称' AFTER `GROUP_ID`;
+
+
+
+INSERT INTO `vps_sys_datadic_m` VALUES (uuid(), (SELECT a.CATEGORY_KEY FROM vps_sys_diccategory_info  a  where a.CATEGORY_NAME = 'filter功能开关配置'), 'switch_group', '0', '精细化营销群组开关0关闭1开启', '', 1, '0', 1, NOW(), '1', NOW()
+(), '1');
+
+INSERT INTO `vps_sys_datadic_m` VALUES (uuid(), (SELECT a.CATEGORY_KEY FROM vps_sys_diccategory_info  a  where a.CATEGORY_NAME = 'filterhttp调用URL配置'), 'crm_interface_url', 'http://47.94.17.36/vjifenCRMServer/', '精细化营销群组url地址
+', '', 1, '0', 1, NOW(), '1', NOW(), '1');
+
+

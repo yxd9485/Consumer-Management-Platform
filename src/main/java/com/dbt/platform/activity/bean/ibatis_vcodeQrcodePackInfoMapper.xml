@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeQrcodePackInfoDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeQrcodePackInfo" id="vcodeQrcodePackInfoResultMap">
+		<result property="packKey" column="pack_key"/>
+  		<result property="batchKey" column="batch_key"/>
+  		<result property="packCode" column="pack_code"/>
+  		<result property="startDate" column="start_date"/>
+  		<result property="endDate" column="end_date"/>
+  		<result property="qrcodeAmounts" column="qrcode_amounts"/>
+  		<result property="deleteFlag" column="delete_flag"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="createUser" column="create_user"/>
+  		<result property="updateTime" column="update_time"/>
+  		<result property="updateUser" column="update_user"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+	         pack_key, 
+  			 batch_key,
+  			 pack_code,
+  			 start_date,
+  			 end_date,
+  			 qrcode_amounts,
+  			 delete_flag,
+  			 create_time,
+  			 create_user,
+  			 update_time,
+			 update_user 
+  	</sql>
+	<insert id="create" parameterType="com.dbt.platform.activity.bean.VcodeQrcodePackInfo">
+		INSERT INTO vps_vcode_qrcode_pack_info(
+			pack_key, 
+  			batch_key,
+  			pack_code,
+  			start_date,
+  			end_date,
+  			qrcode_amounts,
+  			delete_flag,
+  			create_time,
+  			create_user,
+  			update_time,
+  			 update_user 
+		)
+		VALUES(
+		    #{packKey},
+			
+  			#{batchKey},
+			
+  			#{packCode},
+			
+  			#{startDate},
+			
+  			#{endDate},
+			
+  			#{qrcodeAmounts},
+			
+  			#{deleteFlag},
+			
+  			#{createTime},
+			
+  			#{createUser},
+			
+  			#{updateTime},
+			
+  			#{updateUser}
+		)
+	</insert>
+	<update id="update" parameterType="com.dbt.platform.activity.bean.VcodeQrcodePackInfo">
+		update vps_vcode_qrcode_pack_info 
+	<set>
+			<if test="batchKey != null and batchKey!=''">
+			batch_key = #{batchKey},
+			</if>
+			<if test="packCode != null and packCode!=''">
+			pack_code = #{packCode},
+			</if>
+			<if test="qrcodeAmounts != null and qrcodeAmounts!=''">
+			qrcode_amounts = #{qrcodeAmounts},
+			</if>
+			<if test="deleteFlag != null and deleteFlag!=''">
+			delete_flag = #{deleteFlag},
+			</if>
+			<if test="updateUser != null and updateUser!=''">
+			update_user = #{updateUser},
+			</if>
+	</set>
+	 where pack_key=#{packKey}
+	 
+	</update>
+	<select id="findPackInfoByBatchkey" resultMap="vcodeQrcodePackInfoResultMap" parameterType="String">
+  	     select 
+			   <include refid="Base_Column_List" />
+	     from vps_vcode_qrcode_pack_info t
+	   	  where batch_key=#{batchKey} 
+	   	  limit 1
+  	</select>
+  	
+  	<select id="findPackListByBatchKey" resultMap="vcodeQrcodePackInfoResultMap" parameterType="String">
+  	     select 
+			   <include refid="Base_Column_List" />
+	     from vps_vcode_qrcode_pack_info
+	   	 where batch_key = #{batchKey} 
+  	</select>
+	
+	<!-- 根据包码批量修改包信息 -->
+	<update id="batchUpdatePackInfoByPackKey" parameterType="com.dbt.platform.activity.bean.VcodeQrcodePackInfo">
+		update vps_vcode_qrcode_pack_info
+		SET start_date = #{startDate}
+		, end_date = #{endDate}
+		, update_time = #{updateTime}
+		, update_user = #{updateUser}
+		where batch_key =#{batchKey}
+	</update>
+	<!-- 批量入库包吗信息 -->
+	<insert id="batchAddPackInfo" parameterType="java.util.List">
+		INSERT INTO vps_vcode_qrcode_pack_info(
+			pack_key, 
+  			batch_key,
+  			pack_code,
+  			start_date,
+  			end_date,
+  			qrcode_amounts,
+  			delete_flag,
+  			create_time,
+  			create_user,
+  			update_time,
+  			 update_user 
+		)
+		VALUES
+		<foreach collection="list" separator="," item="itm">
+		(	
+			#{itm.packKey},
+			
+  			#{itm.batchKey},
+			
+  			#{itm.packCode},
+			
+  			#{itm.startDate},
+			
+  			#{itm.endDate},
+			
+  			#{itm.qrcodeAmounts},
+			
+  			#{itm.deleteFlag},
+			
+  			#{itm.createTime},
+			
+  			#{itm.createUser},
+			
+  			#{itm.updateTime},
+			
+  			#{itm.updateUser}
+  		)
+		</foreach>
+	</insert>
+	
+<!-- 	物理删除批次相关的包 -->
+	<delete id="removeByBatchKey" parameterType="String">
+	   delete from 
+	       vps_vcode_qrcode_pack_info
+	   where
+	       batch_key = #{batchKey}
+	</delete>
+</mapper>

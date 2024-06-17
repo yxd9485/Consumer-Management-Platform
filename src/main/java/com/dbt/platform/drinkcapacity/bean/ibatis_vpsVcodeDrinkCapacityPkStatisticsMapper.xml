@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.drinkcapacity.dao.IVpsVcodeDrinkCapacityPkStatisticsDao">
+
+	<resultMap type="com.dbt.platform.drinkcapacity.bean.VpsVcodeDrinkCapacityPkStatistics" id="baseResultMap">
+		<result property="userKey" column="USER_KEY"/>
+		<result property="winNum" column="WIN_NUM"/>
+		<result property="loseNum" column="LOSE_NUM"/>
+		<result property="drawNum" column="DRAW_NUM"/>
+		<result property="unpkNum" column="UNPK_NUM"/>
+		<result property="lastPkTime" column="LAST_PK_TIME"/>
+		<result property="lastPkResult" column="LAST_PK_RESULT"/>
+		<result property="lastShareTime" column="LAST_SHARE_TIME"/>
+		<result property="lastBeginTime" column="LAST_BEGIN_TIME"/>
+		<result property="lastPkInfoKey" column="LAST_PK_INFO_KEY"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="updateTime" column="UPDATE_TIME"/>
+	</resultMap>
+	
+	
+	<update id="updatePkResult" parameterType="Map">
+	   update 
+	       vps_vcode_drinkcapacity_pk_statistics
+	   <set>
+	       <if test="winNum > 0">
+	           win_num = win_num + 1,
+	       </if>
+           <if test="loseNum > 0">
+               lose_num = lose_num + 1,
+           </if>
+           <if test="drawNum > 0">
+               draw_num = draw_num + 1,
+           </if>
+           <if test="unpkNum > 0">
+               unpk_num = unpk_num + 1,
+           </if>
+	       <if test="lastPkTime != '' and lastPkTime != null">
+	           LAST_PK_TIME = #{lastPkTime},
+	       </if>
+	       <if test="lastPkResult != '' and lastPkResult != null">
+	           LAST_PK_RESULT = #{lastPkResult},
+	       </if>
+	       update_time = now()
+	   </set>
+	   where
+	       user_key = #{userKey}
+	</update>
+	
+<!-- 	获取用户的比赛情况 -->
+	<select id="findByUserKey" parameterType="String" resultMap="baseResultMap">
+	   select 
+	       *
+	   from 
+	       vps_vcode_drinkcapacity_pk_statistics
+	   where
+	       user_key = #{userKey}
+	   limit 1
+	</select>
+</mapper>

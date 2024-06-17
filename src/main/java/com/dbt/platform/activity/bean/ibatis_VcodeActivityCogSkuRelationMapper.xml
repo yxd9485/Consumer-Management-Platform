@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dbt.platform.activity.dao.IVcodeActivityCogSkuRelationDao">
+
+	<resultMap type="com.dbt.platform.activity.bean.VcodeActivityCogSkuRelation" id="resultSkuRelation">
+		<result property="infoKey" column="INFO_KEY"/>
+		<result property="vcodeActivityKey" column="VCODE_ACTIVITY_KEY"/>
+		<result property="skuKey" column="SKU_KEY"/>
+		<result property="createTime" column="CREATE_TIME"/>
+	</resultMap>
+
+
+	<!-- 批量插入方法 -->
+	<insert id="batchInsert">
+		INSERT INTO vps_vcode_activity_cog_sku_relation
+		(info_key, vcode_activity_key, sku_key, create_time)
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			(#{item.infoKey}, #{item.vcodeActivityKey}, #{item.skuKey}, #{item.createTime})
+		</foreach>
+	</insert>
+
+	<select id="loadSkuKeysByActivityKey" resultType="string">
+		select SKU_KEY from vps_vcode_activity_cog_sku_relation where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</select>
+
+	<delete id="deleteByActivityKey" parameterType="string">
+		delete from vps_vcode_activity_cog_sku_relation where VCODE_ACTIVITY_KEY = #{vcodeActivityKey}
+	</delete>
+
+</mapper>

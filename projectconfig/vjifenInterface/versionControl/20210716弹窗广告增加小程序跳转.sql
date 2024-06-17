@@ -1,0 +1,24 @@
+ -- 各省区数据库执行
+ALTER TABLE `vps_ad_home`
+MODIFY COLUMN `JUMP_TYP`  varchar(36) NULL DEFAULT NULL COMMENT '发布类型 0 无 1 链接 2 图片链接、3第三方小程序链接、4小程序内部链接' AFTER `AREANAME`,
+ADD COLUMN `APPID`  varchar(36) NULL COMMENT '小程序appid' AFTER `JUMP_TYP`;
+
+ALTER TABLE vps_ad_shop
+MODIFY COLUMN `JUMP_TYP`  varchar(36) NULL DEFAULT NULL COMMENT '发布类型 0 无 1 链接 2 图片链接、3第三方小程序链接、4内部小程序内部链接' AFTER `AREANAME`,
+ADD COLUMN `APPID`  varchar(36) NULL COMMENT '小程序appid' AFTER `JUMP_TYP`;
+
+ALTER TABLE vps_ad_up
+MODIFY COLUMN `JUMP_TYP`  varchar(36) NULL DEFAULT NULL COMMENT '发布类型 0 无 1 链接 2 图片链接、3第三方小程序链接、4内部小程序内部链接' AFTER `AREANAME`,
+ADD COLUMN `APPID`  varchar(36) NULL COMMENT '小程序appid' AFTER `JUMP_TYP`;
+
+ALTER TABLE `vps_ad_up`
+ADD COLUMN `CROWD_LIMIT_TYPE`  varchar(1) NULL COMMENT '人群限制类型：默认0不限制，1黑名单不可参与、2指定群组参与、3指定群组参不与' AFTER `AREANAME`,
+ADD COLUMN `USER_GROUP_IDS`  varchar(36) NULL DEFAULT NULL COMMENT '分组ID集合' AFTER `CROWD_LIMIT_TYPE`;
+
+ALTER TABLE `vps_ad_shop`
+ADD COLUMN `CROWD_LIMIT_TYPE`  varchar(1) NULL COMMENT '人群限制类型：默认0不限制，1黑名单不可参与、2指定群组参与、3指定群组参不与' AFTER `AREANAME`,
+ADD COLUMN `USER_GROUP_IDS`  varchar(36) NULL DEFAULT NULL COMMENT '分组ID集合' AFTER `CROWD_LIMIT_TYPE`;
+
+ALTER TABLE `vps_ad_home`
+ADD COLUMN `CROWD_LIMIT_TYPE`  varchar(1) NULL COMMENT '人群限制类型：默认0不限制，1黑名单不可参与、2指定群组参与、3指定群组参不与' AFTER `AREANAME`,
+ADD COLUMN `USER_GROUP_IDS`  varchar(36) NULL DEFAULT NULL COMMENT '分组ID集合' AFTER `CROWD_LIMIT_TYPE`;
